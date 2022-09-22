@@ -12,7 +12,7 @@ try {
 
     await studies_selfservice_demo_backend_api.init();
 
-    await studies_selfservice_demo_backend_api.runServer();
+    studies_selfservice_demo_backend_api.runServer();
 } catch (error) {
     console.error(error);
 

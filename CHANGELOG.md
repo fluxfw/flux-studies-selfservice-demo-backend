@@ -6,6 +6,12 @@ Changes:
 
 \-
 
+## v2022-09-22-2-alpha
+
+Changes:
+
+- Min password length from backend
+
 ## v2022-09-22-1-alpha
 
 Changes:
