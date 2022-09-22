@@ -41,9 +41,9 @@ export class StudiesSelfserviceDemoBackendApi {
     }
 
     /**
-     * @returns {Promise<void>}
+     * @returns {void>
      */
-    async runServer() {
+    runServer() {
         const server = express();
 
         const node_server = createServer(server);
@@ -101,6 +101,7 @@ export class StudiesSelfserviceDemoBackendApi {
                      * @type {Start}
                      */
                     data: {
+                        minPasswordLength: 8,
                         semesters: await this.#importSemesters()
                     },
                     element: ELEMENT_START

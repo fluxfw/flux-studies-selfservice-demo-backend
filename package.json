@@ -1,13 +1,13 @@
 {
     "name": "flux-studies-selfservice-demo-backend",
     "productName": "flux-studies-selfservice-demo-backend",
-    "version": "2022-09-22-1-alpha",
+    "version": "2022-09-22-2-alpha",
     "description": "",
     "keywords": [],
     "homepage": "",
     "dependencies": {
         "express": "4.18.1",
-        "flux-studies-selfservice-frontend": "https://github.com/fluxfw/flux-studies-selfservice-frontend/archive/refs/tags/v2022-09-22-1-alpha.tar.gz"
+        "flux-studies-selfservice-frontend": "https://github.com/fluxfw/flux-studies-selfservice-frontend/archive/refs/tags/v2022-09-22-2-alpha.tar.gz"
     },
     "bin": {
         "flux-studies-selfservice-demo-backend": "bin/flux-studies-selfservice-demo-backend.mjs"
