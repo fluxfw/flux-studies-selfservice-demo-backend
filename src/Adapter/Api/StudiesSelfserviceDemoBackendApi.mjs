@@ -2,14 +2,16 @@ import { createServer } from "node:http";
 import express from "express";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
-import { ELEMENT_ROOT, ELEMENT_START } from "../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Element/ELEMENT.mjs";
+import { ELEMENT_CHOICE_SUBJECT, ELEMENT_CREATE, ELEMENT_RESUME, ELEMENT_ROOT, ELEMENT_START } from "../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Element/ELEMENT.mjs";
 
+/** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Subject/ChoiceSubject.mjs").ChoiceSubject} ChoiceSubject */
 /** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Element/ELEMENT.mjs").ELEMENT} ELEMENT */
 /** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Get/GetResult.mjs").GetResult} GetResult */
 /** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Post/Post.mjs").Post} Post */
 /** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Post/PostResult.mjs").PostResult} PostResult */
 /** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Semester/Semester.mjs").Semester} Semester */
 /** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Start/Start.mjs").Start} Start */
+/** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Subject/Subject.mjs").Subject} Subject */
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -95,11 +97,17 @@ export class StudiesSelfserviceDemoBackendApi {
         let get_result;
 
         switch (this.#previous_element) {
+            case ELEMENT_CREATE:
+            case ELEMENT_RESUME:
+            case ELEMENT_START:
+                get_result = {
+                    data: await this.#importChoiceSubject(),
+                    element: ELEMENT_CHOICE_SUBJECT
+                };
+                break;
+
             case ELEMENT_ROOT:
                 get_result = {
-                    /**
-                     * @type {Start}
-                     */
                     data: await this.#importStart(),
                     element: ELEMENT_START
                 };
@@ -112,6 +120,16 @@ export class StudiesSelfserviceDemoBackendApi {
         console.debug("GET", this.#previous_element, get_result);
 
         return get_result;
+    }
+
+    /**
+     * @returns {Promise<ChoiceSubject>}
+     */
+    async #importChoiceSubject() {
+        return {
+            ...(await import("../Data/choice-subject.json", { assert: { type: "json" } })).default,
+            subjects: await this.#importSubjects()
+        };
     }
 
     /**
@@ -129,6 +147,13 @@ export class StudiesSelfserviceDemoBackendApi {
             ...(await import("../Data/start.json", { assert: { type: "json" } })).default,
             semesters: await this.#importSemesters()
         };
+    }
+
+    /**
+     * @returns {Promise<Subject[]>}
+     */
+    async #importSubjects() {
+        return (await import("../Data/subjects.json", { assert: { type: "json" } })).default;
     }
 
     /**

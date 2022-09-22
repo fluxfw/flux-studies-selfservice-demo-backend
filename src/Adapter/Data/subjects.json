@@ -1,0 +1,45 @@
+[
+    {
+        "id": "subject_1",
+        "label": "Subject 1",
+        "qualifications": [
+            {
+                "id": "qualification_1",
+                "label": "Qualification 1",
+                "required": true
+            },
+            {
+                "id": "qualification_2",
+                "label": "Qualification 2"
+            },
+            {
+                "id": "qualification_3",
+                "label": "Qualification 3"
+            }
+        ]
+    },
+    {
+        "id": "subject_2",
+        "label": "Subject 2",
+        "qualifications": [
+            {
+                "id": "qualification_4",
+                "label": "Qualification 4"
+            }
+        ]
+    },
+    {
+        "id": "subject_3",
+        "label": "Subject 3",
+        "qualifications": [
+            {
+                "id": "qualification_5",
+                "label": "Qualification 5"
+            },
+            {
+                "id": "qualification_6",
+                "label": "Qualification 6"
+            }
+        ]
+    }
+]
