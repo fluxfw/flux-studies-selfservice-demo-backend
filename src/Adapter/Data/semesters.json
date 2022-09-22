@@ -1,0 +1,14 @@
+[
+    {
+        "id": "semester_1",
+        "label": "Semester 1"
+    },
+    {
+        "id": "semester_2",
+        "label": "Semester 2"
+    },
+    {
+        "id": "semester_3",
+        "label": "Semester 3"
+    }
+]

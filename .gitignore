@@ -1,0 +1,14 @@
+*
+!bin
+!bin/**
+!src
+!src/**
+!.dockerignore
+!.gitignore
+!.gitlab-ci.yml
+!.npmignore
+!CHANGELOG.md
+!Dockerfile
+!package.json
+!package-lock.json
+!README.md
