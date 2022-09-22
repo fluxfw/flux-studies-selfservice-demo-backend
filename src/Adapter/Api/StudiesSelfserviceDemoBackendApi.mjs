@@ -59,7 +59,7 @@ export class StudiesSelfserviceDemoBackendApi {
         server.get("/", (req, res) => {
             this.#previous_element = ELEMENT_ROOT;
 
-            res.redirect("/flux-studies-selfservice-frontend/src");
+            res.redirect(302, "flux-studies-selfservice-frontend/src");
         });
 
         server.get("/api/get", async (req, res) => {
@@ -100,10 +100,7 @@ export class StudiesSelfserviceDemoBackendApi {
                     /**
                      * @type {Start}
                      */
-                    data: {
-                        minPasswordLength: 8,
-                        semesters: await this.#importSemesters()
-                    },
+                    data: await this.#importStart(),
                     element: ELEMENT_START
                 };
                 break;
@@ -122,6 +119,16 @@ export class StudiesSelfserviceDemoBackendApi {
      */
     async #importSemesters() {
         return (await import("../Data/semesters.json", { assert: { type: "json" } })).default;
+    }
+
+    /**
+     * @returns {Promise<Start>}
+     */
+    async #importStart() {
+        return {
+            ...(await import("../Data/start.json", { assert: { type: "json" } })).default,
+            semesters: await this.#importSemesters()
+        };
     }
 
     /**
