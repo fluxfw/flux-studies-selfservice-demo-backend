@@ -1,0 +1,6 @@
+*
+!bin/flux-studies-selfservice-demo-backend.mjs
+!src
+!src/**
+!package.json
+!package-lock.json
