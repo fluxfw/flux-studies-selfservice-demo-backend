@@ -1,6 +1,8 @@
-import { createServer } from "node:http";
 import express from "express";
+import { ExpressServerApi } from "../../../node_modules/flux-express-server-api/src/Adapter/Api/ExpressServerApi.mjs";
 import { fileURLToPath } from "node:url";
+import { ShutdownHandler } from "../../../node_modules/flux-shutdown-handler-api/src/Adapter/ShutdownHandler/ShutdownHandler.mjs";
+import { ShutdownHandlerApi } from "../../../node_modules/flux-shutdown-handler-api/src/Adapter/Api/ShutdownHandlerApi.mjs";
 import { dirname, join } from "node:path";
 import { ELEMENT_CHOICE_SUBJECT, ELEMENT_CREATE, ELEMENT_RESUME, ELEMENT_ROOT, ELEMENT_START } from "../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Element/ELEMENT.mjs";
 
@@ -17,9 +19,21 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 
 export class StudiesSelfserviceDemoBackendApi {
     /**
+     * @type {ExpressServerApi | null}
+     */
+    #express_server_api = null;
+    /**
      * @type {ELEMENT}
      */
     #previous_element;
+    /**
+     * @type {ShutdownHandler | null}
+     */
+    #shutdown_handler = null;
+    /**
+     * @type {ShutdownHandlerApi | null}
+     */
+    #shutdown_handler_api = null;
 
     /**
      * @returns {StudiesSelfserviceDemoBackendApi}
@@ -39,52 +53,19 @@ export class StudiesSelfserviceDemoBackendApi {
      * @returns {Promise<void>}
      */
     async init() {
+        this.#shutdown_handler_api ??= await this.#getShutdownHandlerApi();
+        this.#shutdown_handler ??= this.#shutdown_handler_api.getShutdownHandler();
 
+        this.#express_server_api ??= await this.#getExpressServerApi();
     }
 
     /**
-     * @returns {void>
+     * @returns {Promise<void>}
      */
-    runServer() {
-        const server = express();
-
-        const node_server = createServer(server);
-
-        node_server.listen(8080);
-
-        server.use(express.json());
-
-        server.use("/flux-css-api", express.static(join(__dirname, "..", "..", "..", "node_modules", "flux-css-api")));
-        server.use("/flux-fetch-api", express.static(join(__dirname, "..", "..", "..", "node_modules", "flux-fetch-api")));
-        server.use("/flux-studies-selfservice-frontend", express.static(join(__dirname, "..", "..", "..", "node_modules", "flux-studies-selfservice-frontend")));
-
-        server.get("/", (req, res) => {
-            this.#previous_element = ELEMENT_ROOT;
-
-            res.redirect(302, "flux-studies-selfservice-frontend/src");
-        });
-
-        server.get("/api/get", async (req, res) => {
-            try {
-                res.json(await this.#get());
-            } catch (error) {
-                console.error("GET", error);
-
-                res.status(500).end();
-            }
-        });
-
-        server.post("/api/post", (req, res) => {
-            try {
-                res.json(this.#post(
-                    req.body
-                ));
-            } catch (error) {
-                console.error("POST", error);
-
-                res.status(500).end();
-            }
-        });
+    async runServer() {
+        await this.#express_server_api.runExpressServer(
+            async () => this.#getRouter()
+        );
     }
 
     /**
@@ -123,6 +104,63 @@ export class StudiesSelfserviceDemoBackendApi {
     }
 
     /**
+     * @returns {Promise<ExpressServerApi>}
+     */
+    async #getExpressServerApi() {
+        const express_server = ExpressServerApi.new(
+            this.#shutdown_handler
+        );
+
+        await express_server.init();
+
+        return express_server;
+    }
+
+    /**
+     * @returns {Promise<express.Router>}
+     */
+    async #getRouter() {
+        const router = express.Router();
+
+        router.get("/api/get", async (req, res) => {
+            try {
+                res.json(await this.#get());
+            } catch (error) {
+                console.error("GET", error);
+
+                res.status(500).end();
+            }
+        });
+
+        router.post("/api/post", async (req, res) => {
+            try {
+                res.json(await this.#post(
+                    req.body
+                ));
+            } catch (error) {
+                console.error("POST", error);
+
+                res.status(500).end();
+            }
+        });
+
+        router.use("/", express.static(join(__dirname, "..", "..", "..", "node_modules", "flux-studies-selfservice-frontend", "src")));
+
+        return router;
+    }
+
+    /**
+     * @returns {Promise<ShutdownHandlerApi>}
+     */
+    async #getShutdownHandlerApi() {
+        const shutdown_handler_api = ShutdownHandlerApi.new();
+
+        await shutdown_handler_api.init();
+
+        return shutdown_handler_api;
+    }
+
+    /**
      * @returns {Promise<ChoiceSubject>}
      */
     async #importChoiceSubject() {
@@ -158,9 +196,9 @@ export class StudiesSelfserviceDemoBackendApi {
 
     /**
      * @param {Post} post
-     * @returns {PostResult}
+     * @returns {Promise<PostResult>}
      */
-    #post(post) {
+    async #post(post) {
         this.#previous_element = post.element;
 
         /**

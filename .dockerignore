@@ -1,5 +1,5 @@
 *
-!bin/flux-studies-selfservice-demo-backend.mjs
+!bin/flux-studies-selfservice-demo-backend-server.mjs
 !src
 !src/**
 !package.json

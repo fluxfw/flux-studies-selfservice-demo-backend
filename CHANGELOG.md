@@ -6,6 +6,15 @@ Changes:
 
 \-
 
+## v2022-09-26-1-alpha
+
+Changes:
+
+- Make root url work without redirect
+- Fix permissions
+- Use flux-express-server-api
+- Use flux-shutdown-handler-api
+
 ## v2022-09-22-4-alpha
 
 Changes:
