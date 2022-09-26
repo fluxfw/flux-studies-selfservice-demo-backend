@@ -6,6 +6,12 @@ Changes:
 
 \-
 
+## v2022-09-26-2-alpha
+
+Changes:
+
+- Improve choice subject page
+
 ## v2022-09-26-1-alpha
 
 Changes:
