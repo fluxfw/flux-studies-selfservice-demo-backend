@@ -1,7 +1,7 @@
 [
     {
-        "id": "subject_1",
-        "label": "Subject 1",
+        "id": "degree_program_1",
+        "label": "Degree program 1",
         "qualifications": [
             {
                 "id": "qualification_1",
@@ -19,8 +19,8 @@
         ]
     },
     {
-        "id": "subject_2",
-        "label": "Subject 2",
+        "id": "degree_program_2",
+        "label": "Degree program 2",
         "qualifications": [
             {
                 "id": "qualification_4",
@@ -29,8 +29,8 @@
         ]
     },
     {
-        "id": "subject_3",
-        "label": "Subject 3",
+        "id": "degree_program_3",
+        "label": "Degree program 3",
         "qualifications": [
             {
                 "id": "qualification_5",

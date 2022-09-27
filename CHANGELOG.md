@@ -6,6 +6,13 @@ Changes:
 
 \-
 
+## v2022-09-27-1-alpha
+
+Changes:
+
+- Rename subject to degree program
+- Replace `_` with `-`
+
 ## v2022-09-26-2-alpha
 
 Changes:
