@@ -5,7 +5,7 @@ import { fileURLToPath } from "node:url";
 import { ShutdownHandler } from "../../../node_modules/flux-shutdown-handler-api/src/Adapter/ShutdownHandler/ShutdownHandler.mjs";
 import { ShutdownHandlerApi } from "../../../node_modules/flux-shutdown-handler-api/src/Adapter/Api/ShutdownHandlerApi.mjs";
 import { dirname, join } from "node:path";
-import { ELEMENT_CHOICE_SUBJECT, ELEMENT_CREATE, ELEMENT_INTENDED_DEGREE_PROGRAM, ELEMENT_RESUME, ELEMENT_ROOT, ELEMENT_START } from "../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Element/ELEMENT.mjs";
+import { ELEMENT_CHOICE_SUBJECT, ELEMENT_CREATE, ELEMENT_INTENDED_DEGREE_PROGRAM, ELEMENT_RESUME, ELEMENT_START } from "../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Element/ELEMENT.mjs";
 
 /** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/ChoiceSubject/ChoiceSubject.mjs").ChoiceSubject} ChoiceSubject */
 /** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/DegreeProgram/DegreeProgram.mjs").DegreeProgram} DegreeProgram */
@@ -22,13 +22,13 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 
 export class StudiesSelfserviceDemoBackendApi {
     /**
+     * @type {ELEMENT[]}
+     */
+    #elements;
+    /**
      * @type {ExpressServerApi | null}
      */
     #express_server_api = null;
-    /**
-     * @type {ELEMENT}
-     */
-    #previous_element;
     /**
      * @type {ShutdownHandler | null}
      */
@@ -49,7 +49,9 @@ export class StudiesSelfserviceDemoBackendApi {
      * @private
      */
     constructor() {
-        this.#previous_element = ELEMENT_ROOT;
+        this.#elements = [
+            ELEMENT_START
+        ];
     }
 
     /**
@@ -72,43 +74,62 @@ export class StudiesSelfserviceDemoBackendApi {
     }
 
     /**
+     * @returns {Promise<void>}
+     */
+    async #back() {
+        let previous_element;
+
+        if (this.#elements.length > 0) {
+            previous_element = this.#elements.pop();
+        } else {
+            previous_element = null;
+        }
+
+        const element = this.#elements[this.#elements.length - 1];
+
+        console.debug("back", {
+            element,
+            previous_element
+        });
+    }
+
+    /**
      * @returns {Promise<GetResult>}
      */
     async #get() {
-        /**
-         * @type {GetResult}
-         */
-        let get_result;
+        const element = this.#elements[this.#elements.length - 1];
 
-        switch (this.#previous_element) {
+        let data;
+
+        switch (element) {
             case ELEMENT_CHOICE_SUBJECT:
-                get_result = {
-                    data: await this.#importIntendedDegreeProgram(),
-                    element: ELEMENT_INTENDED_DEGREE_PROGRAM
-                };
+                data = await this.#importChoiceSubject();
                 break;
 
             case ELEMENT_CREATE:
             case ELEMENT_RESUME:
             case ELEMENT_START:
-                get_result = {
-                    data: await this.#importChoiceSubject(),
-                    element: ELEMENT_CHOICE_SUBJECT
-                };
+                data = await this.#importStart();
                 break;
 
-            case ELEMENT_ROOT:
-                get_result = {
-                    data: await this.#importStart(),
-                    element: ELEMENT_START
-                };
+            case ELEMENT_INTENDED_DEGREE_PROGRAM:
+                data = await await this.#importIntendedDegreeProgram();
                 break;
 
             default:
-                throw new Error(`Previous element ${this.#previous_element} is not supported`);
+                data = null;
+                break;
         }
 
-        console.debug("GET", this.#previous_element, get_result);
+        /**
+         * @type {GetResult}
+         */
+        const get_result = {
+            data,
+            element
+        };
+
+        console.debug("get", get_result);
 
         return get_result;
     }
@@ -132,11 +153,23 @@ export class StudiesSelfserviceDemoBackendApi {
     async #getRouter() {
         const router = express.Router();
 
+        router.post("/api/back", async (req, res) => {
+            try {
+                await this.#back();
+
+                res.json(null);
+            } catch (error) {
+                console.error("back", error);
+
+                res.status(500).end();
+            }
+        });
+
         router.get("/api/get", async (req, res) => {
             try {
                 res.json(await this.#get());
             } catch (error) {
-                console.error("GET", error);
+                console.error("get", error);
 
                 res.status(500).end();
             }
@@ -148,7 +181,7 @@ export class StudiesSelfserviceDemoBackendApi {
                     req.body
                 ));
             } catch (error) {
-                console.error("POST", error);
+                console.error("post", error);
 
                 res.status(500).end();
             }
@@ -226,7 +259,26 @@ export class StudiesSelfserviceDemoBackendApi {
      * @returns {Promise<PostResult>}
      */
     async #post(post) {
-        this.#previous_element = post.element;
+        let next_element;
+
+        switch (post.element) {
+            case ELEMENT_CHOICE_SUBJECT:
+                next_element = ELEMENT_INTENDED_DEGREE_PROGRAM;
+                break;
+
+            case ELEMENT_CREATE:
+            case ELEMENT_RESUME:
+                next_element = ELEMENT_CHOICE_SUBJECT;
+                break;
+
+            default:
+                next_element = null;
+                break;
+        }
+
+        if (next_element !== null) {
+            this.#elements.push(next_element);
+        }
 
         /**
          * @type {PostResult}
@@ -235,7 +287,11 @@ export class StudiesSelfserviceDemoBackendApi {
             ok: true
         };
 
-        console.debug("POST", post, post_result);
+        console.debug("post", {
+            next_element,
+            post,
+            post_result
+        });
 
         return post_result;
     }
