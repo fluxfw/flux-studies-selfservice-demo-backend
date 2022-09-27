@@ -6,6 +6,12 @@ Changes:
 
 \-
 
+## v2022-09-27-2-alpha
+
+Changes:
+
+- Intended degree program page
+
 ## v2022-09-27-1-alpha
 
 Changes:
