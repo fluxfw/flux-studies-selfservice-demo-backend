@@ -5,16 +5,18 @@ import { fileURLToPath } from "node:url";
 import { ShutdownHandler } from "../../../node_modules/flux-shutdown-handler-api/src/Adapter/ShutdownHandler/ShutdownHandler.mjs";
 import { ShutdownHandlerApi } from "../../../node_modules/flux-shutdown-handler-api/src/Adapter/Api/ShutdownHandlerApi.mjs";
 import { dirname, join } from "node:path";
-import { ELEMENT_CHOICE_SUBJECT, ELEMENT_CREATE, ELEMENT_RESUME, ELEMENT_ROOT, ELEMENT_START } from "../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Element/ELEMENT.mjs";
+import { ELEMENT_CHOICE_SUBJECT, ELEMENT_CREATE, ELEMENT_INTENDED_DEGREE_PROGRAM, ELEMENT_RESUME, ELEMENT_ROOT, ELEMENT_START } from "../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Element/ELEMENT.mjs";
 
-/** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Subject/ChoiceSubject.mjs").ChoiceSubject} ChoiceSubject */
+/** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/ChoiceSubject/ChoiceSubject.mjs").ChoiceSubject} ChoiceSubject */
 /** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/DegreeProgram/DegreeProgram.mjs").DegreeProgram} DegreeProgram */
 /** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Element/ELEMENT.mjs").ELEMENT} ELEMENT */
 /** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Get/GetResult.mjs").GetResult} GetResult */
+/** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/IntendedDegreeProgram/IntendedDegreeProgram.mjs").IntendedDegreeProgram} IntendedDegreeProgram */
 /** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Post/Post.mjs").Post} Post */
 /** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Post/PostResult.mjs").PostResult} PostResult */
 /** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Semester/Semester.mjs").Semester} Semester */
 /** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Start/Start.mjs").Start} Start */
+/** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Subject/Subject.mjs").Subject} Subject */
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -79,6 +81,13 @@ export class StudiesSelfserviceDemoBackendApi {
         let get_result;
 
         switch (this.#previous_element) {
+            case ELEMENT_CHOICE_SUBJECT:
+                get_result = {
+                    data: await this.#importIntendedDegreeProgram(),
+                    element: ELEMENT_INTENDED_DEGREE_PROGRAM
+                };
+                break;
+
             case ELEMENT_CREATE:
             case ELEMENT_RESUME:
             case ELEMENT_START:
@@ -166,7 +175,7 @@ export class StudiesSelfserviceDemoBackendApi {
      */
     async #importChoiceSubject() {
         return {
-            ...(await import("../Data/choice-subject.json", { assert: { type: ASSERT_TYPE_JSON } })).default,
+            ...(await import("../Data/ChoiceSubject/choice-subject.json", { assert: { type: ASSERT_TYPE_JSON } })).default,
             "degree-programs": await this.#importDegreePrograms()
         };
     }
@@ -175,14 +184,24 @@ export class StudiesSelfserviceDemoBackendApi {
      * @returns {Promise<DegreeProgram[]>}
      */
     async #importDegreePrograms() {
-        return (await import("../Data/degree-programs.json", { assert: { type: ASSERT_TYPE_JSON } })).default;
+        return (await import("../Data/DegreeProgram/degree-programs.json", { assert: { type: ASSERT_TYPE_JSON } })).default;
+    }
+
+    /**
+     * @returns {Promise<IntendedDegreeProgram>}
+     */
+    async #importIntendedDegreeProgram() {
+        return {
+            ...(await import("../Data/IntendedDegreeProgram/intended-degree-program.json", { assert: { type: ASSERT_TYPE_JSON } })).default,
+            subjects: await this.#importSubjects()
+        };
     }
 
     /**
      * @returns {Promise<Semester[]>}
      */
     async #importSemesters() {
-        return (await import("../Data/semesters.json", { assert: { type: ASSERT_TYPE_JSON } })).default;
+        return (await import("../Data/Semester/semesters.json", { assert: { type: ASSERT_TYPE_JSON } })).default;
     }
 
     /**
@@ -190,9 +209,16 @@ export class StudiesSelfserviceDemoBackendApi {
      */
     async #importStart() {
         return {
-            ...(await import("../Data/start.json", { assert: { type: ASSERT_TYPE_JSON } })).default,
+            ...(await import("../Data/Start/start.json", { assert: { type: ASSERT_TYPE_JSON } })).default,
             semesters: await this.#importSemesters()
         };
+    }
+
+    /**
+     * @returns {Promise<Subject[]>}
+     */
+    async #importSubjects() {
+        return (await import("../Data/Subject/subjects.json", { assert: { type: ASSERT_TYPE_JSON } })).default;
     }
 
     /**

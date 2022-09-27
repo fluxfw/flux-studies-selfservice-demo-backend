@@ -1,0 +1,37 @@
+[
+    {
+        "combinations": [
+            {
+                "id": "combination_1",
+                "label": "Combination 1",
+                "mandatory": "Mandatory 1"
+            },
+            {
+                "id": "combination_2",
+                "label": "Combination 2"
+            }
+        ],
+        "id": "subject_1",
+        "label": "Subject 1"
+    },
+    {
+        "combinations": [
+            {
+                "id": "combination_3",
+                "label": "Combination 3"
+            },
+            {
+                "id": "combination_4",
+                "label": "Combination 4",
+                "mandatory": "Mandatory 2"
+            },
+            {
+                "id": "combination_5",
+                "label": "Combination 5",
+                "mandatory": "Mandatory 3"
+            }
+        ],
+        "id": "subject_2",
+        "label": "Subject 2"
+    }
+]
