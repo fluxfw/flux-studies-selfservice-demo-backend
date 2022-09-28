@@ -1,7 +1,7 @@
 {
     "name": "flux-studies-selfservice-demo-backend",
     "productName": "flux-studies-selfservice-demo-backend",
-    "version": "2022-09-27-3-alpha",
+    "version": "2022-09-28-1-alpha",
     "description": "",
     "keywords": [],
     "homepage": "",
@@ -9,7 +9,7 @@
         "express": "4.18.1",
         "flux-express-server-api": "https://github.com/fluxfw/flux-express-server-api/archive/refs/tags/v2022-09-26-1.tar.gz",
         "flux-shutdown-handler-api": "https://github.com/fluxfw/flux-shutdown-handler-api/archive/refs/tags/v2022-09-26-1.tar.gz",
-        "flux-studies-selfservice-frontend": "https://github.com/fluxfw/flux-studies-selfservice-frontend/archive/refs/tags/v2022-09-27-3-alpha.tar.gz"
+        "flux-studies-selfservice-frontend": "https://github.com/fluxfw/flux-studies-selfservice-frontend/archive/refs/tags/v2022-09-28-1-alpha.tar.gz"
     },
     "bin": {
         "flux-studies-selfservice-demo-backend-server": "bin/flux-studies-selfservice-demo-backend-server.mjs"

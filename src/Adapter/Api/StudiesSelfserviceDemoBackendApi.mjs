@@ -9,9 +9,9 @@ import { ELEMENT_CHOICE_SUBJECT, ELEMENT_CREATE, ELEMENT_INTENDED_DEGREE_PROGRAM
 
 /** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/ChoiceSubject/ChoiceSubject.mjs").ChoiceSubject} ChoiceSubject */
 /** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/DegreeProgram/DegreeProgram.mjs").DegreeProgram} DegreeProgram */
-/** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Element/ELEMENT.mjs").ELEMENT} ELEMENT */
 /** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Get/GetResult.mjs").GetResult} GetResult */
 /** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/IntendedDegreeProgram/IntendedDegreeProgram.mjs").IntendedDegreeProgram} IntendedDegreeProgram */
+/** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Page/PAGE.mjs").PAGE} PAGE */
 /** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Post/Post.mjs").Post} Post */
 /** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Post/PostResult.mjs").PostResult} PostResult */
 /** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Semester/Semester.mjs").Semester} Semester */
@@ -22,13 +22,13 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 
 export class StudiesSelfserviceDemoBackendApi {
     /**
-     * @type {ELEMENT[]}
-     */
-    #elements;
-    /**
      * @type {ExpressServerApi | null}
      */
     #express_server_api = null;
+    /**
+     * @type {PAGE[]}
+     */
+    #pages;
     /**
      * @type {ShutdownHandler | null}
      */
@@ -49,7 +49,7 @@ export class StudiesSelfserviceDemoBackendApi {
      * @private
      */
     constructor() {
-        this.#elements = [
+        this.#pages = [
             ELEMENT_START
         ];
     }
@@ -77,31 +77,34 @@ export class StudiesSelfserviceDemoBackendApi {
      * @returns {Promise<void>}
      */
     async #back() {
-        let previous_element;
+        let previous_page;
 
-        if (this.#elements.length > 0) {
-            previous_element = this.#elements.pop();
+        if (this.#canBack()) {
+            previous_page = this.#pages.pop();
         } else {
-            previous_element = null;
+            previous_page = this.#page;
         }
 
-        const element = this.#elements[this.#elements.length - 1];
-
         console.debug("back", {
-            element,
-            previous_element
+            previous_page,
+            next_page: this.#page
         });
+    }
+
+    /**
+     * @returns {boolean}
+     */
+    #canBack() {
+        return this.#pages.length > 1;
     }
 
     /**
      * @returns {Promise<GetResult>}
      */
     async #get() {
-        const element = this.#elements[this.#elements.length - 1];
-
         let data;
 
-        switch (element) {
+        switch (this.#page) {
             case ELEMENT_CHOICE_SUBJECT:
                 data = await this.#importChoiceSubject();
                 break;
@@ -125,11 +128,14 @@ export class StudiesSelfserviceDemoBackendApi {
          * @type {GetResult}
          */
         const get_result = {
+            page: this.#page,
             data,
-            element
+            can_back: this.#canBack()
         };
 
-        console.debug("get", get_result);
+        console.debug("get", {
+            get_result
+        });
 
         return get_result;
     }
@@ -255,29 +261,36 @@ export class StudiesSelfserviceDemoBackendApi {
     }
 
     /**
+     * @returns {PAGE | null}
+     */
+    get #page() {
+        return this.#pages[this.#pages.length - 1] ?? null;
+    }
+
+    /**
      * @param {Post} post
      * @returns {Promise<PostResult>}
      */
     async #post(post) {
-        let next_element;
+        let next_page;
 
-        switch (post.element) {
+        switch (post.page) {
             case ELEMENT_CHOICE_SUBJECT:
-                next_element = ELEMENT_INTENDED_DEGREE_PROGRAM;
+                next_page = ELEMENT_INTENDED_DEGREE_PROGRAM;
                 break;
 
             case ELEMENT_CREATE:
             case ELEMENT_RESUME:
-                next_element = ELEMENT_CHOICE_SUBJECT;
+                next_page = ELEMENT_CHOICE_SUBJECT;
                 break;
 
             default:
-                next_element = null;
+                next_page = null;
                 break;
         }
 
-        if (next_element !== null) {
-            this.#elements.push(next_element);
+        if (next_page !== null) {
+            this.#pages.push(next_page);
         }
 
         /**
@@ -288,8 +301,8 @@ export class StudiesSelfserviceDemoBackendApi {
         };
 
         console.debug("post", {
-            next_element,
             post,
+            next_page,
             post_result
         });
 
