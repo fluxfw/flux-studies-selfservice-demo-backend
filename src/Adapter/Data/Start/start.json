@@ -1,4 +1,4 @@
 {
-    "min-password-length": 8,
-    "semesters": []
+    "semesters": [],
+    "min-password-length": 8
 }
