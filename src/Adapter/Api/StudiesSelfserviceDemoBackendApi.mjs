@@ -8,17 +8,21 @@ import { MIN_PASSWORD_LENGTH } from "../Start/MIN_PASSWORD_LENGTH.mjs";
 import { ShutdownHandler } from "../../../node_modules/flux-shutdown-handler-api/src/Adapter/ShutdownHandler/ShutdownHandler.mjs";
 import { ShutdownHandlerApi } from "../../../node_modules/flux-shutdown-handler-api/src/Adapter/Api/ShutdownHandlerApi.mjs";
 import { dirname, join } from "node:path";
-import { PAGE_CHOICE_SUBJECT, PAGE_CREATE, PAGE_IDENTIFICATION_NUMBER, PAGE_INTENDED_DEGREE_PROGRAM, PAGE_RESUME, PAGE_START } from "../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Page/PAGE.mjs";
+import { PAGE_CHOICE_SUBJECT, PAGE_CREATE, PAGE_IDENTIFICATION_NUMBER, PAGE_INTENDED_DEGREE_PROGRAM, PAGE_INTENDED_DEGREE_PROGRAM_2, PAGE_RESUME, PAGE_START } from "../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Page/PAGE.mjs";
 
 /** @typedef {import("../Application/Application.mjs").Application} Application */
 /** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/ChoiceSubject/ChoiceSubject.mjs").ChoiceSubject} ChoiceSubject */
 /** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/IntendedDegreeProgram/ChosenIntendedDegreeProgram.mjs").ChosenIntendedDegreeProgram} ChosenIntendedDegreeProgram */
+/** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/IntendedDegreeProgram2/ChosenIntendedDegreeProgram2.mjs").ChosenIntendedDegreeProgram2} ChosenIntendedDegreeProgram2 */
 /** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/ChoiceSubject/ChosenSubject.mjs").ChosenSubject} ChosenSubject */
+/** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Create/Create.mjs").Create} Create */
 /** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/DegreeProgram/DegreeProgram.mjs").DegreeProgram} DegreeProgram */
 /** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/IdentificationNumber/IdentificationNumber.mjs").IdentificationNumber} IdentificationNumber */
 /** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/IntendedDegreeProgram/IntendedDegreeProgram.mjs").IntendedDegreeProgram} IntendedDegreeProgram */
+/** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/IntendedDegreeProgram2/IntendedDegreeProgram2.mjs").IntendedDegreeProgram2} IntendedDegreeProgram2 */
 /** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Post/Post.mjs").Post} Post */
 /** @typedef {import("../Response/Response.mjs").Response} Response */
+/** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Resume/Resume.mjs").Resume} Resume */
 /** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Semester/Semester.mjs").Semester} Semester */
 /** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Start/Start.mjs").Start} Start */
 /** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Subject/Subject.mjs").Subject} Subject */
@@ -103,6 +107,10 @@ export class StudiesSelfserviceDemoBackendApi {
                 application.page = PAGE_CHOICE_SUBJECT;
                 break;
 
+            case PAGE_INTENDED_DEGREE_PROGRAM_2:
+                application.page = PAGE_INTENDED_DEGREE_PROGRAM;
+                break;
+
             default:
                 identification_number = false;
                 break;
@@ -115,7 +123,7 @@ export class StudiesSelfserviceDemoBackendApi {
     }
 
     /**
-     * @param {Post} post
+     * @param {Post & {data: Create}} post
      * @returns {Promise<string | false>}
      */
     async #create(post) {
@@ -127,8 +135,11 @@ export class StudiesSelfserviceDemoBackendApi {
             return false;
         }
 
+        /**
+         * @type {Application}
+         */
         const application = {
-            "identification-number": Math.random().toString(16).substring(2, 10),
+            "identification-number": Math.random().toString(36).substring(2, 12),
             page: PAGE_IDENTIFICATION_NUMBER,
             posts: []
         };
@@ -155,7 +166,7 @@ export class StudiesSelfserviceDemoBackendApi {
 
         switch (page) {
             case PAGE_CHOICE_SUBJECT:
-                data = await this.#importChoiceSubject(
+                data = await this.#getChoiceSubject(
                     this.#getPost(
                         application,
                         PAGE_CHOICE_SUBJECT
@@ -165,14 +176,14 @@ export class StudiesSelfserviceDemoBackendApi {
                 break;
 
             case PAGE_IDENTIFICATION_NUMBER:
-                data = await this.#importIdentificationNumber(
+                data = await this.#getIdentificationNumber(
                     application["identification-number"]
                 );
                 can_back = false;
                 break;
 
             case PAGE_INTENDED_DEGREE_PROGRAM:
-                data = await this.#importIntendedDegreeProgram(
+                data = await this.#getIntendedDegreeProgram(
                     this.#getPost(
                         application,
                         PAGE_INTENDED_DEGREE_PROGRAM
@@ -180,9 +191,22 @@ export class StudiesSelfserviceDemoBackendApi {
                 );
                 break;
 
+            case PAGE_INTENDED_DEGREE_PROGRAM_2:
+                data = await this.#getIntendedDegreeProgram2(
+                    this.#getPost(
+                        application,
+                        PAGE_INTENDED_DEGREE_PROGRAM
+                    ).data,
+                    this.#getPost(
+                        application,
+                        PAGE_INTENDED_DEGREE_PROGRAM_2
+                    )?.data ?? null
+                );
+                break;
+
             default:
                 page = PAGE_START;
-                data = await this.#importStart();
+                data = await this.#getStart();
                 can_back = false;
                 identification_number = false;
                 break;
@@ -221,6 +245,25 @@ export class StudiesSelfserviceDemoBackendApi {
     }
 
     /**
+     * @param {ChosenSubject | null} values
+     * @returns {Promise<ChoiceSubject>}
+     */
+    async #getChoiceSubject(values = null) {
+        return {
+            ...await this.#importJson("../Data/ChoiceSubject/choice-subject.json"),
+            "degree-programs": await this.#getDegreePrograms(),
+            values
+        };
+    }
+
+    /**
+     * @returns {Promise<DegreeProgram[]>}
+     */
+    async #getDegreePrograms() {
+        return this.#importJson("../Data/DegreeProgram/degree-programs.json");
+    }
+
+    /**
      * @returns {Promise<ExpressServerApi>}
      */
     async #getExpressServerApi() {
@@ -231,6 +274,43 @@ export class StudiesSelfserviceDemoBackendApi {
         await express_server.init();
 
         return express_server;
+    }
+
+    /**
+     * @param {string} identification_number
+     * @returns {Promise<IdentificationNumber>}
+     */
+    async #getIdentificationNumber(identification_number) {
+        return {
+            ...await this.#importJson("../Data/IdentificationNumber/identification-number.json"),
+            "identification-number": identification_number
+        };
+    }
+
+    /**
+     * @param {ChosenIntendedDegreeProgram | null} values
+     * @returns {Promise<IntendedDegreeProgram>}
+     */
+    async #getIntendedDegreeProgram(values = null) {
+        return {
+            ...await this.#importJson("../Data/IntendedDegreeProgram/intended-degree-program.json"),
+            subjects: await this.#getSubjects(),
+            values
+        };
+    }
+
+    /**
+     * @param {ChosenIntendedDegreeProgram} chosen_intended_degree_program
+     * @param {ChosenIntendedDegreeProgram2 | null} values
+     * @returns {Promise<IntendedDegreeProgram2>}
+     */
+    async #getIntendedDegreeProgram2(chosen_intended_degree_program, values = null) {
+        return {
+            ...await this.#importJson("../Data/IntendedDegreeProgram2/intended-degree-program-2.json"),
+            subject: (await this.#getSubjects()).find(subject => subject.id === chosen_intended_degree_program.subject),
+            combination: chosen_intended_degree_program.combination,
+            values
+        };
     }
 
     /**
@@ -316,6 +396,13 @@ export class StudiesSelfserviceDemoBackendApi {
     }
 
     /**
+     * @returns {Promise<Semester[]>}
+     */
+    async #getSemesters() {
+        return this.#importJson("../Data/Semester/semesters.json");
+    }
+
+    /**
      * @returns {Promise<ShutdownHandlerApi>}
      */
     async #getShutdownHandlerApi() {
@@ -327,61 +414,12 @@ export class StudiesSelfserviceDemoBackendApi {
     }
 
     /**
-     * @param {ChosenSubject | null} values
-     * @returns {Promise<ChoiceSubject>}
-     */
-    async #importChoiceSubject(values = null) {
-        return {
-            ...(await import("../Data/ChoiceSubject/choice-subject.json", { assert: { type: ASSERT_TYPE_JSON } })).default,
-            "degree-programs": await this.#importDegreePrograms(),
-            values
-        };
-    }
-
-    /**
-     * @returns {Promise<DegreeProgram[]>}
-     */
-    async #importDegreePrograms() {
-        return (await import("../Data/DegreeProgram/degree-programs.json", { assert: { type: ASSERT_TYPE_JSON } })).default;
-    }
-
-    /**
-     * @param {string} identification_number
-     * @returns {Promise<IdentificationNumber>}
-     */
-    async #importIdentificationNumber(identification_number) {
-        return {
-            ...(await import("../Data/IdentificationNumber/identification-number.json", { assert: { type: ASSERT_TYPE_JSON } })).default,
-            "identification-number": identification_number
-        };
-    }
-
-    /**
-     * @param {ChosenIntendedDegreeProgram | null} values
-     * @returns {Promise<IntendedDegreeProgram>}
-     */
-    async #importIntendedDegreeProgram(values = null) {
-        return {
-            ...(await import("../Data/IntendedDegreeProgram/intended-degree-program.json", { assert: { type: ASSERT_TYPE_JSON } })).default,
-            subjects: await this.#importSubjects(),
-            values
-        };
-    }
-
-    /**
-     * @returns {Promise<Semester[]>}
-     */
-    async #importSemesters() {
-        return (await import("../Data/Semester/semesters.json", { assert: { type: ASSERT_TYPE_JSON } })).default;
-    }
-
-    /**
      * @returns {Promise<Start>}
      */
-    async #importStart() {
+    async #getStart() {
         return {
-            ...(await import("../Data/Start/start.json", { assert: { type: ASSERT_TYPE_JSON } })).default,
-            semesters: await this.#importSemesters(),
+            ...await this.#importJson("../Data/Start/start.json"),
+            semesters: await this.#getSemesters(),
             "min-password-length": MIN_PASSWORD_LENGTH
         };
     }
@@ -389,8 +427,16 @@ export class StudiesSelfserviceDemoBackendApi {
     /**
      * @returns {Promise<Subject[]>}
      */
-    async #importSubjects() {
-        return (await import("../Data/Subject/subjects.json", { assert: { type: ASSERT_TYPE_JSON } })).default;
+    async #getSubjects() {
+        return this.#importJson("../Data/Subject/subjects.json");
+    }
+
+    /**
+     * @param {string} file
+     * @returns {Promise<*>}
+     */
+    async #importJson(file) {
+        return (await import(file, { assert: { type: ASSERT_TYPE_JSON } })).default;
     }
 
     /**
@@ -418,6 +464,15 @@ export class StudiesSelfserviceDemoBackendApi {
                     break;
 
                 case PAGE_INTENDED_DEGREE_PROGRAM:
+                    this.#addPost(
+                        application,
+                        post
+                    );
+
+                    application.page = PAGE_INTENDED_DEGREE_PROGRAM_2;
+                    break;
+
+                case PAGE_INTENDED_DEGREE_PROGRAM_2:
                     this.#addPost(
                         application,
                         post
@@ -492,7 +547,7 @@ export class StudiesSelfserviceDemoBackendApi {
     }
 
     /**
-     * @param {Post} post
+     * @param {Post & {data: Resume}} post
      * @returns {Promise<string | false>}
      */
     async #resume(post) {
