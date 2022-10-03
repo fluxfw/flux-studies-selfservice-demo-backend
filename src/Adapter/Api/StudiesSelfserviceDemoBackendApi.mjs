@@ -1,11 +1,10 @@
-import { ASSERT_TYPE_JSON } from "../../../node_modules/flux-fetch-api/src/Adapter/AssertType/ASSERT_TYPE.mjs";
+import { AssertImportJson } from "../../../node_modules/flux-json-api/src/Adapter/ImportJson/AssertImportJson.mjs";
 import { COOKIE_IDENTIFICATION_NUMBER } from "../Response/COOKIE.mjs";
 import cookieParser from "cookie-parser";
 import express from "express";
 import { ExpressServerApi } from "../../../node_modules/flux-express-server-api/src/Adapter/Api/ExpressServerApi.mjs";
 import { fileURLToPath } from "node:url";
 import { MIN_PASSWORD_LENGTH } from "../Start/MIN_PASSWORD_LENGTH.mjs";
-import { ShutdownHandler } from "../../../node_modules/flux-shutdown-handler-api/src/Adapter/ShutdownHandler/ShutdownHandler.mjs";
 import { ShutdownHandlerApi } from "../../../node_modules/flux-shutdown-handler-api/src/Adapter/Api/ShutdownHandlerApi.mjs";
 import { dirname, join } from "node:path";
 import { PAGE_CHOICE_SUBJECT, PAGE_CREATE, PAGE_IDENTIFICATION_NUMBER, PAGE_INTENDED_DEGREE_PROGRAM, PAGE_INTENDED_DEGREE_PROGRAM_2, PAGE_RESUME, PAGE_START } from "../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Page/PAGE.mjs";
@@ -24,8 +23,9 @@ import { PAGE_CHOICE_SUBJECT, PAGE_CREATE, PAGE_IDENTIFICATION_NUMBER, PAGE_INTE
 /** @typedef {import("../Response/Response.mjs").Response} Response */
 /** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Resume/Resume.mjs").Resume} Resume */
 /** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Semester/Semester.mjs").Semester} Semester */
+/** @typedef {import( "../../../node_modules/flux-shutdown-handler-api/src/Adapter/ShutdownHandler/ShutdownHandler.mjs").ShutdownHandler} ShutdownHandler */
 /** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Start/Start.mjs").Start} Start */
-/** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Subject/Subject.mjs").Subject} Subject */
+/** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/SubjectWithCombinations/SubjectWithCombinations.mjs").SubjectWithCombinations} SubjectWithCombinations */
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -38,6 +38,10 @@ export class StudiesSelfserviceDemoBackendApi {
      * @type {ExpressServerApi | null}
      */
     #express_server_api = null;
+    /**
+     * @type {AssertImportJson | null}
+     */
+    #import_json = null;
     /**
      * @type {ShutdownHandler | null}
      */
@@ -67,6 +71,8 @@ export class StudiesSelfserviceDemoBackendApi {
     async init() {
         this.#shutdown_handler_api ??= await this.#getShutdownHandlerApi();
         this.#shutdown_handler ??= this.#shutdown_handler_api.getShutdownHandler();
+
+        this.#import_json ??= AssertImportJson.new();
 
         this.#express_server_api ??= await this.#getExpressServerApi();
     }
@@ -250,7 +256,7 @@ export class StudiesSelfserviceDemoBackendApi {
      */
     async #getChoiceSubject(values = null) {
         return {
-            ...await this.#importJson("../Data/ChoiceSubject/choice-subject.json"),
+            ...await this.#import_json.importJson(`${__dirname}/../Data/ChoiceSubject/choice-subject.json`),
             "degree-programs": await this.#getDegreePrograms(),
             values
         };
@@ -260,7 +266,7 @@ export class StudiesSelfserviceDemoBackendApi {
      * @returns {Promise<DegreeProgram[]>}
      */
     async #getDegreePrograms() {
-        return this.#importJson("../Data/DegreeProgram/degree-programs.json");
+        return this.#import_json.importJson(`${__dirname}/../Data/DegreeProgram/degree-programs.json`);
     }
 
     /**
@@ -282,7 +288,7 @@ export class StudiesSelfserviceDemoBackendApi {
      */
     async #getIdentificationNumber(identification_number) {
         return {
-            ...await this.#importJson("../Data/IdentificationNumber/identification-number.json"),
+            ...await this.#import_json.importJson(`${__dirname}/../Data/IdentificationNumber/identification-number.json`),
             "identification-number": identification_number
         };
     }
@@ -293,7 +299,7 @@ export class StudiesSelfserviceDemoBackendApi {
      */
     async #getIntendedDegreeProgram(values = null) {
         return {
-            ...await this.#importJson("../Data/IntendedDegreeProgram/intended-degree-program.json"),
+            ...await this.#import_json.importJson(`${__dirname}/../Data/IntendedDegreeProgram/intended-degree-program.json`),
             subjects: await this.#getSubjects(),
             values
         };
@@ -305,10 +311,15 @@ export class StudiesSelfserviceDemoBackendApi {
      * @returns {Promise<IntendedDegreeProgram2>}
      */
     async #getIntendedDegreeProgram2(chosen_intended_degree_program, values = null) {
+        const subject = (await this.#getSubjects()).find(_subject => _subject.id === chosen_intended_degree_program.subject);
+
+        const _subject = structuredClone(subject);
+        delete _subject.combinations;
+
         return {
-            ...await this.#importJson("../Data/IntendedDegreeProgram2/intended-degree-program-2.json"),
-            subject: (await this.#getSubjects()).find(subject => subject.id === chosen_intended_degree_program.subject),
-            combination: chosen_intended_degree_program.combination,
+            ...await this.#import_json.importJson(`${__dirname}/../Data/IntendedDegreeProgram2/intended-degree-program-2.json`),
+            subject: _subject,
+            combination: subject.combinations.find(combination => combination.id === chosen_intended_degree_program.combination),
             values
         };
     }
@@ -399,7 +410,7 @@ export class StudiesSelfserviceDemoBackendApi {
      * @returns {Promise<Semester[]>}
      */
     async #getSemesters() {
-        return this.#importJson("../Data/Semester/semesters.json");
+        return this.#import_json.importJson(`${__dirname}/../Data/Semester/semesters.json`);
     }
 
     /**
@@ -418,25 +429,17 @@ export class StudiesSelfserviceDemoBackendApi {
      */
     async #getStart() {
         return {
-            ...await this.#importJson("../Data/Start/start.json"),
+            ...await this.#import_json.importJson(`${__dirname}/../Data/Start/start.json`),
             semesters: await this.#getSemesters(),
             "min-password-length": MIN_PASSWORD_LENGTH
         };
     }
 
     /**
-     * @returns {Promise<Subject[]>}
+     * @returns {Promise<SubjectWithCombinations[]>}
      */
     async #getSubjects() {
-        return this.#importJson("../Data/Subject/subjects.json");
-    }
-
-    /**
-     * @param {string} file
-     * @returns {Promise<*>}
-     */
-    async #importJson(file) {
-        return (await import(file, { assert: { type: ASSERT_TYPE_JSON } })).default;
+        return this.#import_json.importJson(`${__dirname}/../Data/Subject/subjects.json`);
     }
 
     /**

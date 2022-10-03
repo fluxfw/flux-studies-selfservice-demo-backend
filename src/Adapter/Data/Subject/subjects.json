@@ -2,21 +2,41 @@
     {
         "id": "subject_1",
         "label": "Subject 1",
+        "ect": 180,
         "combinations": [
             {
                 "id": "combination_1",
                 "label": "Combination 1",
-                "mandatory": "Mandatory 1"
+                "mandatory": [
+                    {
+                        "id": "mandatory_1",
+                        "label": "Mandatory 1",
+                        "ect": 120
+                    }
+                ]
             },
             {
                 "id": "combination_2",
-                "label": "Combination 2"
+                "label": "Combination 2",
+                "mandatory": [
+                    {
+                        "id": "mandatory_2",
+                        "label": "Mandatory 2",
+                        "ect": 60
+                    },
+                    {
+                        "id": "mandatory_3",
+                        "label": "Mandatory 3",
+                        "ect": 60
+                    }
+                ]
             }
         ]
     },
     {
         "id": "subject_2",
         "label": "Subject 2",
+        "ect": 150,
         "combinations": [
             {
                 "id": "combination_3",
@@ -25,12 +45,24 @@
             {
                 "id": "combination_4",
                 "label": "Combination 4",
-                "mandatory": "Mandatory 2"
+                "mandatory": [
+                    {
+                        "id": "mandatory_4",
+                        "label": "Mandatory 4",
+                        "ect": 150
+                    }
+                ]
             },
             {
                 "id": "combination_5",
                 "label": "Combination 5",
-                "mandatory": "Mandatory 3"
+                "mandatory": [
+                    {
+                        "id": "mandatory_5",
+                        "label": "Mandatory 5",
+                        "ect": 120
+                    }
+                ]
             }
         ]
     }

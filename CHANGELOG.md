@@ -6,6 +6,13 @@ Changes:
 
 \-
 
+## v2022-10-03-1-alpha
+
+Changes:
+
+- First ECT points
+- Multiple mandatory subjects
+
 ## v2022-09-30-1-alpha
 
 Changes:
