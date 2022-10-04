@@ -10,11 +10,13 @@
             },
             {
                 "id": "qualification_2",
-                "label": "Qualification 2"
+                "label": "Qualification 2",
+                "required": false
             },
             {
                 "id": "qualification_3",
-                "label": "Qualification 3"
+                "label": "Qualification 3",
+                "required": false
             }
         ]
     },
@@ -24,7 +26,8 @@
         "qualifications": [
             {
                 "id": "qualification_4",
-                "label": "Qualification 4"
+                "label": "Qualification 4",
+                "required": false
             }
         ]
     },
@@ -34,11 +37,13 @@
         "qualifications": [
             {
                 "id": "qualification_5",
-                "label": "Qualification 5"
+                "label": "Qualification 5",
+                "required": true
             },
             {
                 "id": "qualification_6",
-                "label": "Qualification 6"
+                "label": "Qualification 6",
+                "required": true
             }
         ]
     }
