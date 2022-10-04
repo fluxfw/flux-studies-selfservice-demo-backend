@@ -11,9 +11,34 @@
                     {
                         "id": "mandatory_1",
                         "label": "Mandatory 1",
-                        "ect": 120
+                        "ect": 150
                     }
-                ]
+                ],
+                "single-choice": [
+                    {
+                        "id": "single_choice_1",
+                        "label": "Single choice 1",
+                        "ect": 30,
+                        "choices": [
+                            {
+                                "id": "single_choice_1_1",
+                                "label": "Single choice 1-1",
+                                "ect": 30
+                            },
+                            {
+                                "id": "single_choice_1_2",
+                                "label": "Single choice 1-2",
+                                "ect": 30
+                            },
+                            {
+                                "id": "single_choice_1_3",
+                                "label": "Single choice 1-3",
+                                "ect": 30
+                            }
+                        ]
+                    }
+                ],
+                "multiple-choice": null
             },
             {
                 "id": "combination_2",
@@ -29,6 +54,46 @@
                         "label": "Mandatory 3",
                         "ect": 60
                     }
+                ],
+                "single-choice": null,
+                "multiple-choice": [
+                    {
+                        "id": "multiple_choice_1",
+                        "label": "Multiple choice 1",
+                        "ect": 60,
+                        "choices": [
+                            {
+                                "id": "multiple_choice_1_1",
+                                "label": "Multiple choice 1-1",
+                                "ect": 30
+                            },
+                            {
+                                "id": "multiple_choice_1_2",
+                                "label": "Multiple choice 1-2",
+                                "ect": 30
+                            },
+                            {
+                                "id": "multiple_choice_1_3",
+                                "label": "Multiple choice 1-3",
+                                "ect": 30
+                            },
+                            {
+                                "id": "multiple_choice_1_4",
+                                "label": "Multiple choice 1-4",
+                                "ect": 30
+                            },
+                            {
+                                "id": "multiple_choice_1_5",
+                                "label": "Multiple choice 1-5",
+                                "ect": 30
+                            },
+                            {
+                                "id": "multiple_choice_1_6",
+                                "label": "Multiple choice 1-6",
+                                "ect": 30
+                            }
+                        ]
+                    }
                 ]
             }
         ]
@@ -40,29 +105,147 @@
         "combinations": [
             {
                 "id": "combination_3",
-                "label": "Combination 3"
+                "label": "Combination 3",
+                "mandatory": [
+                    {
+                        "id": "mandatory_4",
+                        "label": "Mandatory 4",
+                        "ect": 60
+                    }
+                ],
+                "single-choice": [
+                    {
+                        "id": "single_choice_2",
+                        "label": "Single choice 2",
+                        "ect": 30,
+                        "choices": [
+                            {
+                                "id": "single_choice_2_1",
+                                "label": "Single choice 2-1",
+                                "ect": 30
+                            },
+                            {
+                                "id": "single_choice_2_2",
+                                "label": "Single choice 2-2",
+                                "ect": 30
+                            },
+                            {
+                                "id": "single_choice_2_3",
+                                "label": "Single choice 2-3",
+                                "ect": 30
+                            },
+                            {
+                                "id": "single_choice_2_4",
+                                "label": "Single choice 2-4",
+                                "ect": 30
+                            }
+                        ]
+                    }
+                ],
+                "multiple-choice": [
+                    {
+                        "id": "multiple_choice_2",
+                        "label": "Multiple choice 2",
+                        "ect": 90,
+                        "choices": [
+                            {
+                                "id": "multiple_choice_2_1",
+                                "label": "Multiple choice 2-1",
+                                "ect": 30
+                            },
+                            {
+                                "id": "multiple_choice_2_2",
+                                "label": "Multiple choice 2-2",
+                                "ect": 30
+                            },
+                            {
+                                "id": "multiple_choice_2_3",
+                                "label": "Multiple choice 2-3",
+                                "ect": 30
+                            },
+                            {
+                                "id": "multiple_choice_2_4",
+                                "label": "Multiple choice 2-4",
+                                "ect": 30
+                            },
+                            {
+                                "id": "multiple_choice_2_5",
+                                "label": "Multiple choice 2-5",
+                                "ect": 30
+                            },
+                            {
+                                "id": "multiple_choice_2_6",
+                                "label": "Multiple choice 2-6",
+                                "ect": 30
+                            }
+                        ]
+                    }
+                ]
             },
             {
                 "id": "combination_4",
                 "label": "Combination 4",
                 "mandatory": [
                     {
-                        "id": "mandatory_4",
-                        "label": "Mandatory 4",
+                        "id": "mandatory_5",
+                        "label": "Mandatory 5",
                         "ect": 150
                     }
-                ]
+                ],
+                "single-choice": null,
+                "multiple-choice": null
             },
             {
                 "id": "combination_5",
                 "label": "Combination 5",
-                "mandatory": [
+                "mandatory": null,
+                "single-choice": [
                     {
-                        "id": "mandatory_5",
-                        "label": "Mandatory 5",
-                        "ect": 120
+                        "id": "single_choice_3",
+                        "label": "Single choice 3",
+                        "ect": 120,
+                        "choices": [
+                            {
+                                "id": "single_choice_3_1",
+                                "label": "Single choice 3-1",
+                                "ect": 120
+                            },
+                            {
+                                "id": "single_choice_3_2",
+                                "label": "Single choice 3-2",
+                                "ect": 120
+                            },
+                            {
+                                "id": "single_choice_3_3",
+                                "label": "Single choice 3-3",
+                                "ect": 120
+                            }
+                        ]
+                    },
+                    {
+                        "id": "single_choice_4",
+                        "label": "Single choice 4",
+                        "ect": 30,
+                        "choices": [
+                            {
+                                "id": "single_choice_4_1",
+                                "label": "Single choice 4-1",
+                                "ect": 30
+                            },
+                            {
+                                "id": "single_choice_4_2",
+                                "label": "Single choice 4-2",
+                                "ect": 30
+                            },
+                            {
+                                "id": "single_choice_4_3",
+                                "label": "Single choice 4-3",
+                                "ect": 30
+                            }
+                        ]
                     }
-                ]
+                ],
+                "multiple-choice": null
             }
         ]
     }
