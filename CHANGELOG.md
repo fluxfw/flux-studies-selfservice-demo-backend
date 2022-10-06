@@ -6,6 +6,13 @@ Changes:
 
 \-
 
+## v2022-10-06-1-alpha
+
+Changes:
+
+- Legal page
+- Completed page
+
 ## v2022-10-05-1-alpha
 
 Changes:
