@@ -4,11 +4,13 @@ import cookieParser from "cookie-parser";
 import express from "express";
 import { ExpressServerApi } from "../../../node_modules/flux-express-server-api/src/Adapter/Api/ExpressServerApi.mjs";
 import { fileURLToPath } from "node:url";
+import { MAX_COMMENTS_LENGTH } from "../Legal/MAX_COMMENTS_LENGTH.mjs";
 import { MIN_PASSWORD_LENGTH } from "../Start/MIN_PASSWORD_LENGTH.mjs";
 import { ShutdownHandlerApi } from "../../../node_modules/flux-shutdown-handler-api/src/Adapter/Api/ShutdownHandlerApi.mjs";
 import { dirname, join } from "node:path";
-import { PAGE_CHOICE_SUBJECT, PAGE_CREATE, PAGE_IDENTIFICATION_NUMBER, PAGE_INTENDED_DEGREE_PROGRAM, PAGE_INTENDED_DEGREE_PROGRAM_2, PAGE_RESUME, PAGE_START } from "../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Page/PAGE.mjs";
+import { PAGE_CHOICE_SUBJECT, PAGE_COMPLETED, PAGE_CREATE, PAGE_IDENTIFICATION_NUMBER, PAGE_INTENDED_DEGREE_PROGRAM, PAGE_INTENDED_DEGREE_PROGRAM_2, PAGE_LEGAL, PAGE_RESUME, PAGE_START } from "../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Page/PAGE.mjs";
 
+/** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Legal/AcceptedLegal.mjs").AcceptedLegal} AcceptedLegal */
 /** @typedef {import("../Application/Application.mjs").Application} Application */
 /** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/ChoiceSubject/ChoiceSubject.mjs").ChoiceSubject} ChoiceSubject */
 /** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/IntendedDegreeProgram/ChosenIntendedDegreeProgram.mjs").ChosenIntendedDegreeProgram} ChosenIntendedDegreeProgram */
@@ -19,6 +21,7 @@ import { PAGE_CHOICE_SUBJECT, PAGE_CREATE, PAGE_IDENTIFICATION_NUMBER, PAGE_INTE
 /** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/IdentificationNumber/IdentificationNumber.mjs").IdentificationNumber} IdentificationNumber */
 /** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/IntendedDegreeProgram/IntendedDegreeProgram.mjs").IntendedDegreeProgram} IntendedDegreeProgram */
 /** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/IntendedDegreeProgram2/IntendedDegreeProgram2.mjs").IntendedDegreeProgram2} IntendedDegreeProgram2 */
+/** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Legal/Legal.mjs").Legal} Legal */
 /** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Post/Post.mjs").Post} Post */
 /** @typedef {import("../Response/Response.mjs").Response} Response */
 /** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Resume/Resume.mjs").Resume} Resume */
@@ -88,6 +91,26 @@ export class StudiesSelfserviceDemoBackendApi {
 
     /**
      * @param {Application} application
+     * @param {Post & {data: AcceptedLegal}} post
+     * @returns {Promise<boolean>}
+     */
+    async #acceptedLegal(application, post) {
+        if (post.data.comments.length > MAX_COMMENTS_LENGTH) {
+            return false;
+        }
+
+        this.#addPost(
+            application,
+            post
+        );
+
+        application.page = PAGE_COMPLETED;
+
+        return true;
+    }
+
+    /**
+     * @param {Application} application
      * @param {Post} post
      * @returns {void}
      */
@@ -115,6 +138,10 @@ export class StudiesSelfserviceDemoBackendApi {
 
             case PAGE_INTENDED_DEGREE_PROGRAM_2:
                 application.page = PAGE_INTENDED_DEGREE_PROGRAM;
+                break;
+
+            case PAGE_LEGAL:
+                application.page = PAGE_INTENDED_DEGREE_PROGRAM_2;
                 break;
 
             default:
@@ -166,7 +193,7 @@ export class StudiesSelfserviceDemoBackendApi {
      */
     async #get(application = null) {
         let page = application?.page ?? null;
-        let data;
+        let data = {};
         let can_back = true;
         let identification_number = null;
 
@@ -178,6 +205,10 @@ export class StudiesSelfserviceDemoBackendApi {
                         PAGE_CHOICE_SUBJECT
                     )?.data ?? null
                 );
+                can_back = false;
+                break;
+
+            case PAGE_COMPLETED:
                 can_back = false;
                 break;
 
@@ -206,6 +237,19 @@ export class StudiesSelfserviceDemoBackendApi {
                     this.#getPost(
                         application,
                         PAGE_INTENDED_DEGREE_PROGRAM_2
+                    )?.data ?? null
+                );
+                break;
+
+            case PAGE_LEGAL:
+                data = await this.#getLegal(
+                    this.#getPost(
+                        application,
+                        PAGE_INTENDED_DEGREE_PROGRAM
+                    ).data,
+                    this.#getPost(
+                        application,
+                        PAGE_LEGAL
                     )?.data ?? null
                 );
                 break;
@@ -320,6 +364,26 @@ export class StudiesSelfserviceDemoBackendApi {
             ...await this.#import_json.importJson(`${__dirname}/../Data/IntendedDegreeProgram2/intended-degree-program-2.json`),
             subject: _subject,
             combination: subject.combinations.find(combination => combination.id === chosen_intended_degree_program.combination),
+            values
+        };
+    }
+
+    /**
+     * @param {ChosenIntendedDegreeProgram} chosen_intended_degree_program
+     * @param {AcceptedLegal | null} values
+     * @returns {Promise<Legal>}
+     */
+    async #getLegal(chosen_intended_degree_program, values = null) {
+        const subject = (await this.#getSubjects()).find(_subject => _subject.id === chosen_intended_degree_program.subject);
+
+        const _subject = structuredClone(subject);
+        delete _subject.combinations;
+
+        return {
+            ...await this.#import_json.importJson(`${__dirname}/../Data/Legal/legal.json`),
+            subject: _subject,
+            combination: subject.combinations.find(combination => combination.id === chosen_intended_degree_program.combination),
+            "max-comments-length": MAX_COMMENTS_LENGTH,
             values
         };
     }
@@ -477,6 +541,15 @@ export class StudiesSelfserviceDemoBackendApi {
 
                 case PAGE_INTENDED_DEGREE_PROGRAM_2:
                     this.#addPost(
+                        application,
+                        post
+                    );
+
+                    application.page = PAGE_LEGAL;
+                    break;
+
+                case PAGE_LEGAL:
+                    ok = await this.#acceptedLegal(
                         application,
                         post
                     );
