@@ -6,6 +6,13 @@ Changes:
 
 \-
 
+## v2022-10-10-1-alpha
+
+Changes:
+
+- Error handling
+- Pwa
+
 ## v2022-10-06-1-alpha
 
 Changes:
