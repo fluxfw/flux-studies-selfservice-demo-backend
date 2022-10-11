@@ -6,6 +6,12 @@ Changes:
 
 \-
 
+## v2022-10-11-2-alpha
+
+Changes:
+
+- Localization
+
 ## v2022-10-11-1-alpha
 
 Changes:
