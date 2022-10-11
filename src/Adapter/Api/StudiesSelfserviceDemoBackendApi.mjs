@@ -132,6 +132,10 @@ export class StudiesSelfserviceDemoBackendApi {
         let identification_number = null;
 
         switch (application?.page ?? null) {
+            case PAGE_COMPLETED:
+                application.page = PAGE_LEGAL;
+                break;
+
             case PAGE_INTENDED_DEGREE_PROGRAM:
                 application.page = PAGE_CHOICE_SUBJECT;
                 break;
@@ -209,7 +213,6 @@ export class StudiesSelfserviceDemoBackendApi {
                 break;
 
             case PAGE_COMPLETED:
-                can_back = false;
                 break;
 
             case PAGE_IDENTIFICATION_NUMBER:
