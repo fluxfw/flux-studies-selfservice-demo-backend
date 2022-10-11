@@ -1,10 +1,8 @@
 FROM node:18-alpine AS build
 
 COPY package*.json /build/flux-studies-selfservice-demo-backend/
+COPY bin/install-dependencies.sh /build/flux-studies-selfservice-demo-backend/bin/install-dependencies.sh
 RUN (cd /build/flux-studies-selfservice-demo-backend && npm ci --omit=dev)
-
-# TODO: npm removes symlinks (Or bad tar extract?)
-RUN for lib in flux-css-api flux-fetch-api flux-json-api flux-loading-api flux-pwa-api; do mkdir -p /build/flux-studies-selfservice-demo-backend/node_modules/flux-studies-selfservice-frontend/src/Libs/$lib && ln -s ../../../../$lib/src /build/flux-studies-selfservice-demo-backend/node_modules/flux-studies-selfservice-frontend/src/Libs/$lib/src; done
 
 COPY . /build/flux-studies-selfservice-demo-backend
 
