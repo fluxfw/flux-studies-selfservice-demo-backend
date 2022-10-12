@@ -1,6 +1,9 @@
 {
     "subject": {},
     "combination": "",
+    "single-choice": null,
+    "multiple-choice": null,
+    "agb": "TODO",
     "max-comments-length": 0,
     "values": null
 }
