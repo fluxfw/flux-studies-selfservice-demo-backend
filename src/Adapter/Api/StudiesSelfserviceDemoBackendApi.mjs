@@ -252,6 +252,10 @@ export class StudiesSelfserviceDemoBackendApi {
                     ).data,
                     this.#getPost(
                         application,
+                        PAGE_INTENDED_DEGREE_PROGRAM_2
+                    ).data,
+                    this.#getPost(
+                        application,
                         PAGE_LEGAL
                     )?.data ?? null
                 );
@@ -373,10 +377,11 @@ export class StudiesSelfserviceDemoBackendApi {
 
     /**
      * @param {ChosenIntendedDegreeProgram} chosen_intended_degree_program
+     * @param {ChosenIntendedDegreeProgram2} chosen_intended_degree_program_2
      * @param {AcceptedLegal | null} values
      * @returns {Promise<Legal>}
      */
-    async #getLegal(chosen_intended_degree_program, values = null) {
+    async #getLegal(chosen_intended_degree_program, chosen_intended_degree_program_2, values = null) {
         const subject = (await this.#getSubjects()).find(_subject => _subject.id === chosen_intended_degree_program.subject);
 
         const _subject = structuredClone(subject);
@@ -386,6 +391,8 @@ export class StudiesSelfserviceDemoBackendApi {
             ...await this.#import_json.importJson(`${__dirname}/../Data/Legal/legal.json`),
             subject: _subject,
             combination: subject.combinations.find(combination => combination.id === chosen_intended_degree_program.combination),
+            "single-choice": chosen_intended_degree_program_2["single-choice"],
+            "multiple-choice": chosen_intended_degree_program_2["multiple-choice"],
             "max-comments-length": MAX_COMMENTS_LENGTH,
             values
         };
