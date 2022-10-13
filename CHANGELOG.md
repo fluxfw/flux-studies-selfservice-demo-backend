@@ -6,6 +6,12 @@ Changes:
 
 \-
 
+## v2022-10-13-1-alpha
+
+Changes:
+
+- Accent color
+
 ## v2022-10-12-2-alpha
 
 Changes:
