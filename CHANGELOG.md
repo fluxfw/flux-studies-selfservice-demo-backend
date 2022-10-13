@@ -6,6 +6,12 @@ Changes:
 
 \-
 
+## v2022-10-13-2-alpha
+
+Changes:
+
+- Select color scheme
+
 ## v2022-10-13-1-alpha
 
 Changes:
