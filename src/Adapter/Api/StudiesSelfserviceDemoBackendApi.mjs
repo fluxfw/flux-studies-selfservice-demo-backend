@@ -4,31 +4,42 @@ import cookieParser from "cookie-parser";
 import express from "express";
 import { ExpressServerApi } from "../../../node_modules/flux-express-server-api/src/Adapter/Api/ExpressServerApi.mjs";
 import { fileURLToPath } from "node:url";
-import { MAX_COMMENTS_LENGTH } from "../Legal/MAX_COMMENTS_LENGTH.mjs";
-import { MIN_PASSWORD_LENGTH } from "../Start/MIN_PASSWORD_LENGTH.mjs";
+import { MAX_COMMENTS_LENGTH } from "../Data/Legal/MAX_COMMENTS_LENGTH.mjs";
+import { MAX_ISSUE_DATE } from "../Data/UniversityEntranceQualification/MAX_ISSUE_DATE.mjs";
+import { MIN_ISSUE_DATE } from "../Data/UniversityEntranceQualification/MIN_ISSUE_DATE.mjs";
+import { MIN_PASSWORD_LENGTH } from "../Data/Start/MIN_PASSWORD_LENGTH.mjs";
 import { ShutdownHandlerApi } from "../../../node_modules/flux-shutdown-handler-api/src/Adapter/Api/ShutdownHandlerApi.mjs";
 import { dirname, join } from "node:path";
-import { PAGE_CHOICE_SUBJECT, PAGE_COMPLETED, PAGE_CREATE, PAGE_IDENTIFICATION_NUMBER, PAGE_INTENDED_DEGREE_PROGRAM, PAGE_INTENDED_DEGREE_PROGRAM_2, PAGE_LEGAL, PAGE_RESUME, PAGE_START } from "../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Page/PAGE.mjs";
+import { PAGE_CHOICE_SUBJECT, PAGE_COMPLETED, PAGE_CREATE, PAGE_IDENTIFICATION_NUMBER, PAGE_INTENDED_DEGREE_PROGRAM, PAGE_INTENDED_DEGREE_PROGRAM_2, PAGE_LEGAL, PAGE_RESUME, PAGE_START, PAGE_UNIVERSITY_ENTRANCE_QUALIFICATION } from "../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Page/PAGE.mjs";
 
 /** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Legal/AcceptedLegal.mjs").AcceptedLegal} AcceptedLegal */
 /** @typedef {import("../Application/Application.mjs").Application} Application */
+/** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Canton/Canton.mjs").Canton} Canton */
+/** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Certificate/Certificate.mjs").Certificate} Certificate */
+/** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/CertificateType/CertificateType.mjs").CertificateType} CertificateType */
 /** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/ChoiceSubject/ChoiceSubject.mjs").ChoiceSubject} ChoiceSubject */
 /** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/IntendedDegreeProgram/ChosenIntendedDegreeProgram.mjs").ChosenIntendedDegreeProgram} ChosenIntendedDegreeProgram */
 /** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/IntendedDegreeProgram2/ChosenIntendedDegreeProgram2.mjs").ChosenIntendedDegreeProgram2} ChosenIntendedDegreeProgram2 */
 /** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/ChoiceSubject/ChosenSubject.mjs").ChosenSubject} ChosenSubject */
+/** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/UniversityEntranceQualification/ChosenUniversityEntranceQualification.mjs").ChosenUniversityEntranceQualification} ChosenUniversityEntranceQualification */
+/** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/IdentificationNumber/ConfirmedIdentificationNumber.mjs").ConfirmedIdentificationNumber} ConfirmedIdentificationNumber */
+/** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Country/Country.mjs").Country} Country */
 /** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Create/Create.mjs").Create} Create */
 /** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/DegreeProgram/DegreeProgram.mjs").DegreeProgram} DegreeProgram */
 /** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/IdentificationNumber/IdentificationNumber.mjs").IdentificationNumber} IdentificationNumber */
 /** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/IntendedDegreeProgram/IntendedDegreeProgram.mjs").IntendedDegreeProgram} IntendedDegreeProgram */
 /** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/IntendedDegreeProgram2/IntendedDegreeProgram2.mjs").IntendedDegreeProgram2} IntendedDegreeProgram2 */
 /** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Legal/Legal.mjs").Legal} Legal */
+/** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Place/Place.mjs").Place} Place */
 /** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Post/Post.mjs").Post} Post */
 /** @typedef {import("../Response/Response.mjs").Response} Response */
 /** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Resume/Resume.mjs").Resume} Resume */
+/** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/School/School.mjs").School} School */
 /** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Semester/Semester.mjs").Semester} Semester */
 /** @typedef {import( "../../../node_modules/flux-shutdown-handler-api/src/Adapter/ShutdownHandler/ShutdownHandler.mjs").ShutdownHandler} ShutdownHandler */
 /** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Start/Start.mjs").Start} Start */
 /** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/SubjectWithCombinations/SubjectWithCombinations.mjs").SubjectWithCombinations} SubjectWithCombinations */
+/** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/UniversityEntranceQualification/UniversityEntranceQualification.mjs").UniversityEntranceQualification} UniversityEntranceQualification */
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -95,7 +106,27 @@ export class StudiesSelfserviceDemoBackendApi {
      * @returns {Promise<boolean>}
      */
     async #acceptedLegal(application, post) {
-        if (post.data.comments.length > MAX_COMMENTS_LENGTH) {
+        if (application.page !== PAGE_LEGAL || post.page !== application.page) {
+            return false;
+        }
+
+        if (typeof post.data !== "object") {
+            return false;
+        }
+
+        if (typeof post.data["not-disqualified"] !== "boolean" || !post.data["not-disqualified"]) {
+            return false;
+        }
+
+        if (typeof post.data.agb !== "boolean" || !post.data.agb) {
+            return false;
+        }
+
+        if (typeof post.data.complete !== "boolean" || !post.data.complete) {
+            return false;
+        }
+
+        if (typeof post.data.comments !== "string" || post.data.comments.length > MAX_COMMENTS_LENGTH) {
             return false;
         }
 
@@ -145,6 +176,10 @@ export class StudiesSelfserviceDemoBackendApi {
                 break;
 
             case PAGE_LEGAL:
+                application.page = PAGE_UNIVERSITY_ENTRANCE_QUALIFICATION;
+                break;
+
+            case PAGE_UNIVERSITY_ENTRANCE_QUALIFICATION:
                 application.page = PAGE_INTENDED_DEGREE_PROGRAM_2;
                 break;
 
@@ -160,11 +195,207 @@ export class StudiesSelfserviceDemoBackendApi {
     }
 
     /**
+     * @param {Application} application
+     * @param {Post & {data: ChosenIntendedDegreeProgram}} post
+     * @returns {Promise<boolean>}
+     */
+    async #chosenIntendedDegreeProgram(application, post) {
+        if (application.page !== PAGE_INTENDED_DEGREE_PROGRAM || post.page !== application.page) {
+            return false;
+        }
+
+        if (typeof post.data !== "object") {
+            return false;
+        }
+
+        if (typeof post.data.subject !== "string" || post.data.subject === "") {
+            return false;
+        }
+
+        if (typeof post.data.combination !== "string" || post.data.combination === "") {
+            return false;
+        }
+
+        this.#addPost(
+            application,
+            post
+        );
+
+        application.page = PAGE_INTENDED_DEGREE_PROGRAM_2;
+
+        return true;
+    }
+
+    /**
+     * @param {Application} application
+     * @param {Post & {data: ChosenIntendedDegreeProgram2}} post
+     * @returns {Promise<boolean>}
+     */
+    async #chosenIntendedDegreeProgram2(application, post) {
+        if (application.page !== PAGE_INTENDED_DEGREE_PROGRAM_2 || post.page !== application.page) {
+            return false;
+        }
+
+        if (typeof post.data !== "object") {
+            return false;
+        }
+
+        if (!(typeof post.data["single-choice"] === "object" || post.data["single-choice"] === null)) {
+            return false;
+        }
+
+        if (!(typeof post.data["multiple-choice"] === "object" || post.data["multiple-choice"] === null)) {
+            return false;
+        }
+
+        if (typeof post.data["further-information"] !== "string") {
+            return false;
+        }
+
+        this.#addPost(
+            application,
+            post
+        );
+
+        application.page = PAGE_UNIVERSITY_ENTRANCE_QUALIFICATION;
+
+        return true;
+    }
+
+    /**
+     * @param {Application} application
+     * @param {Post & {data: ChosenSubject}} post
+     * @returns {Promise<boolean>}
+     */
+    async #chosenSubject(application, post) {
+        if (application.page !== PAGE_CHOICE_SUBJECT || post.page !== application.page) {
+            return false;
+        }
+
+        if (typeof post.data !== "object") {
+            return false;
+        }
+
+        if (typeof post.data["degree-program"] !== "string" || post.data["degree-program"] === "") {
+            return false;
+        }
+
+        if (typeof post.data.qualifications !== "object") {
+            return false;
+        }
+
+        this.#addPost(
+            application,
+            post
+        );
+
+        application.page = PAGE_INTENDED_DEGREE_PROGRAM;
+
+        return true;
+    }
+
+    /**
+     * @param {Application} application
+     * @param {Post & {data: ChosenUniversityEntranceQualification}} post
+     * @returns {Promise<boolean>}
+     */
+    async #chosenUniversityEntranceQualification(application, post) {
+        if (application.page !== PAGE_UNIVERSITY_ENTRANCE_QUALIFICATION || post.page !== application.page) {
+            return false;
+        }
+
+        if (typeof post.data !== "object") {
+            return false;
+        }
+
+        if (typeof post.data["certificate-type"] !== "string" || post.data["certificate-type"] === "") {
+            return false;
+        }
+
+        if (typeof post.data["issue-date"] !== "number" || post.data["issue-date"] < MIN_ISSUE_DATE || post.data["issue-date"] > MAX_ISSUE_DATE) {
+            return false;
+        }
+
+        if (typeof post.data.certificate !== "string" || post.data.certificate === "") {
+            return false;
+        }
+
+        if (typeof post.data["matura-canton"] !== "string" || post.data["matura-canton"] === "") {
+            return false;
+        }
+
+        if (typeof post.data["upper-secondary-school"] !== "string" || post.data["upper-secondary-school"] === "") {
+            return false;
+        }
+
+        if (typeof post.data["certificate-country"] !== "string" || post.data["certificate-country"] === "") {
+            return false;
+        }
+
+        if (typeof post.data["certificate-canton"] !== "string" || post.data["certificate-canton"] === "") {
+            return false;
+        }
+
+        if (typeof post.data["certificate-place"] !== "string" || post.data["certificate-place"] === "") {
+            return false;
+        }
+
+        this.#addPost(
+            application,
+            post
+        );
+
+        application.page = PAGE_LEGAL;
+
+        return true;
+    }
+
+    /**
+     * @param {Application} application
+     * @param {Post & {data: ConfirmedIdentificationNumber}} post
+     * @returns {Promise<boolean>}
+     */
+    async #confirmedIdentificationNumber(application, post) {
+        if (application.page !== PAGE_IDENTIFICATION_NUMBER || post.page !== application.page) {
+            return false;
+        }
+
+        if (typeof post.data !== "object") {
+            return false;
+        }
+
+        this.#addPost(
+            application,
+            post
+        );
+
+        application.page = PAGE_CHOICE_SUBJECT;
+
+        return true;
+    }
+
+    /**
      * @param {Post & {data: Create}} post
      * @returns {Promise<string | false>}
      */
     async #create(post) {
-        if (post.data.password.length < MIN_PASSWORD_LENGTH || post.data["confirm-password"].length < MIN_PASSWORD_LENGTH) {
+        if (post.page !== PAGE_CREATE) {
+            return false;
+        }
+
+        if (typeof post.data !== "object") {
+            return false;
+        }
+
+        if (typeof post.data.semester !== "string" || post.data.semester === "") {
+            return false;
+        }
+
+        if (typeof post.data.password !== "string" || post.data.password.length < MIN_PASSWORD_LENGTH) {
+            return false;
+        }
+
+        if (typeof post.data["confirm-password"] !== "string" || post.data["confirm-password"].length < MIN_PASSWORD_LENGTH) {
             return false;
         }
 
@@ -261,6 +492,15 @@ export class StudiesSelfserviceDemoBackendApi {
                 );
                 break;
 
+            case PAGE_UNIVERSITY_ENTRANCE_QUALIFICATION:
+                data = await this.#getUniversityEntranceQualification(
+                    this.#getPost(
+                        application,
+                        PAGE_UNIVERSITY_ENTRANCE_QUALIFICATION
+                    )?.data ?? null
+                );
+                break;
+
             default:
                 page = PAGE_START;
                 data = await this.#getStart();
@@ -273,7 +513,7 @@ export class StudiesSelfserviceDemoBackendApi {
             data: {
                 page,
                 data,
-                can_back
+                "can-back": can_back
             },
             "identification-number": identification_number
         };
@@ -302,6 +542,27 @@ export class StudiesSelfserviceDemoBackendApi {
     }
 
     /**
+     * @returns {Promise<Canton[]>}
+     */
+    async #getCantons() {
+        return this.#import_json.importJson(`${__dirname}/../Data/Canton/cantons.json`);
+    }
+
+    /**
+     * @returns {Promise<Certificate[]>}
+     */
+    async #getCertificates() {
+        return this.#import_json.importJson(`${__dirname}/../Data/Certificate/certificates.json`);
+    }
+
+    /**
+     * @returns {Promise<CertificateType[]>}
+     */
+    async #getCertificateTypes() {
+        return this.#import_json.importJson(`${__dirname}/../Data/CertificateType/certificate-types.json`);
+    }
+
+    /**
      * @param {ChosenSubject | null} values
      * @returns {Promise<ChoiceSubject>}
      */
@@ -311,6 +572,13 @@ export class StudiesSelfserviceDemoBackendApi {
             "degree-programs": await this.#getDegreePrograms(),
             values
         };
+    }
+
+    /**
+     * @returns {Promise<Country[]>}
+     */
+    async #getCountries() {
+        return this.#import_json.importJson(`${__dirname}/../Data/Country/countries.json`);
     }
 
     /**
@@ -399,6 +667,13 @@ export class StudiesSelfserviceDemoBackendApi {
     }
 
     /**
+     * @returns {Promise<Place[]>}
+     */
+    async #getPlaces() {
+        return this.#import_json.importJson(`${__dirname}/../Data/Place/places.json`);
+    }
+
+    /**
      * @param {Application} application
      * @param {string} page
      * @returns {Post | null}
@@ -481,6 +756,13 @@ export class StudiesSelfserviceDemoBackendApi {
     }
 
     /**
+     * @returns {Promise<School[]>}
+     */
+    async #getSchools() {
+        return this.#import_json.importJson(`${__dirname}/../Data/School/schools.json`);
+    }
+
+    /**
      * @returns {Promise<Semester[]>}
      */
     async #getSemesters() {
@@ -517,6 +799,25 @@ export class StudiesSelfserviceDemoBackendApi {
     }
 
     /**
+     * @param {ChosenUniversityEntranceQualification | null} values
+     * @returns {Promise<UniversityEntranceQualification>}
+     */
+    async #getUniversityEntranceQualification(values = null) {
+        return {
+            ...await this.#import_json.importJson(`${__dirname}/../Data/UniversityEntranceQualification/university-entrance-qualification.json`),
+            "certificate-types": await this.#getCertificateTypes(),
+            "min-issue-date": MIN_ISSUE_DATE,
+            "max-issue-date": MAX_ISSUE_DATE,
+            certificates: await this.#getCertificates(),
+            cantons: await this.#getCantons(),
+            schools: await this.#getSchools(),
+            countries: await this.#getCountries(),
+            places: await this.#getPlaces(),
+            values
+        };
+    }
+
+    /**
      * @param {Post} post
      * @param {Application | null} application
      * @returns {Promise<Response>}
@@ -525,82 +826,90 @@ export class StudiesSelfserviceDemoBackendApi {
         let ok = true;
         let identification_number = null;
 
-        if (application !== null) {
-            switch (post.page) {
-                case PAGE_CHOICE_SUBJECT:
-                    this.#addPost(
-                        application,
-                        post
-                    );
+        if (typeof post === "object") {
+            if (application !== null) {
+                switch (application.page) {
+                    case PAGE_CHOICE_SUBJECT:
+                        ok = await this.#chosenSubject(
+                            application,
+                            post
+                        );
+                        break;
 
-                    application.page = PAGE_INTENDED_DEGREE_PROGRAM;
-                    break;
+                    case PAGE_IDENTIFICATION_NUMBER:
+                        ok = await this.#confirmedIdentificationNumber(
+                            application,
+                            post
+                        );
+                        break;
 
-                case PAGE_IDENTIFICATION_NUMBER:
-                    application.page = PAGE_CHOICE_SUBJECT;
-                    break;
+                    case PAGE_INTENDED_DEGREE_PROGRAM:
+                        ok = await this.#chosenIntendedDegreeProgram(
+                            application,
+                            post
+                        );
+                        break;
 
-                case PAGE_INTENDED_DEGREE_PROGRAM:
-                    this.#addPost(
-                        application,
-                        post
-                    );
+                    case PAGE_INTENDED_DEGREE_PROGRAM_2:
+                        ok = await this.#chosenIntendedDegreeProgram2(
+                            application,
+                            post
+                        );
+                        break;
 
-                    application.page = PAGE_INTENDED_DEGREE_PROGRAM_2;
-                    break;
+                    case PAGE_LEGAL:
+                        ok = await this.#acceptedLegal(
+                            application,
+                            post
+                        );
+                        break;
 
-                case PAGE_INTENDED_DEGREE_PROGRAM_2:
-                    this.#addPost(
-                        application,
-                        post
-                    );
+                    case PAGE_UNIVERSITY_ENTRANCE_QUALIFICATION:
+                        ok = await this.#chosenUniversityEntranceQualification(
+                            application,
+                            post
+                        );
+                        break;
 
-                    application.page = PAGE_LEGAL;
-                    break;
+                    default:
+                        ok = false;
+                        break;
+                }
+            } else {
+                switch (post.page) {
+                    case PAGE_CREATE: {
+                        const _identification_number = await this.#create(
+                            post
+                        );
 
-                case PAGE_LEGAL:
-                    ok = await this.#acceptedLegal(
-                        application,
-                        post
-                    );
-                    break;
+                        if (_identification_number !== false) {
+                            identification_number = _identification_number;
+                        } else {
+                            ok = _identification_number;
+                        }
+                    }
+                        break;
 
-                default:
-                    ok = false;
-                    break;
+                    case PAGE_RESUME: {
+                        const _identification_number = await this.#resume(
+                            post
+                        );
+
+                        if (_identification_number !== false) {
+                            identification_number = _identification_number;
+                        } else {
+                            ok = _identification_number;
+                        }
+                    }
+                        break;
+
+                    default:
+                        ok = false;
+                        break;
+                }
             }
         } else {
-            switch (post.page) {
-                case PAGE_CREATE: {
-                    const _identification_number = await this.#create(
-                        post
-                    );
-
-                    if (_identification_number !== false) {
-                        identification_number = _identification_number;
-                    } else {
-                        ok = false;
-                    }
-                }
-                    break;
-
-                case PAGE_RESUME: {
-                    const _identification_number = await this.#resume(
-                        post
-                    );
-
-                    if (_identification_number !== false) {
-                        identification_number = _identification_number;
-                    } else {
-                        ok = false;
-                    }
-                }
-                    break;
-
-                default:
-                    ok = false;
-                    break;
-            }
+            ok = false;
         }
 
         return {
@@ -637,7 +946,19 @@ export class StudiesSelfserviceDemoBackendApi {
      * @returns {Promise<string | false>}
      */
     async #resume(post) {
-        if (post.data.password.length < MIN_PASSWORD_LENGTH) {
+        if (post.page !== PAGE_RESUME) {
+            return false;
+        }
+
+        if (typeof post.data !== "object") {
+            return false;
+        }
+
+        if (typeof post.data["identification-number"] !== "string" || post.data["identification-number"] === "") {
+            return false;
+        }
+
+        if (typeof post.data.password !== "string" || post.data.password.length < MIN_PASSWORD_LENGTH) {
             return false;
         }
 

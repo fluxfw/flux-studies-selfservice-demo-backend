@@ -1,0 +1,14 @@
+[
+    {
+        "id": "certificate_type_1",
+        "label": "Certificate type 1"
+    },
+    {
+        "id": "certificate_type_2",
+        "label": "Certificate type 2"
+    },
+    {
+        "id": "certificate_type_3",
+        "label": "Certificate type 3"
+    }
+]
