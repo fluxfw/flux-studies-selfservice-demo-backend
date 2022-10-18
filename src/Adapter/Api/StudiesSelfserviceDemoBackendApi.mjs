@@ -1,13 +1,22 @@
+import { BIRTH_DATE_FORMAT } from "../Data/PersonalData/BIRTH_DATE_FORMAT.mjs";
 import { COOKIE_IDENTIFICATION_NUMBER } from "../Response/COOKIE.mjs";
 import cookieParser from "cookie-parser";
 import express from "express";
 import { fileURLToPath } from "node:url";
+import { MAX_BIRTH_DATE } from "../Data/PersonalData/MAX_BIRTH_DATE.mjs";
 import { MAX_COMMENTS_LENGTH } from "../Data/Legal/MAX_COMMENTS_LENGTH.mjs";
+import { MAX_HOUSE_NUMBER } from "../Data/PersonalData/MAX_HOUSE_NUMBER.mjs";
 import { MAX_ISSUE_DATE } from "../Data/UniversityEntranceQualification/MAX_ISSUE_DATE.mjs";
+import { MAX_POSTAL_CODE } from "../Data/PersonalData/MAX_POSTAL_CODE.mjs";
+import { MIN_BIRTH_DATE } from "../Data/PersonalData/MIN_BIRTH_DATE.mjs";
+import { MIN_HOUSE_NUMBER } from "../Data/PersonalData/MIN_HOUSE_NUMBER.mjs";
 import { MIN_ISSUE_DATE } from "../Data/UniversityEntranceQualification/MIN_ISSUE_DATE.mjs";
 import { MIN_PASSWORD_LENGTH } from "../Data/Start/MIN_PASSWORD_LENGTH.mjs";
+import { MIN_POSTAL_CODE } from "../Data/PersonalData/MIN_POSTAL_CODE.mjs";
+import { OLD_AGE_SURVIVAR_INSURANCE_NUMBER_FORMAT } from "../Data/PersonalData/OLD_AGE_SURVIVAR_INSURANCE_NUMBER_FORMAT.mjs";
+import { REGISTRATION_NUMBER_FORMAT } from "../Data/PersonalData/REGISTRATION_NUMBER_FORMAT.mjs";
 import { dirname, join } from "node:path";
-import { PAGE_CHOICE_SUBJECT, PAGE_COMPLETED, PAGE_CREATE, PAGE_IDENTIFICATION_NUMBER, PAGE_INTENDED_DEGREE_PROGRAM, PAGE_INTENDED_DEGREE_PROGRAM_2, PAGE_LEGAL, PAGE_RESUME, PAGE_START, PAGE_UNIVERSITY_ENTRANCE_QUALIFICATION } from "../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Page/PAGE.mjs";
+import { PAGE_CHOICE_SUBJECT, PAGE_COMPLETED, PAGE_CREATE, PAGE_IDENTIFICATION_NUMBER, PAGE_INTENDED_DEGREE_PROGRAM, PAGE_INTENDED_DEGREE_PROGRAM_2, PAGE_LEGAL, PAGE_PERSONAL_DATA, PAGE_RESUME, PAGE_START, PAGE_UNIVERSITY_ENTRANCE_QUALIFICATION } from "../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Page/PAGE.mjs";
 
 /** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Legal/AcceptedLegal.mjs").AcceptedLegal} AcceptedLegal */
 /** @typedef {import("../Application/Application.mjs").Application} Application */
@@ -25,14 +34,18 @@ import { PAGE_CHOICE_SUBJECT, PAGE_COMPLETED, PAGE_CREATE, PAGE_IDENTIFICATION_N
 /** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Country/Country.mjs").Country} Country */
 /** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Create/Create.mjs").Create} Create */
 /** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/DegreeProgram/DegreeProgram.mjs").DegreeProgram} DegreeProgram */
+/** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/PersonalData/FilledPersonalData.mjs").FilledPersonalData} FilledPersonalData */
 /** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/IdentificationNumber/IdentificationNumber.mjs").IdentificationNumber} IdentificationNumber */
 /** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/IntendedDegreeProgram/IntendedDegreeProgram.mjs").IntendedDegreeProgram} IntendedDegreeProgram */
 /** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/IntendedDegreeProgram2/IntendedDegreeProgram2.mjs").IntendedDegreeProgram2} IntendedDegreeProgram2 */
+/** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Language/Language.mjs").Language} Language */
 /** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Legal/Legal.mjs").Legal} Legal */
+/** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/PersonalData/PersonalData.mjs").PersonalData} PersonalData */
 /** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Place/Place.mjs").Place} Place */
 /** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Post/Post.mjs").Post} Post */
 /** @typedef {import("../Response/Response.mjs").Response} Response */
 /** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Resume/Resume.mjs").Resume} Resume */
+/** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Salutation/Salutation.mjs").Salutation} Salutation */
 /** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/School/School.mjs").School} School */
 /** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Semester/Semester.mjs").Semester} Semester */
 /** @typedef {import( "../../../node_modules/flux-shutdown-handler-api/src/Adapter/ShutdownHandler/ShutdownHandler.mjs").ShutdownHandler} ShutdownHandler */
@@ -176,6 +189,10 @@ export class StudiesSelfserviceDemoBackendApi {
                 break;
 
             case PAGE_LEGAL:
+                application.page = PAGE_PERSONAL_DATA;
+                break;
+
+            case PAGE_PERSONAL_DATA:
                 application.page = PAGE_UNIVERSITY_ENTRANCE_QUALIFICATION;
                 break;
 
@@ -280,7 +297,7 @@ export class StudiesSelfserviceDemoBackendApi {
             return false;
         }
 
-        if (typeof post.data.qualifications !== "object") {
+        if (typeof post.data.qualifications !== "object" || Object.keys(post.data.qualifications).some(key => !(typeof key === "string" || key === "")) || Object.values(post.data.qualifications).some(value => typeof value !== "boolean")) {
             return false;
         }
 
@@ -345,7 +362,7 @@ export class StudiesSelfserviceDemoBackendApi {
             post
         );
 
-        application.page = PAGE_LEGAL;
+        application.page = PAGE_PERSONAL_DATA;
 
         return true;
     }
@@ -423,6 +440,114 @@ export class StudiesSelfserviceDemoBackendApi {
     }
 
     /**
+     * @param {Application} application
+     * @param {Post & {data: PersonalData}} post
+     * @returns {Promise<boolean>}
+     */
+    async #filledPersonalData(application, post) {
+        if (application.page !== PAGE_PERSONAL_DATA || post.page !== application.page) {
+            return false;
+        }
+
+        if (typeof post.data !== "object") {
+            return false;
+        }
+
+        if (typeof post.data["salutation"] !== "string" || post.data["salutation"] === "") {
+            return false;
+        }
+
+        if (typeof post.data["first-name"] !== "string" || post.data["first-name"] === "") {
+            return false;
+        }
+
+        if (typeof post.data["second-first-name"] !== "string") {
+            return false;
+        }
+
+        if (!Array.isArray(post.data["additional-first-names"]) || post.data["additional-first-names"].some(name => !(typeof name === "string" || name === ""))) {
+            return false;
+        }
+
+        if (typeof post.data["last-name"] !== "string" || post.data["last-name"] === "") {
+            return false;
+        }
+
+        if (typeof post.data["registration-number"] !== "string" || !(post.data["registration-number"] === "" || REGISTRATION_NUMBER_FORMAT.test(post.data["registration-number"]))) {
+            return false;
+        }
+
+        if (typeof post.data.country !== "string" || post.data.country === "") {
+            return false;
+        }
+
+        if (typeof post.data["extra-address-line"] !== "string") {
+            return false;
+        }
+
+        if (typeof post.data.street !== "string" || post.data.street === "") {
+            return false;
+        }
+
+        if (typeof post.data["house-number"] !== "number" || post.data["house-number"] < MIN_HOUSE_NUMBER || post.data["house-number"] > MAX_HOUSE_NUMBER) {
+            return false;
+        }
+
+        if (typeof post.data["postal-office-box"] !== "string") {
+            return false;
+        }
+
+        if (typeof post.data["postal-code"] !== "number" || post.data["postal-code"] < MIN_POSTAL_CODE || post.data["postal-code"] > MAX_POSTAL_CODE) {
+            return false;
+        }
+
+        if (typeof post.data.place !== "string" || post.data.place === "") {
+            return false;
+        }
+
+        if (typeof post.data.email !== "string" || post.data.email === "") {
+            return false;
+        }
+
+        if (typeof post.data["mother-language"] !== "string" || post.data["mother-language"] === "") {
+            return false;
+        }
+
+        if (typeof post.data["correspondence-language"] !== "string" || post.data["correspondence-language"] === "") {
+            return false;
+        }
+
+        if (typeof post.data["birth-date"] !== "string" || post.data["birth-date"] === "" || !BIRTH_DATE_FORMAT.test(post.data["birth-date"]) || post.data["birth-date"] < MIN_BIRTH_DATE || post.data["birth-date"] > MAX_BIRTH_DATE) {
+            return false;
+        }
+
+        if (typeof post.data["old-age-survivar-insurance-number"] !== "string" || !(post.data["old-age-survivar-insurance-number"] === "" || OLD_AGE_SURVIVAR_INSURANCE_NUMBER_FORMAT.test(post.data["old-age-survivar-insurance-number"]))) {
+            return false;
+        }
+
+        if (typeof post.data.nationally !== "string" || post.data.nationally === "") {
+            return false;
+        }
+
+        if (typeof post.data["origin-place"] !== "string" || post.data["origin-place"] === "") {
+            return false;
+        }
+
+        if (typeof post.data["parent-address"] !== "boolean") {
+            return false;
+        }
+
+        this.#addPost(
+            application,
+            post
+        );
+
+        application.page = PAGE_LEGAL;
+
+        return true;
+    }
+
+    /**
      * @param {Application | null} application
      * @returns {Promise<Response>}
      */
@@ -488,6 +613,15 @@ export class StudiesSelfserviceDemoBackendApi {
                     this.#getPost(
                         application,
                         PAGE_LEGAL
+                    )?.data ?? null
+                );
+                break;
+
+            case PAGE_PERSONAL_DATA:
+                data = await this.#getPersonalData(
+                    this.#getPost(
+                        application,
+                        PAGE_PERSONAL_DATA
                     )?.data ?? null
                 );
                 break;
@@ -662,6 +796,15 @@ export class StudiesSelfserviceDemoBackendApi {
     }
 
     /**
+     * @returns {Promise<Language[]>}
+     */
+    async #getLanguages() {
+        return this.#import_json.importJson(
+            `${__dirname}/../Data/Language/languages.json`
+        );
+    }
+
+    /**
      * @param {ChosenIntendedDegreeProgram} chosen_intended_degree_program
      * @param {ChosenIntendedDegreeProgram2} chosen_intended_degree_program_2
      * @param {AcceptedLegal | null} values
@@ -682,6 +825,31 @@ export class StudiesSelfserviceDemoBackendApi {
             "single-choice": chosen_intended_degree_program_2["single-choice"],
             "multiple-choice": chosen_intended_degree_program_2["multiple-choice"],
             "max-comments-length": MAX_COMMENTS_LENGTH,
+            values
+        };
+    }
+
+    /**
+     * @param {FilledPersonalData | null} values
+     * @returns {Promise<PersonalData>}
+     */
+    async #getPersonalData(values = null) {
+        return {
+            ...await this.#import_json.importJson(
+                `${__dirname}/../Data/PersonalData/personal-data.json`
+            ),
+            salutations: await this.#getSalutations(),
+            "registration-number-format": `${REGISTRATION_NUMBER_FORMAT}`,
+            countries: await this.#getCountries(),
+            "min-house-number": MIN_HOUSE_NUMBER,
+            "max-house-number": MAX_HOUSE_NUMBER,
+            "min-postal-code": MIN_POSTAL_CODE,
+            "max-postal-code": MAX_POSTAL_CODE,
+            places: await this.#getPlaces(),
+            languages: await this.#getLanguages(),
+            "min-birth-date": MIN_BIRTH_DATE,
+            "max-birth-date": MAX_BIRTH_DATE,
+            "old-age-survivar-insurance-number-format": `${OLD_AGE_SURVIVAR_INSURANCE_NUMBER_FORMAT}`,
             values
         };
     }
@@ -775,6 +943,15 @@ export class StudiesSelfserviceDemoBackendApi {
         router.use("/", express.static(join(__dirname, "..", "..", "..", "node_modules", "flux-studies-selfservice-frontend", "src")));
 
         return router;
+    }
+
+    /**
+     * @returns {Promise<Salutation[]>}
+     */
+    async #getSalutations() {
+        return this.#import_json.importJson(
+            `${__dirname}/../Data/Salutation/salutations.json`
+        );
     }
 
     /**
@@ -891,6 +1068,13 @@ export class StudiesSelfserviceDemoBackendApi {
 
                     case PAGE_LEGAL:
                         ok = await this.#acceptedLegal(
+                            application,
+                            post
+                        );
+                        break;
+
+                    case PAGE_PERSONAL_DATA:
+                        ok = await this.#filledPersonalData(
                             application,
                             post
                         );

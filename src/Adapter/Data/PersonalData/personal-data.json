@@ -1,0 +1,18 @@
+{
+    "salutations": [],
+    "registration-number-format": "",
+    "registration-number-example": "00-000-000",
+    "countries": [],
+    "extra-address-line-example": "c/o",
+    "min-house-number": 0,
+    "max-house-number": 0,
+    "min-postal-code": 0,
+    "max-postal-code": 0,
+    "places": [],
+    "languages": [],
+    "min-birth-date": "",
+    "max-birth-date": "",
+    "old-age-survivar-insurance-number-format": "",
+    "old-age-survivar-insurance-number-example": "000.0000.0000.00",
+    "values": null
+}
