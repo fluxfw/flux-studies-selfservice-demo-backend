@@ -6,6 +6,12 @@ Changes:
 
 \-
 
+## v2022-10-18-1-alpha
+
+Changes:
+
+- Personal data page
+
 ## v2022-10-17-1-alpha
 
 Changes:
