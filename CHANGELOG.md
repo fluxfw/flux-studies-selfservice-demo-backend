@@ -6,6 +6,12 @@ Changes:
 
 \-
 
+## v2022-10-19-1-alpha
+
+Changes:
+
+- Code style
+
 ## v2022-10-18-1-alpha
 
 Changes:
