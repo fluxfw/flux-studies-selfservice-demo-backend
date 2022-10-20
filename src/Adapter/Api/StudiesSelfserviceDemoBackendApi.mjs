@@ -16,7 +16,7 @@ import { MIN_POSTAL_CODE } from "../Data/PersonalData/MIN_POSTAL_CODE.mjs";
 import { OLD_AGE_SURVIVAR_INSURANCE_NUMBER_FORMAT } from "../Data/PersonalData/OLD_AGE_SURVIVAR_INSURANCE_NUMBER_FORMAT.mjs";
 import { REGISTRATION_NUMBER_FORMAT } from "../Data/PersonalData/REGISTRATION_NUMBER_FORMAT.mjs";
 import { dirname, join } from "node:path";
-import { PAGE_CHOICE_SUBJECT, PAGE_COMPLETED, PAGE_CREATE, PAGE_IDENTIFICATION_NUMBER, PAGE_INTENDED_DEGREE_PROGRAM, PAGE_INTENDED_DEGREE_PROGRAM_2, PAGE_LEGAL, PAGE_PERSONAL_DATA, PAGE_RESUME, PAGE_START, PAGE_UNIVERSITY_ENTRANCE_QUALIFICATION } from "../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Page/PAGE.mjs";
+import { PAGE_CHOICE_SUBJECT, PAGE_COMPLETED, PAGE_CREATE, PAGE_IDENTIFICATION_NUMBER, PAGE_INTENDED_DEGREE_PROGRAM, PAGE_INTENDED_DEGREE_PROGRAM_2, PAGE_LEGAL, PAGE_PERSONAL_DATA, PAGE_PORTRAIT, PAGE_RESUME, PAGE_START, PAGE_UNIVERSITY_ENTRANCE_QUALIFICATION } from "../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Page/PAGE.mjs";
 
 /** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Legal/AcceptedLegal.mjs").AcceptedLegal} AcceptedLegal */
 /** @typedef {import("../Application/Application.mjs").Application} Application */
@@ -28,6 +28,7 @@ import { PAGE_CHOICE_SUBJECT, PAGE_COMPLETED, PAGE_CREATE, PAGE_IDENTIFICATION_N
 /** @typedef {import("../../../node_modules/flux-express-server-api/src/Adapter/Api/ExpressServerApi.mjs").ExpressServerApi} ExpressServerApi */
 /** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/IntendedDegreeProgram/ChosenIntendedDegreeProgram.mjs").ChosenIntendedDegreeProgram} ChosenIntendedDegreeProgram */
 /** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/IntendedDegreeProgram2/ChosenIntendedDegreeProgram2.mjs").ChosenIntendedDegreeProgram2} ChosenIntendedDegreeProgram2 */
+/** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Portrait/ChosenPortrait.mjs").ChosenPortrait} ChosenPortrait */
 /** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/ChoiceSubject/ChosenSubject.mjs").ChosenSubject} ChosenSubject */
 /** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/UniversityEntranceQualification/ChosenUniversityEntranceQualification.mjs").ChosenUniversityEntranceQualification} ChosenUniversityEntranceQualification */
 /** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/IdentificationNumber/ConfirmedIdentificationNumber.mjs").ConfirmedIdentificationNumber} ConfirmedIdentificationNumber */
@@ -42,6 +43,7 @@ import { PAGE_CHOICE_SUBJECT, PAGE_COMPLETED, PAGE_CREATE, PAGE_IDENTIFICATION_N
 /** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Legal/Legal.mjs").Legal} Legal */
 /** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/PersonalData/PersonalData.mjs").PersonalData} PersonalData */
 /** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Place/Place.mjs").Place} Place */
+/** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Portrait/Portrait.mjs").Portrait} Portrait */
 /** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Post/Post.mjs").Post} Post */
 /** @typedef {import("../Response/Response.mjs").Response} Response */
 /** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Resume/Resume.mjs").Resume} Resume */
@@ -193,6 +195,10 @@ export class StudiesSelfserviceDemoBackendApi {
                 break;
 
             case PAGE_PERSONAL_DATA:
+                application.page = PAGE_PORTRAIT;
+                break;
+
+            case PAGE_PORTRAIT:
                 application.page = PAGE_UNIVERSITY_ENTRANCE_QUALIFICATION;
                 break;
 
@@ -281,6 +287,30 @@ export class StudiesSelfserviceDemoBackendApi {
 
     /**
      * @param {Application} application
+     * @param {Post & {data: Portrait}} post
+     * @returns {Promise<boolean>}
+     */
+    async #chosenPortrait(application, post) {
+        if (application.page !== PAGE_PORTRAIT || post.page !== application.page) {
+            return false;
+        }
+
+        if (typeof post.data !== "object") {
+            return false;
+        }
+
+        this.#addPost(
+            application,
+            post
+        );
+
+        application.page = PAGE_PERSONAL_DATA;
+
+        return true;
+    }
+
+    /**
+     * @param {Application} application
      * @param {Post & {data: ChosenSubject}} post
      * @returns {Promise<boolean>}
      */
@@ -362,7 +392,7 @@ export class StudiesSelfserviceDemoBackendApi {
             post
         );
 
-        application.page = PAGE_PERSONAL_DATA;
+        application.page = PAGE_PORTRAIT;
 
         return true;
     }
@@ -626,6 +656,15 @@ export class StudiesSelfserviceDemoBackendApi {
                 );
                 break;
 
+            case PAGE_PORTRAIT:
+                data = await this.#getPortrait(
+                    this.#getPost(
+                        application,
+                        PAGE_PORTRAIT
+                    )?.data ?? null
+                );
+                break;
+
             case PAGE_UNIVERSITY_ENTRANCE_QUALIFICATION:
                 data = await this.#getUniversityEntranceQualification(
                     this.#getPost(
@@ -864,6 +903,19 @@ export class StudiesSelfserviceDemoBackendApi {
     }
 
     /**
+     * @param {ChosenPortrait | null} values
+     * @returns {Promise<Portrait>}
+     */
+    async #getPortrait(values = null) {
+        return {
+            ...await this.#import_json.importJson(
+                `${__dirname}/../Data/Portrait/portrait.json`
+            ),
+            values
+        };
+    }
+
+    /**
      * @param {Application} application
      * @param {string} page
      * @returns {Post | null}
@@ -1075,6 +1127,13 @@ export class StudiesSelfserviceDemoBackendApi {
 
                     case PAGE_PERSONAL_DATA:
                         ok = await this.#filledPersonalData(
+                            application,
+                            post
+                        );
+                        break;
+
+                    case PAGE_PORTRAIT:
+                        ok = await this.#chosenPortrait(
                             application,
                             post
                         );
