@@ -14,12 +14,14 @@ import { MIN_ISSUE_DATE } from "../Data/UniversityEntranceQualification/MIN_ISSU
 import { MIN_PASSWORD_LENGTH } from "../Data/Start/MIN_PASSWORD_LENGTH.mjs";
 import { MIN_POSTAL_CODE } from "../Data/PersonalData/MIN_POSTAL_CODE.mjs";
 import { OLD_AGE_SURVIVAR_INSURANCE_NUMBER_FORMAT } from "../Data/PersonalData/OLD_AGE_SURVIVAR_INSURANCE_NUMBER_FORMAT.mjs";
+import { PHONE_FORMAT } from "../Data/PersonalData/PHONE_FORMAT.mjs";
 import { REGISTRATION_NUMBER_FORMAT } from "../Data/PersonalData/REGISTRATION_NUMBER_FORMAT.mjs";
 import { dirname, join } from "node:path";
 import { PAGE_CHOICE_SUBJECT, PAGE_COMPLETED, PAGE_CREATE, PAGE_IDENTIFICATION_NUMBER, PAGE_INTENDED_DEGREE_PROGRAM, PAGE_INTENDED_DEGREE_PROGRAM_2, PAGE_LEGAL, PAGE_PERSONAL_DATA, PAGE_PORTRAIT, PAGE_RESUME, PAGE_START, PAGE_UNIVERSITY_ENTRANCE_QUALIFICATION } from "../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Page/PAGE.mjs";
 
 /** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Legal/AcceptedLegal.mjs").AcceptedLegal} AcceptedLegal */
 /** @typedef {import("../Application/Application.mjs").Application} Application */
+/** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/AreaCode/AreaCode.mjs").AreaCode} AreaCode */
 /** @typedef {import("../../../node_modules/flux-json-api/src/Adapter/ImportJson/AssertImportJson.mjs").AssertImportJson} AssertImportJson */
 /** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Canton/Canton.mjs").Canton} Canton */
 /** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Certificate/Certificate.mjs").Certificate} Certificate */
@@ -535,7 +537,23 @@ export class StudiesSelfserviceDemoBackendApi {
             return false;
         }
 
-        if (typeof post.data.email !== "string" || post.data.email === "") {
+        if (typeof post.data["phone-area-code"] !== "string" || (post.data["phone-area-code"] === "" && post.data.phone !== "")) {
+            return false;
+        }
+
+        if (typeof post.data.phone !== "string" || !(post.data.phone === "" || PHONE_FORMAT.test(post.data.phone)) || (post.data["phone-area-code"] !== "" && post.data.phone === "")) {
+            return false;
+        }
+
+        if (typeof post.data["mobile-area-code"] !== "string" || (post.data["mobile-area-code"] === "" && post.data.mobile !== "")) {
+            return false;
+        }
+
+        if (typeof post.data.mobile !== "string" || !(post.data.mobile === "" || PHONE_FORMAT.test(post.data.mobile)) || (post.data["mobile-area-code"] !== "" && post.data.mobile === "")) {
+            return false;
+        }
+
+        if (typeof post.data.email !== "string") {
             return false;
         }
 
@@ -715,6 +733,15 @@ export class StudiesSelfserviceDemoBackendApi {
     }
 
     /**
+     * @returns {Promise<AreaCode[]>}
+     */
+    async #getAreaCodes() {
+        return this.#import_json.importJson(
+            `${__dirname}/../Data/AreaCode/area-codes.json`
+        );
+    }
+
+    /**
      * @returns {Promise<Canton[]>}
      */
     async #getCantons() {
@@ -885,6 +912,8 @@ export class StudiesSelfserviceDemoBackendApi {
             "min-postal-code": MIN_POSTAL_CODE,
             "max-postal-code": MAX_POSTAL_CODE,
             places: await this.#getPlaces(),
+            "area-codes": await this.#getAreaCodes(),
+            "phone-format": `${PHONE_FORMAT}`,
             languages: await this.#getLanguages(),
             "min-birth-date": MIN_BIRTH_DATE,
             "max-birth-date": MAX_BIRTH_DATE,

@@ -6,6 +6,12 @@ Changes:
 
 \-
 
+## v2022-10-20-2-alpha
+
+Changes:
+
+- Phone and mobile on personal page
+
 ## v2022-10-20-1-alpha
 
 Changes:
