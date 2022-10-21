@@ -6,6 +6,13 @@ Changes:
 
 \-
 
+## v2022-10-21-1-alpha
+
+Changes:
+
+- Select photo on portrait page
+- Base previous studies page
+
 ## v2022-10-20-2-alpha
 
 Changes:
