@@ -1,13 +1,13 @@
 {
     "name": "flux-studies-selfservice-demo-backend",
     "productName": "flux-studies-selfservice-demo-backend",
-    "version": "2022-10-21-1-alpha",
+    "version": "2022-10-24-1-alpha",
     "description": "",
     "keywords": [],
     "homepage": "",
     "dependencies": {
         "cookie-parser": "1.4.6",
-        "express": "4.18.1"
+        "express": "4.18.2"
     },
     "scripts": {
         "postinstall": "bin/install-dependencies.sh"

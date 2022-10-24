@@ -4,6 +4,6 @@
     "single-choice": null,
     "multiple-choice": null,
     "agb": "TODO",
-    "max-comments-length": 0,
+    "max-comments-length": 2000,
     "values": null
 }
