@@ -6,6 +6,14 @@ Changes:
 
 \-
 
+## v2022-10-24-1-alpha
+
+Changes:
+
+- NodeJS 19
+- Required mobile, phone, email and photo from backend
+- More backend validation
+
 ## v2022-10-21-1-alpha
 
 Changes:

@@ -4,15 +4,9 @@ import cookieParser from "cookie-parser";
 import express from "express";
 import { fileURLToPath } from "node:url";
 import { MAX_BIRTH_DATE } from "../Data/PersonalData/MAX_BIRTH_DATE.mjs";
-import { MAX_COMMENTS_LENGTH } from "../Data/Legal/MAX_COMMENTS_LENGTH.mjs";
-import { MAX_HOUSE_NUMBER } from "../Data/PersonalData/MAX_HOUSE_NUMBER.mjs";
 import { MAX_ISSUE_DATE } from "../Data/UniversityEntranceQualification/MAX_ISSUE_DATE.mjs";
-import { MAX_POSTAL_CODE } from "../Data/PersonalData/MAX_POSTAL_CODE.mjs";
 import { MIN_BIRTH_DATE } from "../Data/PersonalData/MIN_BIRTH_DATE.mjs";
-import { MIN_HOUSE_NUMBER } from "../Data/PersonalData/MIN_HOUSE_NUMBER.mjs";
 import { MIN_ISSUE_DATE } from "../Data/UniversityEntranceQualification/MIN_ISSUE_DATE.mjs";
-import { MIN_PASSWORD_LENGTH } from "../Data/Start/MIN_PASSWORD_LENGTH.mjs";
-import { MIN_POSTAL_CODE } from "../Data/PersonalData/MIN_POSTAL_CODE.mjs";
 import { OLD_AGE_SURVIVAR_INSURANCE_NUMBER_FORMAT } from "../Data/PersonalData/OLD_AGE_SURVIVAR_INSURANCE_NUMBER_FORMAT.mjs";
 import { PHONE_FORMAT } from "../Data/PersonalData/PHONE_FORMAT.mjs";
 import { REGISTRATION_NUMBER_FORMAT } from "../Data/PersonalData/REGISTRATION_NUMBER_FORMAT.mjs";
@@ -57,7 +51,7 @@ import { PAGE_CHOICE_SUBJECT, PAGE_COMPLETED, PAGE_CREATE, PAGE_IDENTIFICATION_N
 /** @typedef {import( "../../../node_modules/flux-shutdown-handler-api/src/Adapter/ShutdownHandler/ShutdownHandler.mjs").ShutdownHandler} ShutdownHandler */
 /** @typedef {import("../../../node_modules/flux-shutdown-handler-api/src/Adapter/Api/ShutdownHandlerApi.mjs").ShutdownHandlerApi} ShutdownHandlerApi */
 /** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Start/Start.mjs").Start} Start */
-/** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/SubjectWithCombinations/SubjectWithCombinations.mjs").SubjectWithCombinations} SubjectWithCombinations */
+/** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Subject/SubjectWithCombinations.mjs").SubjectWithCombinations} SubjectWithCombinations */
 /** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/UniversityEntranceQualification/UniversityEntranceQualification.mjs").UniversityEntranceQualification} UniversityEntranceQualification */
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -125,7 +119,10 @@ export class StudiesSelfserviceDemoBackendApi {
      * @returns {Promise<boolean>}
      */
     async #acceptedLegal(application, post) {
-        if (application.page !== PAGE_LEGAL || post.page !== application.page) {
+        if (
+            application.page !== PAGE_LEGAL
+            || post.page !== application.page
+        ) {
             return false;
         }
 
@@ -133,19 +130,42 @@ export class StudiesSelfserviceDemoBackendApi {
             return false;
         }
 
-        if (typeof post.data["not-disqualified"] !== "boolean" || !post.data["not-disqualified"]) {
+        const legal = await this.#getLegal(
+            this.#getPost(
+                application,
+                PAGE_INTENDED_DEGREE_PROGRAM
+            ).data,
+            this.#getPost(
+                application,
+                PAGE_INTENDED_DEGREE_PROGRAM_2
+            ).data
+        );
+
+        if (
+            typeof post.data["not-disqualified"] !== "boolean"
+            || !post.data["not-disqualified"]
+        ) {
             return false;
         }
 
-        if (typeof post.data.agb !== "boolean" || !post.data.agb) {
+        if (
+            typeof post.data.agb !== "boolean"
+            || !post.data.agb
+        ) {
             return false;
         }
 
-        if (typeof post.data.complete !== "boolean" || !post.data.complete) {
+        if (
+            typeof post.data.complete !== "boolean"
+            || !post.data.complete
+        ) {
             return false;
         }
 
-        if (typeof post.data.comments !== "string" || post.data.comments.length > MAX_COMMENTS_LENGTH) {
+        if (
+            typeof post.data.comments !== "string"
+            || post.data.comments.length > legal["max-comments-length"]
+        ) {
             return false;
         }
 
@@ -231,7 +251,10 @@ export class StudiesSelfserviceDemoBackendApi {
      * @returns {Promise<boolean>}
      */
     async #chosenIntendedDegreeProgram(application, post) {
-        if (application.page !== PAGE_INTENDED_DEGREE_PROGRAM || post.page !== application.page) {
+        if (
+            application.page !== PAGE_INTENDED_DEGREE_PROGRAM
+            || post.page !== application.page
+        ) {
             return false;
         }
 
@@ -239,11 +262,22 @@ export class StudiesSelfserviceDemoBackendApi {
             return false;
         }
 
-        if (typeof post.data.subject !== "string" || post.data.subject === "") {
+        const intended_degree_program = await this.#getIntendedDegreeProgram();
+
+        let subject;
+        if (
+            typeof post.data.subject !== "string"
+            || post.data.subject === ""
+            || (subject = intended_degree_program.subjects.find(_subject => _subject.id === post.data.subject) ?? null) === null
+        ) {
             return false;
         }
 
-        if (typeof post.data.combination !== "string" || post.data.combination === "") {
+        if (
+            typeof post.data.combination !== "string"
+            || post.data.combination === ""
+            || !subject.combinations.some(combination => combination.id === post.data.combination)
+        ) {
             return false;
         }
 
@@ -263,7 +297,10 @@ export class StudiesSelfserviceDemoBackendApi {
      * @returns {Promise<boolean>}
      */
     async #chosenIntendedDegreeProgram2(application, post) {
-        if (application.page !== PAGE_INTENDED_DEGREE_PROGRAM_2 || post.page !== application.page) {
+        if (
+            application.page !== PAGE_INTENDED_DEGREE_PROGRAM_2
+            || post.page !== application.page
+        ) {
             return false;
         }
 
@@ -271,11 +308,69 @@ export class StudiesSelfserviceDemoBackendApi {
             return false;
         }
 
-        if (!(typeof post.data["single-choice"] === "object" || post.data["single-choice"] === null)) {
+        const intended_degree_program_2 = await this.#getIntendedDegreeProgram2(
+            this.#getPost(
+                application,
+                PAGE_INTENDED_DEGREE_PROGRAM
+            ).data
+        );
+
+        if (
+            (intended_degree_program_2.combination["single-choice"] === null && post.data["single-choice"] !== null)
+            || (intended_degree_program_2.combination["single-choice"] !== null && (
+                typeof post.data["single-choice"] !== "object"
+                || !Object.keys(post.data["single-choice"]).every(key => typeof key === "string" && key !== "")
+                || !Object.values(post.data["single-choice"]).every(value => typeof value === "string" && value !== "")
+                || Object.keys(post.data["single-choice"]).length === 0
+                || !Object.entries(post.data["single-choice"]).every(([
+                    key,
+                    value
+                ]) => {
+                    const single_choice = intended_degree_program_2.combination["single-choice"].find(_single_choice => _single_choice.id === key) ?? null;
+
+                    if (single_choice === null) {
+                        return false;
+                    }
+
+                    return single_choice.choices.some(choice => choice.id === value);
+                })
+            ))
+        ) {
             return false;
         }
 
-        if (!(typeof post.data["multiple-choice"] === "object" || post.data["multiple-choice"] === null)) {
+        if (
+            (intended_degree_program_2.combination["multiple-choice"] === null && post.data["multiple-choice"] !== null)
+            || (intended_degree_program_2.combination["multiple-choice"] !== null && (
+                typeof post.data["multiple-choice"] !== "object"
+                || !Object.keys(post.data["multiple-choice"]).every(key => typeof key === "string" && key !== "")
+                || !Object.values(post.data["multiple-choice"]).every(value => Array.isArray(value) && value.every(_value => typeof _value === "string" && _value !== "") && value.length > 0)
+                || Object.keys(post.data["multiple-choice"]).length === 0
+                || !Object.entries(post.data["multiple-choice"]).every(([
+                    key,
+                    value
+                ]) => {
+                    const multiple_choice = intended_degree_program_2.combination["multiple-choice"].find(_multiple_choice => _multiple_choice.id === key) ?? null;
+
+                    if (multiple_choice === null) {
+                        return false;
+                    }
+
+                    if (!value.every(_value => multiple_choice.choices.some(choice => choice.id === _value))) {
+                        return false;
+                    }
+
+                    let ect = 0;
+                    for (const choice of multiple_choice.choices) {
+                        if (value.includes(choice.id)) {
+                            ect += choice.ect;
+                        }
+                    }
+
+                    return ect === multiple_choice.ect;
+                })
+            ))
+        ) {
             return false;
         }
 
@@ -299,7 +394,10 @@ export class StudiesSelfserviceDemoBackendApi {
      * @returns {Promise<boolean>}
      */
     async #chosenPortrait(application, post) {
-        if (application.page !== PAGE_PORTRAIT || post.page !== application.page) {
+        if (
+            application.page !== PAGE_PORTRAIT
+            || post.page !== application.page
+        ) {
             return false;
         }
 
@@ -307,7 +405,12 @@ export class StudiesSelfserviceDemoBackendApi {
             return false;
         }
 
-        if (!(post.data.photo === null || (Array.isArray(post.data.photo) && !post.data.photo.some(char => typeof char !== "number")))) {
+        const portrait = await this.#getPortrait();
+
+        if (
+            (portrait["required-photo"] ? post.data.photo === null : false)
+            || (post.data.photo !== null && !(Array.isArray(post.data.photo) && post.data.photo.every(char => typeof char === "number")))
+        ) {
             return false;
         }
 
@@ -323,11 +426,14 @@ export class StudiesSelfserviceDemoBackendApi {
 
     /**
      * @param {Application} application
-     * @param {Post & {data: PreviousStudies}} post
+     * @param {Post & {data: ChosenPreviousStudies}} post
      * @returns {Promise<boolean>}
      */
     async #chosenPreviousStudies(application, post) {
-        if (application.page !== PAGE_PREVIOUS_STUDIES || post.page !== application.page) {
+        if (
+            application.page !== PAGE_PREVIOUS_STUDIES
+            || post.page !== application.page
+        ) {
             return false;
         }
 
@@ -351,7 +457,10 @@ export class StudiesSelfserviceDemoBackendApi {
      * @returns {Promise<boolean>}
      */
     async #chosenSubject(application, post) {
-        if (application.page !== PAGE_CHOICE_SUBJECT || post.page !== application.page) {
+        if (
+            application.page !== PAGE_CHOICE_SUBJECT
+            || post.page !== application.page
+        ) {
             return false;
         }
 
@@ -359,11 +468,24 @@ export class StudiesSelfserviceDemoBackendApi {
             return false;
         }
 
-        if (typeof post.data["degree-program"] !== "string" || post.data["degree-program"] === "") {
+        const choice_subject = await this.#getChoiceSubject();
+
+        let degree_program;
+        if (
+            typeof post.data["degree-program"] !== "string"
+            || post.data["degree-program"] === ""
+            || (degree_program = choice_subject["degree-programs"].find(_degree_program => _degree_program.id === post.data["degree-program"]) ?? null) === null
+        ) {
             return false;
         }
 
-        if (typeof post.data.qualifications !== "object" || Object.keys(post.data.qualifications).some(key => !(typeof key === "string" || key === "")) || Object.values(post.data.qualifications).some(value => typeof value !== "boolean")) {
+        if (
+            typeof post.data.qualifications !== "object"
+            || !Object.keys(post.data.qualifications).every(qualification => typeof qualification === "string" && qualification !== "")
+            || !Object.values(post.data.qualifications).every(value => typeof value === "boolean")
+            || !Object.keys(post.data.qualifications).every(qualification => degree_program.qualifications.some(_qualification => _qualification.id === qualification))
+            || !degree_program.qualifications.filter(qualification => qualification.required).every(qualification => post.data.qualifications[qualification.id])
+        ) {
             return false;
         }
 
@@ -383,7 +505,10 @@ export class StudiesSelfserviceDemoBackendApi {
      * @returns {Promise<boolean>}
      */
     async #chosenUniversityEntranceQualification(application, post) {
-        if (application.page !== PAGE_UNIVERSITY_ENTRANCE_QUALIFICATION || post.page !== application.page) {
+        if (
+            application.page !== PAGE_UNIVERSITY_ENTRANCE_QUALIFICATION
+            || post.page !== application.page
+        ) {
             return false;
         }
 
@@ -391,35 +516,69 @@ export class StudiesSelfserviceDemoBackendApi {
             return false;
         }
 
-        if (typeof post.data["certificate-type"] !== "string" || post.data["certificate-type"] === "") {
+        const university_entrance_qualification = await this.#getUniversityEntranceQualification();
+
+        if (
+            typeof post.data["certificate-type"] !== "string"
+            || post.data["certificate-type"] === ""
+            || !university_entrance_qualification["certificate-types"].some(certificate_type => certificate_type.id === post.data["certificate-type"])
+        ) {
             return false;
         }
 
-        if (typeof post.data["issue-date"] !== "number" || post.data["issue-date"] < MIN_ISSUE_DATE || post.data["issue-date"] > MAX_ISSUE_DATE) {
+        if (
+            typeof post.data["issue-date"] !== "number"
+            || post.data["issue-date"] < university_entrance_qualification["min-issue-date"]
+            || post.data["issue-date"] > university_entrance_qualification["max-issue-date"]
+        ) {
             return false;
         }
 
-        if (typeof post.data.certificate !== "string" || post.data.certificate === "") {
+        if (
+            typeof post.data.certificate !== "string"
+            || post.data.certificate === ""
+            || !university_entrance_qualification.certificates.some(certificate => certificate.id === post.data.certificate)
+        ) {
             return false;
         }
 
-        if (typeof post.data["matura-canton"] !== "string" || post.data["matura-canton"] === "") {
+        if (
+            typeof post.data["matura-canton"] !== "string"
+            || post.data["matura-canton"] === ""
+            || !university_entrance_qualification.cantons.some(canton => canton.id === post.data["matura-canton"])
+        ) {
             return false;
         }
 
-        if (typeof post.data["upper-secondary-school"] !== "string" || post.data["upper-secondary-school"] === "") {
+        if (
+            typeof post.data["upper-secondary-school"] !== "string"
+            || post.data["upper-secondary-school"] === ""
+            || !university_entrance_qualification.schools.some(school => school.id === post.data["upper-secondary-school"])
+        ) {
             return false;
         }
 
-        if (typeof post.data["certificate-country"] !== "string" || post.data["certificate-country"] === "") {
+        if (
+            typeof post.data["certificate-country"] !== "string"
+            || post.data["certificate-country"] === ""
+            || !university_entrance_qualification.countries.some(country => country.id === post.data["certificate-country"])
+        ) {
             return false;
         }
 
-        if (typeof post.data["certificate-canton"] !== "string" || post.data["certificate-canton"] === "") {
+        if (
+            typeof post.data["certificate-canton"] !== "string"
+            || post.data["certificate-canton"] === ""
+            || !university_entrance_qualification.cantons.some(canton => canton.id === post.data["certificate-canton"])
+        ) {
             return false;
         }
 
-        if (typeof post.data["certificate-place"] !== "string" || post.data["certificate-place"] === "") {
+        if (
+            typeof post.data["certificate-place"] !== "string"
+            || post.data["certificate-place"] === ""
+            || !university_entrance_qualification.places.some(place => place.id === post.data["certificate-place"])
+        ) {
             return false;
         }
 
@@ -439,7 +598,10 @@ export class StudiesSelfserviceDemoBackendApi {
      * @returns {Promise<boolean>}
      */
     async #confirmedIdentificationNumber(application, post) {
-        if (application.page !== PAGE_IDENTIFICATION_NUMBER || post.page !== application.page) {
+        if (
+            application.page !== PAGE_IDENTIFICATION_NUMBER
+            || post.page !== application.page
+        ) {
             return false;
         }
 
@@ -470,15 +632,29 @@ export class StudiesSelfserviceDemoBackendApi {
             return false;
         }
 
-        if (typeof post.data.semester !== "string" || post.data.semester === "") {
+        const start = await this.#getStart();
+
+        if (
+            typeof post.data.semester !== "string"
+            || post.data.semester === ""
+            || !start.semesters.some(semester => semester.id === post.data.semester)
+        ) {
             return false;
         }
 
-        if (typeof post.data.password !== "string" || post.data.password.length < MIN_PASSWORD_LENGTH) {
+        if (
+            typeof post.data.password !== "string"
+            || post.data.password === ""
+            || post.data.password.length < start["min-password-length"]
+        ) {
             return false;
         }
 
-        if (typeof post.data["confirm-password"] !== "string" || post.data["confirm-password"].length < MIN_PASSWORD_LENGTH) {
+        if (
+            typeof post.data["confirm-password"] !== "string"
+            || post.data["confirm-password"] === ""
+            || post.data["confirm-password"].length < start["min-password-length"]
+        ) {
             return false;
         }
 
@@ -490,7 +666,7 @@ export class StudiesSelfserviceDemoBackendApi {
          * @type {Application}
          */
         const application = {
-            "identification-number": Math.random().toString(36).substring(2, 12),
+            "identification-number": this.#randomIdentificationNumber(),
             page: PAGE_IDENTIFICATION_NUMBER,
             posts: []
         };
@@ -507,11 +683,14 @@ export class StudiesSelfserviceDemoBackendApi {
 
     /**
      * @param {Application} application
-     * @param {Post & {data: PersonalData}} post
+     * @param {Post & {data: FilledPersonalData}} post
      * @returns {Promise<boolean>}
      */
     async #filledPersonalData(application, post) {
-        if (application.page !== PAGE_PERSONAL_DATA || post.page !== application.page) {
+        if (
+            application.page !== PAGE_PERSONAL_DATA
+            || post.page !== application.page
+        ) {
             return false;
         }
 
@@ -519,11 +698,20 @@ export class StudiesSelfserviceDemoBackendApi {
             return false;
         }
 
-        if (typeof post.data["salutation"] !== "string" || post.data["salutation"] === "") {
+        const personal_data = await this.#getPersonalData();
+
+        if (
+            typeof post.data.salutation !== "string"
+            || post.data.salutation === ""
+            || !personal_data.salutations.some(salutation => salutation.id === post.data.salutation)
+        ) {
             return false;
         }
 
-        if (typeof post.data["first-name"] !== "string" || post.data["first-name"] === "") {
+        if (
+            typeof post.data["first-name"] !== "string"
+            || post.data["first-name"] === ""
+        ) {
             return false;
         }
 
@@ -531,19 +719,35 @@ export class StudiesSelfserviceDemoBackendApi {
             return false;
         }
 
-        if (!Array.isArray(post.data["additional-first-names"]) || post.data["additional-first-names"].some(name => !(typeof name === "string" || name === ""))) {
+        if (
+            !Array.isArray(post.data["additional-first-names"])
+            || !post.data["additional-first-names"].every(name => typeof name === "string" && name !== "")
+        ) {
             return false;
         }
 
-        if (typeof post.data["last-name"] !== "string" || post.data["last-name"] === "") {
+        if (
+            typeof post.data["last-name"] !== "string"
+            || post.data["last-name"] === ""
+        ) {
             return false;
         }
 
-        if (typeof post.data["registration-number"] !== "string" || !(post.data["registration-number"] === "" || REGISTRATION_NUMBER_FORMAT.test(post.data["registration-number"]))) {
+        if (
+            typeof post.data["registration-number"] !== "string"
+            || !(
+                post.data["registration-number"] === ""
+                || REGISTRATION_NUMBER_FORMAT.test(post.data["registration-number"])
+            )
+        ) {
             return false;
         }
 
-        if (typeof post.data.country !== "string" || post.data.country === "") {
+        if (
+            typeof post.data.country !== "string"
+            || post.data.country === ""
+            || !personal_data.countries.some(country => country.id === post.data.country)
+        ) {
             return false;
         }
 
@@ -551,11 +755,18 @@ export class StudiesSelfserviceDemoBackendApi {
             return false;
         }
 
-        if (typeof post.data.street !== "string" || post.data.street === "") {
+        if (
+            typeof post.data.street !== "string"
+            || post.data.street === ""
+        ) {
             return false;
         }
 
-        if (typeof post.data["house-number"] !== "number" || post.data["house-number"] < MIN_HOUSE_NUMBER || post.data["house-number"] > MAX_HOUSE_NUMBER) {
+        if (
+            typeof post.data["house-number"] !== "number"
+            || post.data["house-number"] < personal_data["min-house-number"]
+            || post.data["house-number"] > personal_data["max-house-number"]
+        ) {
             return false;
         }
 
@@ -563,55 +774,114 @@ export class StudiesSelfserviceDemoBackendApi {
             return false;
         }
 
-        if (typeof post.data["postal-code"] !== "number" || post.data["postal-code"] < MIN_POSTAL_CODE || post.data["postal-code"] > MAX_POSTAL_CODE) {
+        if (
+            typeof post.data["postal-code"] !== "number"
+            || post.data["postal-code"] < personal_data["min-postal-code"]
+            || post.data["postal-code"] > personal_data["max-postal-code"]
+        ) {
             return false;
         }
 
-        if (typeof post.data.place !== "string" || post.data.place === "") {
+        if (
+            typeof post.data.place !== "string"
+            || post.data.place === ""
+            || !personal_data.places.some(place => place.id === post.data.place)
+        ) {
             return false;
         }
 
-        if (typeof post.data["phone-area-code"] !== "string" || (post.data["phone-area-code"] === "" && post.data.phone !== "")) {
+        if (
+            typeof post.data["phone-area-code"] !== "string"
+            || (personal_data["required-phone"] ? post.data["phone-area-code"] === "" : false)
+            || (post.data["phone-area-code"] !== "" && !personal_data["area-codes"].some(area_code => area_code.id === post.data["phone-area-code"]))
+            || (post.data["phone-area-code"] === "" && post.data.phone !== "")
+        ) {
             return false;
         }
 
-        if (typeof post.data.phone !== "string" || !(post.data.phone === "" || PHONE_FORMAT.test(post.data.phone)) || (post.data["phone-area-code"] !== "" && post.data.phone === "")) {
+        if (
+            typeof post.data.phone !== "string"
+            || (personal_data["required-phone"] ? post.data.phone === "" : false)
+            || (post.data.phone !== "" && !PHONE_FORMAT.test(post.data.phone))
+            || (post.data["phone-area-code"] !== "" && post.data.phone === "")
+        ) {
             return false;
         }
 
-        if (typeof post.data["mobile-area-code"] !== "string" || (post.data["mobile-area-code"] === "" && post.data.mobile !== "")) {
+        if (
+            typeof post.data["mobile-area-code"] !== "string"
+            || (personal_data["required-phone"] ? post.data["mobile-area-code"] === "" : false)
+            || (post.data["mobile-area-code"] !== "" && !personal_data["area-codes"].some(area_code => area_code.id === post.data["mobile-area-code"]))
+            || (post.data["mobile-area-code"] === "" && post.data.mobile !== "")
+        ) {
             return false;
         }
 
-        if (typeof post.data.mobile !== "string" || !(post.data.mobile === "" || PHONE_FORMAT.test(post.data.mobile)) || (post.data["mobile-area-code"] !== "" && post.data.mobile === "")) {
+        if (
+            typeof post.data.mobile !== "string"
+            || (personal_data["required-phone"] ? post.data.mobile === "" : false)
+            || (post.data.mobile !== "" && !PHONE_FORMAT.test(post.data.mobile))
+            || (post.data["mobile-area-code"] !== "" && post.data.mobile === "")
+        ) {
             return false;
         }
 
-        if (typeof post.data.email !== "string") {
+        if (
+            typeof post.data.email !== "string"
+            || (personal_data["required-email"] ? post.data.email === "" : false)
+        ) {
             return false;
         }
 
-        if (typeof post.data["mother-language"] !== "string" || post.data["mother-language"] === "") {
+        if (
+            typeof post.data["mother-language"] !== "string"
+            || post.data["mother-language"] === ""
+            || !personal_data.languages.some(language => language.id === post.data["mother-language"])
+        ) {
             return false;
         }
 
-        if (typeof post.data["correspondence-language"] !== "string" || post.data["correspondence-language"] === "") {
+        if (
+            typeof post.data["correspondence-language"] !== "string"
+            || post.data["correspondence-language"] === ""
+            || !personal_data.languages.some(language => language.id === post.data["correspondence-language"])
+        ) {
             return false;
         }
 
-        if (typeof post.data["birth-date"] !== "string" || post.data["birth-date"] === "" || !BIRTH_DATE_FORMAT.test(post.data["birth-date"]) || post.data["birth-date"] < MIN_BIRTH_DATE || post.data["birth-date"] > MAX_BIRTH_DATE) {
+        if (
+            typeof post.data["birth-date"] !== "string"
+            || post.data["birth-date"] === ""
+            || !BIRTH_DATE_FORMAT.test(post.data["birth-date"])
+            || post.data["birth-date"] < MIN_BIRTH_DATE
+            || post.data["birth-date"] > MAX_BIRTH_DATE
+        ) {
             return false;
         }
 
-        if (typeof post.data["old-age-survivar-insurance-number"] !== "string" || !(post.data["old-age-survivar-insurance-number"] === "" || OLD_AGE_SURVIVAR_INSURANCE_NUMBER_FORMAT.test(post.data["old-age-survivar-insurance-number"]))) {
+        if (
+            typeof post.data["old-age-survivar-insurance-number"] !== "string"
+            || !(
+                post.data["old-age-survivar-insurance-number"] === ""
+                || OLD_AGE_SURVIVAR_INSURANCE_NUMBER_FORMAT.test(post.data["old-age-survivar-insurance-number"])
+            )
+        ) {
             return false;
         }
 
-        if (typeof post.data.nationally !== "string" || post.data.nationally === "") {
+        if (
+            typeof post.data.nationally !== "string"
+            || post.data.nationally === ""
+            || !personal_data.countries.some(country => country.id === post.data.nationally)
+        ) {
             return false;
         }
 
-        if (typeof post.data["origin-place"] !== "string" || post.data["origin-place"] === "") {
+        if (
+            typeof post.data["origin-place"] !== "string"
+            || post.data["origin-place"] === ""
+            || !personal_data.places.some(place => place.id === post.data["origin-place"])
+        ) {
             return false;
         }
 
@@ -933,7 +1203,6 @@ export class StudiesSelfserviceDemoBackendApi {
             combination: subject.combinations.find(combination => combination.id === chosen_intended_degree_program.combination),
             "single-choice": chosen_intended_degree_program_2["single-choice"],
             "multiple-choice": chosen_intended_degree_program_2["multiple-choice"],
-            "max-comments-length": MAX_COMMENTS_LENGTH,
             values
         };
     }
@@ -950,10 +1219,6 @@ export class StudiesSelfserviceDemoBackendApi {
             salutations: await this.#getSalutations(),
             "registration-number-format": `${REGISTRATION_NUMBER_FORMAT}`,
             countries: await this.#getCountries(),
-            "min-house-number": MIN_HOUSE_NUMBER,
-            "max-house-number": MAX_HOUSE_NUMBER,
-            "min-postal-code": MIN_POSTAL_CODE,
-            "max-postal-code": MAX_POSTAL_CODE,
             places: await this.#getPlaces(),
             "area-codes": await this.#getAreaCodes(),
             "phone-format": `${PHONE_FORMAT}`,
@@ -1132,8 +1397,7 @@ export class StudiesSelfserviceDemoBackendApi {
             ...await this.#import_json.importJson(
                 `${__dirname}/../Data/Start/start.json`
             ),
-            semesters: await this.#getSemesters(),
-            "min-password-length": MIN_PASSWORD_LENGTH
+            semesters: await this.#getSemesters()
         };
     }
 
@@ -1292,6 +1556,13 @@ export class StudiesSelfserviceDemoBackendApi {
     }
 
     /**
+     * @returns {string}
+     */
+    #randomIdentificationNumber() {
+        return Math.random().toString(36).substring(2, 12);
+    }
+
+    /**
      * @param {express.request} req
      * @param {express.response} res
      * @param {Response} response
@@ -1325,11 +1596,20 @@ export class StudiesSelfserviceDemoBackendApi {
             return false;
         }
 
-        if (typeof post.data["identification-number"] !== "string" || post.data["identification-number"] === "") {
+        const start = await this.#getStart();
+
+        if (
+            typeof post.data["identification-number"] !== "string"
+            || post.data["identification-number"] === ""
+        ) {
             return false;
         }
 
-        if (typeof post.data.password !== "string" || post.data.password.length < MIN_PASSWORD_LENGTH) {
+        if (
+            typeof post.data.password !== "string"
+            || post.data.password === ""
+            || post.data.password.length < start["min-password-length"]
+        ) {
             return false;
         }
 
