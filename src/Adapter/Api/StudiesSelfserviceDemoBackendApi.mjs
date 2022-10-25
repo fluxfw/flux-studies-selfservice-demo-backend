@@ -1,6 +1,7 @@
 import { BIRTH_DATE_FORMAT } from "../Data/PersonalData/BIRTH_DATE_FORMAT.mjs";
 import { COOKIE_IDENTIFICATION_NUMBER } from "../Response/COOKIE.mjs";
 import cookieParser from "cookie-parser";
+import { EMAIL_FORMAT } from "../Data/PersonalData/EMAIL_FORMAT.mjs";
 import express from "express";
 import { fileURLToPath } from "node:url";
 import { MAX_BIRTH_DATE } from "../Data/PersonalData/MAX_BIRTH_DATE.mjs";
@@ -9,6 +10,7 @@ import { MIN_BIRTH_DATE } from "../Data/PersonalData/MIN_BIRTH_DATE.mjs";
 import { MIN_ISSUE_DATE } from "../Data/UniversityEntranceQualification/MIN_ISSUE_DATE.mjs";
 import { OLD_AGE_SURVIVAR_INSURANCE_NUMBER_FORMAT } from "../Data/PersonalData/OLD_AGE_SURVIVAR_INSURANCE_NUMBER_FORMAT.mjs";
 import { PHONE_FORMAT } from "../Data/PersonalData/PHONE_FORMAT.mjs";
+import { POSTAL_OFFICE_BOX_FORMAT } from "../Data/PersonalData/POSTAL_OFFICE_BOX_FORMAT.mjs";
 import { REGISTRATION_NUMBER_FORMAT } from "../Data/PersonalData/REGISTRATION_NUMBER_FORMAT.mjs";
 import { dirname, join } from "node:path";
 import { PAGE_CHOICE_SUBJECT, PAGE_COMPLETED, PAGE_CREATE, PAGE_IDENTIFICATION_NUMBER, PAGE_INTENDED_DEGREE_PROGRAM, PAGE_INTENDED_DEGREE_PROGRAM_2, PAGE_LEGAL, PAGE_PERSONAL_DATA, PAGE_PORTRAIT, PAGE_PREVIOUS_STUDIES, PAGE_RESUME, PAGE_START, PAGE_UNIVERSITY_ENTRANCE_QUALIFICATION } from "../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Page/PAGE.mjs";
@@ -48,7 +50,7 @@ import { PAGE_CHOICE_SUBJECT, PAGE_COMPLETED, PAGE_CREATE, PAGE_IDENTIFICATION_N
 /** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Salutation/Salutation.mjs").Salutation} Salutation */
 /** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/School/School.mjs").School} School */
 /** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Semester/Semester.mjs").Semester} Semester */
-/** @typedef {import( "../../../node_modules/flux-shutdown-handler-api/src/Adapter/ShutdownHandler/ShutdownHandler.mjs").ShutdownHandler} ShutdownHandler */
+/** @typedef {import("../../../node_modules/flux-shutdown-handler-api/src/Adapter/ShutdownHandler/ShutdownHandler.mjs").ShutdownHandler} ShutdownHandler */
 /** @typedef {import("../../../node_modules/flux-shutdown-handler-api/src/Adapter/Api/ShutdownHandlerApi.mjs").ShutdownHandlerApi} ShutdownHandlerApi */
 /** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Start/Start.mjs").Start} Start */
 /** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Subject/SubjectWithCombinations.mjs").SubjectWithCombinations} SubjectWithCombinations */
@@ -119,10 +121,7 @@ export class StudiesSelfserviceDemoBackendApi {
      * @returns {Promise<boolean>}
      */
     async #acceptedLegal(application, post) {
-        if (
-            application.page !== PAGE_LEGAL
-            || post.page !== application.page
-        ) {
+        if (application.page !== PAGE_LEGAL || post.page !== application.page) {
             return false;
         }
 
@@ -133,6 +132,10 @@ export class StudiesSelfserviceDemoBackendApi {
         const legal = await this.#getLegal(
             this.#getPost(
                 application,
+                PAGE_CHOICE_SUBJECT
+            ).data,
+            this.#getPost(
+                application,
                 PAGE_INTENDED_DEGREE_PROGRAM
             ).data,
             this.#getPost(
@@ -141,31 +144,31 @@ export class StudiesSelfserviceDemoBackendApi {
             ).data
         );
 
-        if (
-            typeof post.data["not-disqualified"] !== "boolean"
-            || !post.data["not-disqualified"]
-        ) {
+        if (typeof post.data["not-disqualified"] !== "boolean") {
+            return false;
+        }
+        if (!post.data["not-disqualified"]) {
             return false;
         }
 
-        if (
-            typeof post.data.agb !== "boolean"
-            || !post.data.agb
-        ) {
+        if (typeof post.data.agb !== "boolean") {
+            return false;
+        }
+        if (!post.data.agb) {
             return false;
         }
 
-        if (
-            typeof post.data.complete !== "boolean"
-            || !post.data.complete
-        ) {
+        if (typeof post.data.complete !== "boolean") {
+            return false;
+        }
+        if (!post.data.complete) {
             return false;
         }
 
-        if (
-            typeof post.data.comments !== "string"
-            || post.data.comments.length > legal["max-comments-length"]
-        ) {
+        if (typeof post.data.comments !== "string") {
+            return false;
+        }
+        if (post.data.comments.length > legal["max-comments-length"]) {
             return false;
         }
 
@@ -251,10 +254,7 @@ export class StudiesSelfserviceDemoBackendApi {
      * @returns {Promise<boolean>}
      */
     async #chosenIntendedDegreeProgram(application, post) {
-        if (
-            application.page !== PAGE_INTENDED_DEGREE_PROGRAM
-            || post.page !== application.page
-        ) {
+        if (application.page !== PAGE_INTENDED_DEGREE_PROGRAM || post.page !== application.page) {
             return false;
         }
 
@@ -264,20 +264,24 @@ export class StudiesSelfserviceDemoBackendApi {
 
         const intended_degree_program = await this.#getIntendedDegreeProgram();
 
-        let subject;
-        if (
-            typeof post.data.subject !== "string"
-            || post.data.subject === ""
-            || (subject = intended_degree_program.subjects.find(_subject => _subject.id === post.data.subject) ?? null) === null
-        ) {
+        if (typeof post.data.subject !== "string") {
+            return false;
+        }
+        if (post.data.subject === "") {
+            return false;
+        }
+        const subject = intended_degree_program.subjects.find(_subject => _subject.id === post.data.subject) ?? null;
+        if (subject === null) {
             return false;
         }
 
-        if (
-            typeof post.data.combination !== "string"
-            || post.data.combination === ""
-            || !subject.combinations.some(combination => combination.id === post.data.combination)
-        ) {
+        if (typeof post.data.combination !== "string") {
+            return false;
+        }
+        if (post.data.combination === "") {
+            return false;
+        }
+        if (!subject.combinations.some(combination => combination.id === post.data.combination)) {
             return false;
         }
 
@@ -297,10 +301,7 @@ export class StudiesSelfserviceDemoBackendApi {
      * @returns {Promise<boolean>}
      */
     async #chosenIntendedDegreeProgram2(application, post) {
-        if (
-            application.page !== PAGE_INTENDED_DEGREE_PROGRAM_2
-            || post.page !== application.page
-        ) {
+        if (application.page !== PAGE_INTENDED_DEGREE_PROGRAM_2 || post.page !== application.page) {
             return false;
         }
 
@@ -315,62 +316,60 @@ export class StudiesSelfserviceDemoBackendApi {
             ).data
         );
 
-        if (
-            (intended_degree_program_2.combination["single-choice"] === null && post.data["single-choice"] !== null)
-            || (intended_degree_program_2.combination["single-choice"] !== null && (
-                typeof post.data["single-choice"] !== "object"
-                || !Object.keys(post.data["single-choice"]).every(key => typeof key === "string" && key !== "")
-                || !Object.values(post.data["single-choice"]).every(value => typeof value === "string" && value !== "")
-                || Object.keys(post.data["single-choice"]).length === 0
-                || !Object.entries(post.data["single-choice"]).every(([
-                    key,
-                    value
-                ]) => {
-                    const single_choice = intended_degree_program_2.combination["single-choice"].find(_single_choice => _single_choice.id === key) ?? null;
+        if (intended_degree_program_2.combination["single-choice"] === null && post.data["single-choice"] !== null) {
+            return false;
+        }
+        if (intended_degree_program_2.combination["single-choice"] !== null && (typeof post.data["single-choice"] !== "object"
+            || Object.keys(post.data["single-choice"]).length === 0
+            || !Object.keys(post.data["single-choice"]).every(key => typeof key === "string" && key !== "")
+            || !Object.values(post.data["single-choice"]).every(value => typeof value === "string" && value !== "")
+            || !intended_degree_program_2.combination["single-choice"].every(single_choice => single_choice.id in post.data["single-choice"])
+            || !Object.entries(post.data["single-choice"]).every(([
+                key,
+                value
+            ]) => {
+                const single_choice = intended_degree_program_2.combination["single-choice"].find(_single_choice => _single_choice.id === key) ?? null;
 
-                    if (single_choice === null) {
-                        return false;
-                    }
+                if (single_choice === null) {
+                    return false;
+                }
 
-                    return single_choice.choices.some(choice => choice.id === value);
-                })
-            ))
-        ) {
+                return single_choice.choices.some(choice => choice.id === value);
+            }))) {
             return false;
         }
 
-        if (
-            (intended_degree_program_2.combination["multiple-choice"] === null && post.data["multiple-choice"] !== null)
-            || (intended_degree_program_2.combination["multiple-choice"] !== null && (
-                typeof post.data["multiple-choice"] !== "object"
-                || !Object.keys(post.data["multiple-choice"]).every(key => typeof key === "string" && key !== "")
-                || !Object.values(post.data["multiple-choice"]).every(value => Array.isArray(value) && value.every(_value => typeof _value === "string" && _value !== "") && value.length > 0)
-                || Object.keys(post.data["multiple-choice"]).length === 0
-                || !Object.entries(post.data["multiple-choice"]).every(([
-                    key,
-                    value
-                ]) => {
-                    const multiple_choice = intended_degree_program_2.combination["multiple-choice"].find(_multiple_choice => _multiple_choice.id === key) ?? null;
+        if (intended_degree_program_2.combination["multiple-choice"] === null && post.data["multiple-choice"] !== null) {
+            return false;
+        }
+        if (intended_degree_program_2.combination["multiple-choice"] !== null && (typeof post.data["multiple-choice"] !== "object"
+            || Object.keys(post.data["multiple-choice"]).length === 0
+            || !Object.keys(post.data["multiple-choice"]).every(key => typeof key === "string" && key !== "")
+            || !Object.values(post.data["multiple-choice"]).every(value => Array.isArray(value) && value.length > 0 && value.every(_value => typeof _value === "string" && _value !== ""))
+            || !intended_degree_program_2.combination["multiple-choice"].every(multiple_choice => multiple_choice.id in post.data["multiple-choice"])
+            || !Object.entries(post.data["multiple-choice"]).every(([
+                key,
+                value
+            ]) => {
+                const multiple_choice = intended_degree_program_2.combination["multiple-choice"].find(_multiple_choice => _multiple_choice.id === key) ?? null;
 
-                    if (multiple_choice === null) {
-                        return false;
+                if (multiple_choice === null) {
+                    return false;
+                }
+
+                if (!value.every(_value => multiple_choice.choices.some(choice => choice.id === _value))) {
+                    return false;
+                }
+
+                let ect = 0;
+                for (const choice of multiple_choice.choices) {
+                    if (value.includes(choice.id)) {
+                        ect += choice.ect;
                     }
+                }
 
-                    if (!value.every(_value => multiple_choice.choices.some(choice => choice.id === _value))) {
-                        return false;
-                    }
-
-                    let ect = 0;
-                    for (const choice of multiple_choice.choices) {
-                        if (value.includes(choice.id)) {
-                            ect += choice.ect;
-                        }
-                    }
-
-                    return ect === multiple_choice.ect;
-                })
-            ))
-        ) {
+                return ect === multiple_choice.ect;
+            }))) {
             return false;
         }
 
@@ -394,10 +393,7 @@ export class StudiesSelfserviceDemoBackendApi {
      * @returns {Promise<boolean>}
      */
     async #chosenPortrait(application, post) {
-        if (
-            application.page !== PAGE_PORTRAIT
-            || post.page !== application.page
-        ) {
+        if (application.page !== PAGE_PORTRAIT || post.page !== application.page) {
             return false;
         }
 
@@ -407,10 +403,10 @@ export class StudiesSelfserviceDemoBackendApi {
 
         const portrait = await this.#getPortrait();
 
-        if (
-            (portrait["required-photo"] ? post.data.photo === null : false)
-            || (post.data.photo !== null && !(Array.isArray(post.data.photo) && post.data.photo.every(char => typeof char === "number")))
-        ) {
+        if (post.data.photo !== null && !(Array.isArray(post.data.photo) && post.data.photo.length > 0 && post.data.photo.every(char => typeof char === "number" && Number.isInteger(char) && char >= 0))) {
+            return false;
+        }
+        if (portrait["required-photo"] && post.data.photo === null) {
             return false;
         }
 
@@ -430,10 +426,7 @@ export class StudiesSelfserviceDemoBackendApi {
      * @returns {Promise<boolean>}
      */
     async #chosenPreviousStudies(application, post) {
-        if (
-            application.page !== PAGE_PREVIOUS_STUDIES
-            || post.page !== application.page
-        ) {
+        if (application.page !== PAGE_PREVIOUS_STUDIES || post.page !== application.page) {
             return false;
         }
 
@@ -457,10 +450,7 @@ export class StudiesSelfserviceDemoBackendApi {
      * @returns {Promise<boolean>}
      */
     async #chosenSubject(application, post) {
-        if (
-            application.page !== PAGE_CHOICE_SUBJECT
-            || post.page !== application.page
-        ) {
+        if (application.page !== PAGE_CHOICE_SUBJECT || post.page !== application.page) {
             return false;
         }
 
@@ -470,22 +460,36 @@ export class StudiesSelfserviceDemoBackendApi {
 
         const choice_subject = await this.#getChoiceSubject();
 
-        let degree_program;
-        if (
-            typeof post.data["degree-program"] !== "string"
-            || post.data["degree-program"] === ""
-            || (degree_program = choice_subject["degree-programs"].find(_degree_program => _degree_program.id === post.data["degree-program"]) ?? null) === null
-        ) {
+        if (typeof post.data["degree-program"] !== "string") {
+            return false;
+        }
+        if (post.data["degree-program"] === "") {
+            return false;
+        }
+        const degree_program = choice_subject["degree-programs"].find(_degree_program => _degree_program.id === post.data["degree-program"]) ?? null;
+        if (degree_program === null) {
             return false;
         }
 
-        if (
-            typeof post.data.qualifications !== "object"
-            || !Object.keys(post.data.qualifications).every(qualification => typeof qualification === "string" && qualification !== "")
-            || !Object.values(post.data.qualifications).every(value => typeof value === "boolean")
-            || !Object.keys(post.data.qualifications).every(qualification => degree_program.qualifications.some(_qualification => _qualification.id === qualification))
-            || !degree_program.qualifications.filter(qualification => qualification.required).every(qualification => post.data.qualifications[qualification.id])
-        ) {
+        if (typeof post.data.qualifications !== "object") {
+            return false;
+        }
+        if (Object.keys(post.data.qualifications).length === 0) {
+            return false;
+        }
+        if (!Object.keys(post.data.qualifications).every(qualification => typeof qualification === "string" && qualification !== "")) {
+            return false;
+        }
+        if (!Object.values(post.data.qualifications).every(value => typeof value === "boolean")) {
+            return false;
+        }
+        if (!degree_program.qualifications.every(qualification => qualification.id in post.data.qualifications)) {
+            return false;
+        }
+        if (!degree_program.qualifications.filter(qualification => qualification.required).every(qualification => post.data.qualifications[qualification.id])) {
+            return false;
+        }
+        if (!Object.keys(post.data.qualifications).every(qualification => degree_program.qualifications.some(_qualification => _qualification.id === qualification))) {
             return false;
         }
 
@@ -505,10 +509,7 @@ export class StudiesSelfserviceDemoBackendApi {
      * @returns {Promise<boolean>}
      */
     async #chosenUniversityEntranceQualification(application, post) {
-        if (
-            application.page !== PAGE_UNIVERSITY_ENTRANCE_QUALIFICATION
-            || post.page !== application.page
-        ) {
+        if (application.page !== PAGE_UNIVERSITY_ENTRANCE_QUALIFICATION || post.page !== application.page) {
             return false;
         }
 
@@ -518,67 +519,86 @@ export class StudiesSelfserviceDemoBackendApi {
 
         const university_entrance_qualification = await this.#getUniversityEntranceQualification();
 
-        if (
-            typeof post.data["certificate-type"] !== "string"
-            || post.data["certificate-type"] === ""
-            || !university_entrance_qualification["certificate-types"].some(certificate_type => certificate_type.id === post.data["certificate-type"])
-        ) {
+        if (typeof post.data["certificate-type"] !== "string") {
+            return false;
+        }
+        if (post.data["certificate-type"] === "") {
+            return false;
+        }
+        if (!university_entrance_qualification["certificate-types"].some(certificate_type => certificate_type.id === post.data["certificate-type"])) {
             return false;
         }
 
-        if (
-            typeof post.data["issue-date"] !== "number"
-            || post.data["issue-date"] < university_entrance_qualification["min-issue-date"]
-            || post.data["issue-date"] > university_entrance_qualification["max-issue-date"]
-        ) {
+        if (typeof post.data["issue-date"] !== "number") {
+            return false;
+        }
+        if (!Number.isInteger(post.data["issue-date"])) {
+            return false;
+        }
+        if (post.data["issue-date"] < university_entrance_qualification["min-issue-date"]) {
+            return false;
+        }
+        if (post.data["issue-date"] > university_entrance_qualification["max-issue-date"]) {
             return false;
         }
 
-        if (
-            typeof post.data.certificate !== "string"
-            || post.data.certificate === ""
-            || !university_entrance_qualification.certificates.some(certificate => certificate.id === post.data.certificate)
-        ) {
+        if (typeof post.data.certificate !== "string") {
+            return false;
+        }
+        if (post.data.certificate === "") {
+            return false;
+        }
+        if (!university_entrance_qualification.certificates.some(certificate => certificate.id === post.data.certificate)) {
             return false;
         }
 
-        if (
-            typeof post.data["matura-canton"] !== "string"
-            || post.data["matura-canton"] === ""
-            || !university_entrance_qualification.cantons.some(canton => canton.id === post.data["matura-canton"])
-        ) {
+        if (typeof post.data["matura-canton"] !== "string") {
+            return false;
+        }
+        if (post.data["matura-canton"] === "") {
+            return false;
+        }
+        if (!university_entrance_qualification.cantons.some(canton => canton.id === post.data["matura-canton"])) {
             return false;
         }
 
-        if (
-            typeof post.data["upper-secondary-school"] !== "string"
-            || post.data["upper-secondary-school"] === ""
-            || !university_entrance_qualification.schools.some(school => school.id === post.data["upper-secondary-school"])
-        ) {
+        if (typeof post.data["upper-secondary-school"] !== "string") {
+            return false;
+        }
+        if (post.data["upper-secondary-school"] === "") {
+            return false;
+        }
+        if (!university_entrance_qualification.schools.some(school => school.id === post.data["upper-secondary-school"])) {
             return false;
         }
 
-        if (
-            typeof post.data["certificate-country"] !== "string"
-            || post.data["certificate-country"] === ""
-            || !university_entrance_qualification.countries.some(country => country.id === post.data["certificate-country"])
-        ) {
+        if (typeof post.data["certificate-country"] !== "string") {
+            return false;
+        }
+        if (post.data["certificate-country"] === "") {
+            return false;
+        }
+        if (!university_entrance_qualification.countries.some(country => country.id === post.data["certificate-country"])) {
             return false;
         }
 
-        if (
-            typeof post.data["certificate-canton"] !== "string"
-            || post.data["certificate-canton"] === ""
-            || !university_entrance_qualification.cantons.some(canton => canton.id === post.data["certificate-canton"])
-        ) {
+        if (typeof post.data["certificate-canton"] !== "string") {
+            return false;
+        }
+        if (post.data["certificate-canton"] === "") {
+            return false;
+        }
+        if (!university_entrance_qualification.cantons.some(canton => canton.id === post.data["certificate-canton"])) {
             return false;
         }
 
-        if (
-            typeof post.data["certificate-place"] !== "string"
-            || post.data["certificate-place"] === ""
-            || !university_entrance_qualification.places.some(place => place.id === post.data["certificate-place"])
-        ) {
+        if (typeof post.data["certificate-place"] !== "string") {
+            return false;
+        }
+        if (post.data["certificate-place"] === "") {
+            return false;
+        }
+        if (!university_entrance_qualification.places.some(place => place.id === post.data["certificate-place"])) {
             return false;
         }
 
@@ -598,10 +618,7 @@ export class StudiesSelfserviceDemoBackendApi {
      * @returns {Promise<boolean>}
      */
     async #confirmedIdentificationNumber(application, post) {
-        if (
-            application.page !== PAGE_IDENTIFICATION_NUMBER
-            || post.page !== application.page
-        ) {
+        if (application.page !== PAGE_IDENTIFICATION_NUMBER || post.page !== application.page) {
             return false;
         }
 
@@ -634,27 +651,33 @@ export class StudiesSelfserviceDemoBackendApi {
 
         const start = await this.#getStart();
 
-        if (
-            typeof post.data.semester !== "string"
-            || post.data.semester === ""
-            || !start.semesters.some(semester => semester.id === post.data.semester)
-        ) {
+        if (typeof post.data.semester !== "string") {
+            return false;
+        }
+        if (post.data.semester === "") {
+            return false;
+        }
+        if (!start.semesters.some(semester => semester.id === post.data.semester)) {
             return false;
         }
 
-        if (
-            typeof post.data.password !== "string"
-            || post.data.password === ""
-            || post.data.password.length < start["min-password-length"]
-        ) {
+        if (typeof post.data.password !== "string") {
+            return false;
+        }
+        if (post.data.password === "") {
+            return false;
+        }
+        if (post.data.password.length < start["min-password-length"]) {
             return false;
         }
 
-        if (
-            typeof post.data["confirm-password"] !== "string"
-            || post.data["confirm-password"] === ""
-            || post.data["confirm-password"].length < start["min-password-length"]
-        ) {
+        if (typeof post.data["confirm-password"] !== "string") {
+            return false;
+        }
+        if (post.data["confirm-password"] === "") {
+            return false;
+        }
+        if (post.data["confirm-password"].length < start["min-password-length"]) {
             return false;
         }
 
@@ -687,10 +710,7 @@ export class StudiesSelfserviceDemoBackendApi {
      * @returns {Promise<boolean>}
      */
     async #filledPersonalData(application, post) {
-        if (
-            application.page !== PAGE_PERSONAL_DATA
-            || post.page !== application.page
-        ) {
+        if (application.page !== PAGE_PERSONAL_DATA || post.page !== application.page) {
             return false;
         }
 
@@ -700,18 +720,20 @@ export class StudiesSelfserviceDemoBackendApi {
 
         const personal_data = await this.#getPersonalData();
 
-        if (
-            typeof post.data.salutation !== "string"
-            || post.data.salutation === ""
-            || !personal_data.salutations.some(salutation => salutation.id === post.data.salutation)
-        ) {
+        if (typeof post.data.salutation !== "string") {
+            return false;
+        }
+        if (post.data.salutation === "") {
+            return false;
+        }
+        if (!personal_data.salutations.some(salutation => salutation.id === post.data.salutation)) {
             return false;
         }
 
-        if (
-            typeof post.data["first-name"] !== "string"
-            || post.data["first-name"] === ""
-        ) {
+        if (typeof post.data["first-name"] !== "string") {
+            return false;
+        }
+        if (post.data["first-name"] === "") {
             return false;
         }
 
@@ -719,35 +741,34 @@ export class StudiesSelfserviceDemoBackendApi {
             return false;
         }
 
-        if (
-            !Array.isArray(post.data["additional-first-names"])
-            || !post.data["additional-first-names"].every(name => typeof name === "string" && name !== "")
-        ) {
+        if (!Array.isArray(post.data["additional-first-names"])) {
+            return false;
+        }
+        if (!post.data["additional-first-names"].every(name => typeof name === "string" && name !== "")) {
             return false;
         }
 
-        if (
-            typeof post.data["last-name"] !== "string"
-            || post.data["last-name"] === ""
-        ) {
+        if (typeof post.data["last-name"] !== "string") {
+            return false;
+        }
+        if (post.data["last-name"] === "") {
             return false;
         }
 
-        if (
-            typeof post.data["registration-number"] !== "string"
-            || !(
-                post.data["registration-number"] === ""
-                || REGISTRATION_NUMBER_FORMAT.test(post.data["registration-number"])
-            )
-        ) {
+        if (typeof post.data["registration-number"] !== "string") {
+            return false;
+        }
+        if (post.data["registration-number"] !== "" && !REGISTRATION_NUMBER_FORMAT.test(post.data["registration-number"])) {
             return false;
         }
 
-        if (
-            typeof post.data.country !== "string"
-            || post.data.country === ""
-            || !personal_data.countries.some(country => country.id === post.data.country)
-        ) {
+        if (typeof post.data.country !== "string") {
+            return false;
+        }
+        if (post.data.country === "") {
+            return false;
+        }
+        if (!personal_data.countries.some(country => country.id === post.data.country)) {
             return false;
         }
 
@@ -755,133 +776,178 @@ export class StudiesSelfserviceDemoBackendApi {
             return false;
         }
 
-        if (
-            typeof post.data.street !== "string"
-            || post.data.street === ""
-        ) {
+        if (typeof post.data.street !== "string") {
+            return false;
+        }
+        if (post.data.street === "") {
             return false;
         }
 
-        if (
-            typeof post.data["house-number"] !== "number"
-            || post.data["house-number"] < personal_data["min-house-number"]
-            || post.data["house-number"] > personal_data["max-house-number"]
-        ) {
+        if (typeof post.data["house-number"] !== "number") {
+            return false;
+        }
+        if (!Number.isInteger(post.data["house-number"])) {
+            return false;
+        }
+        if (post.data["house-number"] < personal_data["min-house-number"]) {
+            return false;
+        }
+        if (post.data["house-number"] > personal_data["max-house-number"]) {
             return false;
         }
 
         if (typeof post.data["postal-office-box"] !== "string") {
             return false;
         }
-
-        if (
-            typeof post.data["postal-code"] !== "number"
-            || post.data["postal-code"] < personal_data["min-postal-code"]
-            || post.data["postal-code"] > personal_data["max-postal-code"]
-        ) {
+        if (post.data["postal-office-box"] !== "" && !POSTAL_OFFICE_BOX_FORMAT.test(post.data["postal-office-box"])) {
             return false;
         }
 
-        if (
-            typeof post.data.place !== "string"
-            || post.data.place === ""
-            || !personal_data.places.some(place => place.id === post.data.place)
-        ) {
+        if (typeof post.data["postal-code"] !== "number") {
+            return false;
+        }
+        if (!Number.isInteger(post.data["postal-code"])) {
+            return false;
+        }
+        if (post.data["postal-code"] < personal_data["min-postal-code"]) {
+            return false;
+        }
+        if (post.data["postal-code"] > personal_data["max-postal-code"]) {
             return false;
         }
 
-        if (
-            typeof post.data["phone-area-code"] !== "string"
-            || (personal_data["required-phone"] ? post.data["phone-area-code"] === "" : false)
-            || (post.data["phone-area-code"] !== "" && !personal_data["area-codes"].some(area_code => area_code.id === post.data["phone-area-code"]))
-            || (post.data["phone-area-code"] === "" && post.data.phone !== "")
-        ) {
+        if (typeof post.data.place !== "string") {
+            return false;
+        }
+        if (post.data.place === "") {
+            return false;
+        }
+        if (!personal_data.places.some(place => place.id === post.data.place)) {
             return false;
         }
 
-        if (
-            typeof post.data.phone !== "string"
-            || (personal_data["required-phone"] ? post.data.phone === "" : false)
-            || (post.data.phone !== "" && !PHONE_FORMAT.test(post.data.phone))
-            || (post.data["phone-area-code"] !== "" && post.data.phone === "")
-        ) {
+        if (typeof post.data["phone-area-code"] !== "string") {
+            return false;
+        }
+        if (personal_data["required-phone"] && post.data["phone-area-code"] === "") {
+            return false;
+        }
+        if (post.data["phone-area-code"] !== "" && !personal_data["area-codes"].some(area_code => area_code.id === post.data["phone-area-code"])) {
+            return false;
+        }
+        if (post.data["phone-area-code"] === "" && post.data.phone !== "") {
             return false;
         }
 
-        if (
-            typeof post.data["mobile-area-code"] !== "string"
-            || (personal_data["required-phone"] ? post.data["mobile-area-code"] === "" : false)
-            || (post.data["mobile-area-code"] !== "" && !personal_data["area-codes"].some(area_code => area_code.id === post.data["mobile-area-code"]))
-            || (post.data["mobile-area-code"] === "" && post.data.mobile !== "")
-        ) {
+        if (typeof post.data.phone !== "string") {
+            return false;
+        }
+        if (personal_data["required-phone"] && post.data.phone === "") {
+            return false;
+        }
+        if (post.data.phone !== "" && !PHONE_FORMAT.test(post.data.phone)) {
+            return false;
+        }
+        if (post.data["phone-area-code"] !== "" && post.data.phone === "") {
             return false;
         }
 
-        if (
-            typeof post.data.mobile !== "string"
-            || (personal_data["required-phone"] ? post.data.mobile === "" : false)
-            || (post.data.mobile !== "" && !PHONE_FORMAT.test(post.data.mobile))
-            || (post.data["mobile-area-code"] !== "" && post.data.mobile === "")
-        ) {
+        if (typeof post.data["mobile-area-code"] !== "string") {
+            return false;
+        }
+        if (personal_data["required-mobile"] && post.data["mobile-area-code"] === "") {
+            return false;
+        }
+        if (post.data["mobile-area-code"] !== "" && !personal_data["area-codes"].some(area_code => area_code.id === post.data["mobile-area-code"])) {
+            return false;
+        }
+        if (post.data["mobile-area-code"] === "" && post.data.mobile !== "") {
             return false;
         }
 
-        if (
-            typeof post.data.email !== "string"
-            || (personal_data["required-email"] ? post.data.email === "" : false)
-        ) {
+        if (typeof post.data.mobile !== "string") {
+            return false;
+        }
+        if (personal_data["required-mobile"] && post.data.mobile === "") {
+            return false;
+        }
+        if (post.data.mobile !== "" && !PHONE_FORMAT.test(post.data.mobile)) {
+            return false;
+        }
+        if (post.data["mobile-area-code"] !== "" && post.data.mobile === "") {
             return false;
         }
 
-        if (
-            typeof post.data["mother-language"] !== "string"
-            || post.data["mother-language"] === ""
-            || !personal_data.languages.some(language => language.id === post.data["mother-language"])
-        ) {
+        if (typeof post.data.email !== "string") {
+            return false;
+        }
+        if (personal_data["required-email"] && post.data.email === "") {
+            return false;
+        }
+        if (post.data.email !== "" && !EMAIL_FORMAT.test(post.data.email)) {
             return false;
         }
 
-        if (
-            typeof post.data["correspondence-language"] !== "string"
-            || post.data["correspondence-language"] === ""
-            || !personal_data.languages.some(language => language.id === post.data["correspondence-language"])
-        ) {
+        if (typeof post.data["mother-language"] !== "string") {
+            return false;
+        }
+        if (post.data["mother-language"] === "") {
+            return false;
+        }
+        if (!personal_data.languages.some(language => language.id === post.data["mother-language"])) {
             return false;
         }
 
-        if (
-            typeof post.data["birth-date"] !== "string"
-            || post.data["birth-date"] === ""
-            || !BIRTH_DATE_FORMAT.test(post.data["birth-date"])
-            || post.data["birth-date"] < MIN_BIRTH_DATE
-            || post.data["birth-date"] > MAX_BIRTH_DATE
-        ) {
+        if (typeof post.data["correspondence-language"] !== "string") {
+            return false;
+        }
+        if (post.data["correspondence-language"] === "") {
+            return false;
+        }
+        if (!personal_data.languages.some(language => language.id === post.data["correspondence-language"])) {
             return false;
         }
 
-        if (
-            typeof post.data["old-age-survivar-insurance-number"] !== "string"
-            || !(
-                post.data["old-age-survivar-insurance-number"] === ""
-                || OLD_AGE_SURVIVAR_INSURANCE_NUMBER_FORMAT.test(post.data["old-age-survivar-insurance-number"])
-            )
-        ) {
+        if (typeof post.data["birth-date"] !== "string") {
+            return false;
+        }
+        if (post.data["birth-date"] === "") {
+            return false;
+        }
+        if (!BIRTH_DATE_FORMAT.test(post.data["birth-date"])) {
+            return false;
+        }
+        if (post.data["birth-date"] < MIN_BIRTH_DATE) {
+            return false;
+        }
+        if (post.data["birth-date"] > MAX_BIRTH_DATE) {
             return false;
         }
 
-        if (
-            typeof post.data.nationally !== "string"
-            || post.data.nationally === ""
-            || !personal_data.countries.some(country => country.id === post.data.nationally)
-        ) {
+        if (typeof post.data["old-age-survivar-insurance-number"] !== "string") {
+            return false;
+        }
+        if (post.data["old-age-survivar-insurance-number"] !== "" && !OLD_AGE_SURVIVAR_INSURANCE_NUMBER_FORMAT.test(post.data["old-age-survivar-insurance-number"])) {
             return false;
         }
 
-        if (
-            typeof post.data["origin-place"] !== "string"
-            || post.data["origin-place"] === ""
-            || !personal_data.places.some(place => place.id === post.data["origin-place"])
-        ) {
+        if (typeof post.data.nationally !== "string") {
+            return false;
+        }
+        if (post.data.nationally === "") {
+            return false;
+        }
+        if (!personal_data.countries.some(country => country.id === post.data.nationally)) {
+            return false;
+        }
+
+        if (typeof post.data["origin-place"] !== "string") {
+            return false;
+        }
+        if (post.data["origin-place"] === "") {
+            return false;
+        }
+        if (!personal_data.places.some(place => place.id === post.data["origin-place"])) {
             return false;
         }
 
@@ -954,6 +1020,10 @@ export class StudiesSelfserviceDemoBackendApi {
 
             case PAGE_LEGAL:
                 data = await this.#getLegal(
+                    this.#getPost(
+                        application,
+                        PAGE_CHOICE_SUBJECT
+                    ).data,
                     this.#getPost(
                         application,
                         PAGE_INTENDED_DEGREE_PROGRAM
@@ -1184,12 +1254,13 @@ export class StudiesSelfserviceDemoBackendApi {
     }
 
     /**
+     * @param {ChosenSubject} chosen_subject
      * @param {ChosenIntendedDegreeProgram} chosen_intended_degree_program
      * @param {ChosenIntendedDegreeProgram2} chosen_intended_degree_program_2
      * @param {AcceptedLegal | null} values
      * @returns {Promise<Legal>}
      */
-    async #getLegal(chosen_intended_degree_program, chosen_intended_degree_program_2, values = null) {
+    async #getLegal(chosen_subject, chosen_intended_degree_program, chosen_intended_degree_program_2, values = null) {
         const subject = (await this.#getSubjects()).find(_subject => _subject.id === chosen_intended_degree_program.subject);
 
         const _subject = structuredClone(subject);
@@ -1199,6 +1270,7 @@ export class StudiesSelfserviceDemoBackendApi {
             ...await this.#import_json.importJson(
                 `${__dirname}/../Data/Legal/legal.json`
             ),
+            "degree-program": (await this.#getDegreePrograms()).find(degree_program => degree_program.id === chosen_subject["degree-program"]),
             subject: _subject,
             combination: subject.combinations.find(combination => combination.id === chosen_intended_degree_program.combination),
             "single-choice": chosen_intended_degree_program_2["single-choice"],
@@ -1219,6 +1291,7 @@ export class StudiesSelfserviceDemoBackendApi {
             salutations: await this.#getSalutations(),
             "registration-number-format": `${REGISTRATION_NUMBER_FORMAT}`,
             countries: await this.#getCountries(),
+            "postal-office-box-format": `${POSTAL_OFFICE_BOX_FORMAT}`,
             places: await this.#getPlaces(),
             "area-codes": await this.#getAreaCodes(),
             "phone-format": `${PHONE_FORMAT}`,
@@ -1598,18 +1671,20 @@ export class StudiesSelfserviceDemoBackendApi {
 
         const start = await this.#getStart();
 
-        if (
-            typeof post.data["identification-number"] !== "string"
-            || post.data["identification-number"] === ""
-        ) {
+        if (typeof post.data["identification-number"] !== "string") {
+            return false;
+        }
+        if (post.data["identification-number"] === "") {
             return false;
         }
 
-        if (
-            typeof post.data.password !== "string"
-            || post.data.password === ""
-            || post.data.password.length < start["min-password-length"]
-        ) {
+        if (typeof post.data.password !== "string") {
+            return false;
+        }
+        if (post.data.password === "") {
+            return false;
+        }
+        if (post.data.password.length < start["min-password-length"]) {
             return false;
         }
 

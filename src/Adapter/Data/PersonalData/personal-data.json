@@ -6,6 +6,8 @@
     "extra-address-line-example": "c/o",
     "min-house-number": 1,
     "max-house-number": 9999,
+    "postal-office-box-format": "",
+    "postal-office-box-example": "TODO",
     "min-postal-code": 1,
     "max-postal-code": 9999,
     "places": [],
