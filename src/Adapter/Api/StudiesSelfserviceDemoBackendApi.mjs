@@ -13,8 +13,7 @@ import { MIN_END_DATE } from "../Data/PreviousStudies/MIN_END_DATE.mjs";
 import { MIN_ISSUE_DATE } from "../Data/UniversityEntranceQualification/MIN_ISSUE_DATE.mjs";
 import { MIN_START_DATE } from "../Data/PreviousStudies/MIN_START_DATE.mjs";
 import { OLD_AGE_SURVIVAR_INSURANCE_NUMBER_FORMAT } from "../Data/PersonalData/OLD_AGE_SURVIVAR_INSURANCE_NUMBER_FORMAT.mjs";
-import { PHONE_FORMAT } from "../Data/PersonalData/PHONE_FORMAT.mjs";
-import { POSTAL_OFFICE_BOX_FORMAT } from "../Data/PersonalData/POSTAL_OFFICE_BOX_FORMAT.mjs";
+import { PHONE_NUMBER_FORMAT } from "../Data/PersonalData/PHONE_NUMBER_FORMAT.mjs";
 import { REGISTRATION_NUMBER_FORMAT } from "../Data/PersonalData/REGISTRATION_NUMBER_FORMAT.mjs";
 import { dirname, join } from "node:path";
 import { PAGE_CHOICE_SUBJECT, PAGE_COMPLETED, PAGE_CREATE, PAGE_IDENTIFICATION_NUMBER, PAGE_INTENDED_DEGREE_PROGRAM, PAGE_INTENDED_DEGREE_PROGRAM_2, PAGE_LEGAL, PAGE_PERSONAL_DATA, PAGE_PORTRAIT, PAGE_PREVIOUS_STUDIES, PAGE_RESUME, PAGE_START, PAGE_UNIVERSITY_ENTRANCE_QUALIFICATION } from "../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Page/PAGE.mjs";
@@ -934,9 +933,6 @@ export class StudiesSelfserviceDemoBackendApi {
         if (typeof post.data["postal-office-box"] !== "string") {
             return false;
         }
-        if (post.data["postal-office-box"] !== "" && !POSTAL_OFFICE_BOX_FORMAT.test(post.data["postal-office-box"])) {
-            return false;
-        }
 
         if (typeof post.data["postal-code"] !== "number") {
             return false;
@@ -961,56 +957,36 @@ export class StudiesSelfserviceDemoBackendApi {
             return false;
         }
 
-        if (typeof post.data["phone-area-code"] !== "string") {
-            return false;
-        }
-        if (personal_data["required-phone"] && post.data["phone-area-code"] === "") {
-            return false;
-        }
-        if (post.data["phone-area-code"] !== "" && !personal_data["area-codes"].some(area_code => area_code.id === post.data["phone-area-code"])) {
-            return false;
-        }
-        if (post.data["phone-area-code"] === "" && post.data.phone !== "") {
-            return false;
-        }
+        for (const phone_type of [
+            "home",
+            "mobile",
+            "business"
+        ]) {
+            if (typeof post.data[`${phone_type}-phone-area-code`] !== "string") {
+                return false;
+            }
+            if (personal_data[`required-phone-${phone_type}`] && post.data[`${phone_type}-phone-area-code`] === "") {
+                return false;
+            }
+            if (post.data[`${phone_type}-phone-area-code`] !== "" && !personal_data["area-codes"].some(area_code => area_code.id === post.data[`${phone_type}-phone-area-code`])) {
+                return false;
+            }
+            if (post.data[`${phone_type}-phone-area-code`] === "" && post.data[`${phone_type}-phone-number`] !== "") {
+                return false;
+            }
 
-        if (typeof post.data.phone !== "string") {
-            return false;
-        }
-        if (personal_data["required-phone"] && post.data.phone === "") {
-            return false;
-        }
-        if (post.data.phone !== "" && !PHONE_FORMAT.test(post.data.phone)) {
-            return false;
-        }
-        if (post.data["phone-area-code"] !== "" && post.data.phone === "") {
-            return false;
-        }
-
-        if (typeof post.data["mobile-area-code"] !== "string") {
-            return false;
-        }
-        if (personal_data["required-mobile"] && post.data["mobile-area-code"] === "") {
-            return false;
-        }
-        if (post.data["mobile-area-code"] !== "" && !personal_data["area-codes"].some(area_code => area_code.id === post.data["mobile-area-code"])) {
-            return false;
-        }
-        if (post.data["mobile-area-code"] === "" && post.data.mobile !== "") {
-            return false;
-        }
-
-        if (typeof post.data.mobile !== "string") {
-            return false;
-        }
-        if (personal_data["required-mobile"] && post.data.mobile === "") {
-            return false;
-        }
-        if (post.data.mobile !== "" && !PHONE_FORMAT.test(post.data.mobile)) {
-            return false;
-        }
-        if (post.data["mobile-area-code"] !== "" && post.data.mobile === "") {
-            return false;
+            if (typeof post.data[`${phone_type}-phone-number`] !== "string") {
+                return false;
+            }
+            if (personal_data[`required-${phone_type}`] && post.data[`${phone_type}-phone-number`] === "") {
+                return false;
+            }
+            if (post.data[`${phone_type}-phone-number`] !== "" && !PHONE_NUMBER_FORMAT.test(post.data[`${phone_type}-phone-number`])) {
+                return false;
+            }
+            if (post.data[`${phone_type}-phone-area-code`] !== "" && post.data[`${phone_type}-phone-number`] === "") {
+                return false;
+            }
         }
 
         if (typeof post.data.email !== "string") {
@@ -1461,10 +1437,9 @@ export class StudiesSelfserviceDemoBackendApi {
             salutations: await this.#getSalutations(),
             "registration-number-format": `${REGISTRATION_NUMBER_FORMAT}`,
             countries: await this.#getCountries(),
-            "postal-office-box-format": `${POSTAL_OFFICE_BOX_FORMAT}`,
             places: await this.#getPlaces(),
             "area-codes": await this.#getAreaCodes(),
-            "phone-format": `${PHONE_FORMAT}`,
+            "phone-number-format": `${PHONE_NUMBER_FORMAT}`,
             languages: await this.#getLanguages(),
             "min-birth-date": MIN_BIRTH_DATE,
             "max-birth-date": MAX_BIRTH_DATE,
