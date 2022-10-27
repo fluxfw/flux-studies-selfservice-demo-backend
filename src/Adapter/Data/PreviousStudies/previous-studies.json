@@ -1,3 +1,15 @@
 {
+    "certificate-types": [],
+    "min-start-date": 0,
+    "max-start-date": 0,
+    "min-end-date": 0,
+    "max-end-date": 0,
+    "schools": [],
+    "min-semesters": 1,
+    "max-semesters": 99,
+    "degrees": [],
+    "countries": [],
+    "cantons": [],
+    "places": [],
     "values": null
 }

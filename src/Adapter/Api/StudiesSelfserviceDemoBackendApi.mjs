@@ -5,9 +5,13 @@ import { EMAIL_FORMAT } from "../Data/PersonalData/EMAIL_FORMAT.mjs";
 import express from "express";
 import { fileURLToPath } from "node:url";
 import { MAX_BIRTH_DATE } from "../Data/PersonalData/MAX_BIRTH_DATE.mjs";
+import { MAX_END_DATE } from "../Data/PreviousStudies/MAX_END_DATE.mjs";
 import { MAX_ISSUE_DATE } from "../Data/UniversityEntranceQualification/MAX_ISSUE_DATE.mjs";
+import { MAX_START_DATE } from "../Data/PreviousStudies/MAX_START_DATE.mjs";
 import { MIN_BIRTH_DATE } from "../Data/PersonalData/MIN_BIRTH_DATE.mjs";
+import { MIN_END_DATE } from "../Data/PreviousStudies/MIN_END_DATE.mjs";
 import { MIN_ISSUE_DATE } from "../Data/UniversityEntranceQualification/MIN_ISSUE_DATE.mjs";
+import { MIN_START_DATE } from "../Data/PreviousStudies/MIN_START_DATE.mjs";
 import { OLD_AGE_SURVIVAR_INSURANCE_NUMBER_FORMAT } from "../Data/PersonalData/OLD_AGE_SURVIVAR_INSURANCE_NUMBER_FORMAT.mjs";
 import { PHONE_FORMAT } from "../Data/PersonalData/PHONE_FORMAT.mjs";
 import { POSTAL_OFFICE_BOX_FORMAT } from "../Data/PersonalData/POSTAL_OFFICE_BOX_FORMAT.mjs";
@@ -33,6 +37,7 @@ import { PAGE_CHOICE_SUBJECT, PAGE_COMPLETED, PAGE_CREATE, PAGE_IDENTIFICATION_N
 /** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/IdentificationNumber/ConfirmedIdentificationNumber.mjs").ConfirmedIdentificationNumber} ConfirmedIdentificationNumber */
 /** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Country/Country.mjs").Country} Country */
 /** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Create/Create.mjs").Create} Create */
+/** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Degree/Degree.mjs").Degree} Degree */
 /** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/DegreeProgram/DegreeProgram.mjs").DegreeProgram} DegreeProgram */
 /** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/PersonalData/FilledPersonalData.mjs").FilledPersonalData} FilledPersonalData */
 /** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/IdentificationNumber/IdentificationNumber.mjs").IdentificationNumber} IdentificationNumber */
@@ -431,6 +436,131 @@ export class StudiesSelfserviceDemoBackendApi {
         }
 
         if (typeof post.data !== "object") {
+            return false;
+        }
+
+        const previous_studies = await this.#getPreviousStudies();
+
+        if (!Array.isArray(post.data["previous-studies"])) {
+            return false;
+        }
+        if (!post.data["previous-studies"].every(previous_study => {
+            if (typeof previous_study !== "object") {
+                return false;
+            }
+
+            if (typeof previous_study["certificate-type"] !== "string") {
+                return false;
+            }
+            if (previous_study["certificate-type"] === "") {
+                return false;
+            }
+            if (!previous_studies["certificate-types"].some(certificate_type => certificate_type.id === previous_study["certificate-type"])) {
+                return false;
+            }
+
+            if (typeof previous_study["start-date"] !== "number") {
+                return false;
+            }
+            if (!Number.isInteger(previous_study["start-date"])) {
+                return false;
+            }
+            if (previous_study["start-date"] < previous_studies["min-start-date"]) {
+                return false;
+            }
+            if (previous_study["start-date"] > previous_studies["max-start-date"]) {
+                return false;
+            }
+
+            if (typeof previous_study["end-date"] !== "number") {
+                return false;
+            }
+            if (!Number.isInteger(previous_study["end-date"])) {
+                return false;
+            }
+            if (previous_study["end-date"] < previous_studies["min-end-date"]) {
+                return false;
+            }
+            if (previous_study["end-date"] > previous_studies["max-end-date"]) {
+                return false;
+            }
+
+            if (previous_study["end-date"] < previous_study["start-date"]) {
+                return false;
+            }
+
+            if (typeof previous_study.university !== "string") {
+                return false;
+            }
+            if (previous_study.university === "") {
+                return false;
+            }
+            if (!previous_studies.schools.some(school => school.id === previous_study.university)) {
+                return false;
+            }
+
+            if (typeof previous_study.subject !== "string") {
+                return false;
+            }
+            if (previous_study.subject === "") {
+                return false;
+            }
+
+            if (typeof previous_study.semesters !== "number") {
+                return false;
+            }
+            if (!Number.isInteger(previous_study.semesters)) {
+                return false;
+            }
+            if (previous_study.semesters < previous_studies["min-semesters"]) {
+                return false;
+            }
+            if (previous_study.semesters > previous_studies["max-semesters"]) {
+                return false;
+            }
+
+            if (typeof previous_study.degree !== "string") {
+                return false;
+            }
+            if (previous_study.degree === "") {
+                return false;
+            }
+            if (!previous_studies.degrees.some(degree => degree.id === previous_study.degree)) {
+                return false;
+            }
+
+            if (typeof previous_study["certificate-country"] !== "string") {
+                return false;
+            }
+            if (previous_study["certificate-country"] === "") {
+                return false;
+            }
+            if (!previous_studies.countries.some(country => country.id === previous_study["certificate-country"])) {
+                return false;
+            }
+
+            if (typeof previous_study["certificate-canton"] !== "string") {
+                return false;
+            }
+            if (previous_study["certificate-canton"] === "") {
+                return false;
+            }
+            if (!previous_studies.cantons.some(canton => canton.id === previous_study["certificate-canton"])) {
+                return false;
+            }
+
+            if (typeof previous_study["certificate-place"] !== "string") {
+                return false;
+            }
+            if (previous_study["certificate-place"] === "") {
+                return false;
+            }
+            if (!previous_studies.places.some(place => place.id === previous_study["certificate-place"])) {
+                return false;
+            }
+
+            return true;
+        })) {
             return false;
         }
 
@@ -1184,6 +1314,15 @@ export class StudiesSelfserviceDemoBackendApi {
     }
 
     /**
+     * @returns {Promise<Degree[]>}
+     */
+    async #getDegrees() {
+        return this.#import_json.importJson(
+            `${__dirname}/../Data/Degree/degrees.json`
+        );
+    }
+
+    /**
      * @returns {Promise<ExpressServerApi>}
      */
     async #getExpressServerApi() {
@@ -1334,6 +1473,16 @@ export class StudiesSelfserviceDemoBackendApi {
             ...await this.#import_json.importJson(
                 `${__dirname}/../Data/PreviousStudies/previous-studies.json`
             ),
+            "certificate-types": await this.#getCertificateTypes(),
+            "min-start-date": MIN_START_DATE,
+            "max-start-date": MAX_START_DATE,
+            "min-end-date": MIN_END_DATE,
+            "max-end-date": MAX_END_DATE,
+            schools: await this.#getSchools(),
+            degrees: await this.#getDegrees(),
+            countries: await this.#getCountries(),
+            cantons: await this.#getCantons(),
+            places: await this.#getPlaces(),
             values
         };
     }
