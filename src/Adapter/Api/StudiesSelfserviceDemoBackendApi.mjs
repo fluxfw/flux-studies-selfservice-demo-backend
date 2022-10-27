@@ -22,12 +22,12 @@ import { PAGE_CHOICE_SUBJECT, PAGE_COMPLETED, PAGE_CREATE, PAGE_IDENTIFICATION_N
 /** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Legal/AcceptedLegal.mjs").AcceptedLegal} AcceptedLegal */
 /** @typedef {import("../Application/Application.mjs").Application} Application */
 /** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/AreaCode/AreaCode.mjs").AreaCode} AreaCode */
-/** @typedef {import("../../../node_modules/flux-json-api/src/Adapter/ImportJson/AssertImportJson.mjs").AssertImportJson} AssertImportJson */
 /** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Canton/Canton.mjs").Canton} Canton */
 /** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Certificate/Certificate.mjs").Certificate} Certificate */
 /** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/CertificateType/CertificateType.mjs").CertificateType} CertificateType */
 /** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/ChoiceSubject/ChoiceSubject.mjs").ChoiceSubject} ChoiceSubject */
 /** @typedef {import("../../../node_modules/flux-express-server-api/src/Adapter/Api/ExpressServerApi.mjs").ExpressServerApi} ExpressServerApi */
+/** @typedef {import("../../../node_modules/flux-fetch-api/src/Adapter/Api/FetchApi.mjs").FetchApi} FetchApi */
 /** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/IntendedDegreeProgram/ChosenIntendedDegreeProgram.mjs").ChosenIntendedDegreeProgram} ChosenIntendedDegreeProgram */
 /** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/IntendedDegreeProgram2/ChosenIntendedDegreeProgram2.mjs").ChosenIntendedDegreeProgram2} ChosenIntendedDegreeProgram2 */
 /** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Portrait/ChosenPortrait.mjs").ChosenPortrait} ChosenPortrait */
@@ -43,6 +43,7 @@ import { PAGE_CHOICE_SUBJECT, PAGE_COMPLETED, PAGE_CREATE, PAGE_IDENTIFICATION_N
 /** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/IdentificationNumber/IdentificationNumber.mjs").IdentificationNumber} IdentificationNumber */
 /** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/IntendedDegreeProgram/IntendedDegreeProgram.mjs").IntendedDegreeProgram} IntendedDegreeProgram */
 /** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/IntendedDegreeProgram2/IntendedDegreeProgram2.mjs").IntendedDegreeProgram2} IntendedDegreeProgram2 */
+/** @typedef {import("../../../node_modules/flux-json-api/src/Adapter/Api/JsonApi.mjs").JsonApi} JsonApi */
 /** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Language/Language.mjs").Language} Language */
 /** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Legal/Legal.mjs").Legal} Legal */
 /** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/PersonalData/PersonalData.mjs").PersonalData} PersonalData */
@@ -73,9 +74,13 @@ export class StudiesSelfserviceDemoBackendApi {
      */
     #express_server_api = null;
     /**
-     * @type {AssertImportJson | null}
+     * @type {FetchApi | null}
      */
-    #import_json = null;
+    #fetch_api = null;
+    /**
+     * @type {JsonApi | null}
+     */
+    #json_api = null;
     /**
      * @type {ShutdownHandler | null}
      */
@@ -106,16 +111,16 @@ export class StudiesSelfserviceDemoBackendApi {
         this.#shutdown_handler_api ??= await this.#getShutdownHandlerApi();
         this.#shutdown_handler ??= this.#shutdown_handler_api.getShutdownHandler();
 
-        this.#import_json ??= (await import("../../../node_modules/flux-json-api/src/Adapter/ImportJson/AssertImportJson.mjs")).AssertImportJson.new();
+        this.#fetch_api ??= await this.#getFetchApi();
 
-        this.#express_server_api ??= await this.#getExpressServerApi();
+        this.#json_api ??= await this.#getJsonApi();
     }
 
     /**
      * @returns {Promise<void>}
      */
     async runServer() {
-        await this.#express_server_api.runExpressServer(
+        await (await this.#getExpressServerApi()).runExpressServer(
             async () => this.#getRouter()
         );
     }
@@ -1249,7 +1254,7 @@ export class StudiesSelfserviceDemoBackendApi {
      * @returns {Promise<AreaCode[]>}
      */
     async #getAreaCodes() {
-        return this.#import_json.importJson(
+        return this.#json_api.importJson(
             `${__dirname}/../Data/AreaCode/area-codes.json`
         );
     }
@@ -1258,7 +1263,7 @@ export class StudiesSelfserviceDemoBackendApi {
      * @returns {Promise<Canton[]>}
      */
     async #getCantons() {
-        return this.#import_json.importJson(
+        return this.#json_api.importJson(
             `${__dirname}/../Data/Canton/cantons.json`
         );
     }
@@ -1267,7 +1272,7 @@ export class StudiesSelfserviceDemoBackendApi {
      * @returns {Promise<Certificate[]>}
      */
     async #getCertificates() {
-        return this.#import_json.importJson(
+        return this.#json_api.importJson(
             `${__dirname}/../Data/Certificate/certificates.json`
         );
     }
@@ -1276,7 +1281,7 @@ export class StudiesSelfserviceDemoBackendApi {
      * @returns {Promise<CertificateType[]>}
      */
     async #getCertificateTypes() {
-        return this.#import_json.importJson(
+        return this.#json_api.importJson(
             `${__dirname}/../Data/CertificateType/certificate-types.json`
         );
     }
@@ -1287,7 +1292,7 @@ export class StudiesSelfserviceDemoBackendApi {
      */
     async #getChoiceSubject(values = null) {
         return {
-            ...await this.#import_json.importJson(
+            ...await this.#json_api.importJson(
                 `${__dirname}/../Data/ChoiceSubject/choice-subject.json`
             ),
             "degree-programs": await this.#getDegreePrograms(),
@@ -1299,7 +1304,7 @@ export class StudiesSelfserviceDemoBackendApi {
      * @returns {Promise<Country[]>}
      */
     async #getCountries() {
-        return this.#import_json.importJson(
+        return this.#json_api.importJson(
             `${__dirname}/../Data/Country/countries.json`
         );
     }
@@ -1308,7 +1313,7 @@ export class StudiesSelfserviceDemoBackendApi {
      * @returns {Promise<DegreeProgram[]>}
      */
     async #getDegreePrograms() {
-        return this.#import_json.importJson(
+        return this.#json_api.importJson(
             `${__dirname}/../Data/DegreeProgram/degree-programs.json`
         );
     }
@@ -1317,7 +1322,7 @@ export class StudiesSelfserviceDemoBackendApi {
      * @returns {Promise<Degree[]>}
      */
     async #getDegrees() {
-        return this.#import_json.importJson(
+        return this.#json_api.importJson(
             `${__dirname}/../Data/Degree/degrees.json`
         );
     }
@@ -1326,13 +1331,26 @@ export class StudiesSelfserviceDemoBackendApi {
      * @returns {Promise<ExpressServerApi>}
      */
     async #getExpressServerApi() {
-        const express_server = (await import("../../../node_modules/flux-express-server-api/src/Adapter/Api/ExpressServerApi.mjs")).ExpressServerApi.new(
-            this.#shutdown_handler
-        );
+        if (this.#express_server_api === null) {
+            this.#express_server_api ??= (await import("../../../node_modules/flux-express-server-api/src/Adapter/Api/ExpressServerApi.mjs")).ExpressServerApi.new(
+                this.#shutdown_handler
+            );
 
-        await express_server.init();
+            await this.#express_server_api.init();
+        }
 
-        return express_server;
+        return this.#express_server_api;
+    }
+
+    /**
+     * @returns {Promise<FetchApi>}
+     */
+    async #getFetchApi() {
+        const fetch_api = (await import("../../../node_modules/flux-fetch-api/src/Adapter/Api/FetchApi.mjs")).FetchApi.new();
+
+        await fetch_api.init();
+
+        return fetch_api;
     }
 
     /**
@@ -1341,7 +1359,7 @@ export class StudiesSelfserviceDemoBackendApi {
      */
     async #getIdentificationNumber(identification_number) {
         return {
-            ...await this.#import_json.importJson(
+            ...await this.#json_api.importJson(
                 `${__dirname}/../Data/IdentificationNumber/identification-number.json`
             ),
             "identification-number": identification_number
@@ -1354,7 +1372,7 @@ export class StudiesSelfserviceDemoBackendApi {
      */
     async #getIntendedDegreeProgram(values = null) {
         return {
-            ...await this.#import_json.importJson(
+            ...await this.#json_api.importJson(
                 `${__dirname}/../Data/IntendedDegreeProgram/intended-degree-program.json`
             ),
             subjects: await this.#getSubjects(),
@@ -1374,7 +1392,7 @@ export class StudiesSelfserviceDemoBackendApi {
         delete _subject.combinations;
 
         return {
-            ...await this.#import_json.importJson(
+            ...await this.#json_api.importJson(
                 `${__dirname}/../Data/IntendedDegreeProgram2/intended-degree-program-2.json`
             ),
             subject: _subject,
@@ -1384,10 +1402,23 @@ export class StudiesSelfserviceDemoBackendApi {
     }
 
     /**
+     * @returns {Promise<JsonApi>}
+     */
+    async #getJsonApi() {
+        const json_api = (await import("../../../node_modules/flux-json-api/src/Adapter/Api/JsonApi.mjs")).JsonApi.new(
+            this.#fetch_api
+        );
+
+        await json_api.init();
+
+        return json_api;
+    }
+
+    /**
      * @returns {Promise<Language[]>}
      */
     async #getLanguages() {
-        return this.#import_json.importJson(
+        return this.#json_api.importJson(
             `${__dirname}/../Data/Language/languages.json`
         );
     }
@@ -1406,7 +1437,7 @@ export class StudiesSelfserviceDemoBackendApi {
         delete _subject.combinations;
 
         return {
-            ...await this.#import_json.importJson(
+            ...await this.#json_api.importJson(
                 `${__dirname}/../Data/Legal/legal.json`
             ),
             "degree-program": (await this.#getDegreePrograms()).find(degree_program => degree_program.id === chosen_subject["degree-program"]),
@@ -1424,7 +1455,7 @@ export class StudiesSelfserviceDemoBackendApi {
      */
     async #getPersonalData(values = null) {
         return {
-            ...await this.#import_json.importJson(
+            ...await this.#json_api.importJson(
                 `${__dirname}/../Data/PersonalData/personal-data.json`
             ),
             salutations: await this.#getSalutations(),
@@ -1446,7 +1477,7 @@ export class StudiesSelfserviceDemoBackendApi {
      * @returns {Promise<Place[]>}
      */
     async #getPlaces() {
-        return this.#import_json.importJson(
+        return this.#json_api.importJson(
             `${__dirname}/../Data/Place/places.json`
         );
     }
@@ -1457,7 +1488,7 @@ export class StudiesSelfserviceDemoBackendApi {
      */
     async #getPortrait(values = null) {
         return {
-            ...await this.#import_json.importJson(
+            ...await this.#json_api.importJson(
                 `${__dirname}/../Data/Portrait/portrait.json`
             ),
             values
@@ -1470,7 +1501,7 @@ export class StudiesSelfserviceDemoBackendApi {
      */
     async #getPreviousStudies(values = null) {
         return {
-            ...await this.#import_json.importJson(
+            ...await this.#json_api.importJson(
                 `${__dirname}/../Data/PreviousStudies/previous-studies.json`
             ),
             "certificate-types": await this.#getCertificateTypes(),
@@ -1577,7 +1608,7 @@ export class StudiesSelfserviceDemoBackendApi {
      * @returns {Promise<Salutation[]>}
      */
     async #getSalutations() {
-        return this.#import_json.importJson(
+        return this.#json_api.importJson(
             `${__dirname}/../Data/Salutation/salutations.json`
         );
     }
@@ -1586,7 +1617,7 @@ export class StudiesSelfserviceDemoBackendApi {
      * @returns {Promise<School[]>}
      */
     async #getSchools() {
-        return this.#import_json.importJson(
+        return this.#json_api.importJson(
             `${__dirname}/../Data/School/schools.json`
         );
     }
@@ -1595,7 +1626,7 @@ export class StudiesSelfserviceDemoBackendApi {
      * @returns {Promise<Semester[]>}
      */
     async #getSemesters() {
-        return this.#import_json.importJson(
+        return this.#json_api.importJson(
             `${__dirname}/../Data/Semester/semesters.json`
         );
     }
@@ -1616,7 +1647,7 @@ export class StudiesSelfserviceDemoBackendApi {
      */
     async #getStart() {
         return {
-            ...await this.#import_json.importJson(
+            ...await this.#json_api.importJson(
                 `${__dirname}/../Data/Start/start.json`
             ),
             semesters: await this.#getSemesters()
@@ -1627,7 +1658,7 @@ export class StudiesSelfserviceDemoBackendApi {
      * @returns {Promise<SubjectWithCombinations[]>}
      */
     async #getSubjects() {
-        return this.#import_json.importJson(
+        return this.#json_api.importJson(
             `${__dirname}/../Data/Subject/subjects.json`
         );
     }
@@ -1638,7 +1669,7 @@ export class StudiesSelfserviceDemoBackendApi {
      */
     async #getUniversityEntranceQualification(values = null) {
         return {
-            ...await this.#import_json.importJson(
+            ...await this.#json_api.importJson(
                 `${__dirname}/../Data/UniversityEntranceQualification/university-entrance-qualification.json`
             ),
             "certificate-types": await this.#getCertificateTypes(),
