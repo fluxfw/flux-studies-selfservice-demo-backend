@@ -6,9 +6,16 @@ Changes:
 
 \-
 
+## v2022-10-27-1-alpha
+
+Changes:
+
+- Previous studies page
+
 ## v2022-10-25-1-alpha
 
 Changes:
+
 - More validation
 
 ## v2022-10-24-1-alpha
