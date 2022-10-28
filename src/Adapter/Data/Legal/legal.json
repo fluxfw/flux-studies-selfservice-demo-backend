@@ -4,7 +4,11 @@
     "combination": {},
     "single-choice": null,
     "multiple-choice": null,
-    "agb": "TODO",
+    "agb-title": "AGB",
+    "agb-links": {
+        "de": "https://link-to-agb/de",
+        "en": "https://link-to-agb/en"
+    },
     "max-comments-length": 2000,
     "values": null
 }

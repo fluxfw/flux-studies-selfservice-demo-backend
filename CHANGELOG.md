@@ -6,6 +6,13 @@ Changes:
 
 \-
 
+## v2022-10-28-2-alpha
+
+Changes:
+
+- Multiple previous studies
+- AGB and photo criteria links
+
 ## v2022-10-28-1-alpha
 
 Changes:

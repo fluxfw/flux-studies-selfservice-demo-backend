@@ -1,5 +1,8 @@
 {
     "required-photo": false,
-    "criteria": "TODO",
+    "photo-criteria-links": {
+        "de": "https://link-to-photo-criteria/de",
+        "en": "https://link-to-photo-criteria/en"
+    },
     "values": null
 }
