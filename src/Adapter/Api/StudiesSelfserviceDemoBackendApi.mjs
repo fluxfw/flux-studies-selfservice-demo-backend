@@ -443,6 +443,9 @@ export class StudiesSelfserviceDemoBackendApi {
         if (!Array.isArray(post.data["previous-studies"])) {
             return false;
         }
+        if (post.data["previous-studies"].length === 0) {
+            return false;
+        }
         if (!post.data["previous-studies"].every(previous_study => {
             if (typeof previous_study !== "object") {
                 return false;
