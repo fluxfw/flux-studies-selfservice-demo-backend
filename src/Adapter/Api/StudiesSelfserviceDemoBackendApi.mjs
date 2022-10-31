@@ -16,50 +16,50 @@ import { OLD_AGE_SURVIVAR_INSURANCE_NUMBER_FORMAT } from "../Data/PersonalData/O
 import { PHONE_NUMBER_FORMAT } from "../Data/PersonalData/PHONE_NUMBER_FORMAT.mjs";
 import { REGISTRATION_NUMBER_FORMAT } from "../Data/PersonalData/REGISTRATION_NUMBER_FORMAT.mjs";
 import { dirname, join } from "node:path";
-import { PAGE_CHOICE_SUBJECT, PAGE_COMPLETED, PAGE_CREATE, PAGE_IDENTIFICATION_NUMBER, PAGE_INTENDED_DEGREE_PROGRAM, PAGE_INTENDED_DEGREE_PROGRAM_2, PAGE_LEGAL, PAGE_PERSONAL_DATA, PAGE_PORTRAIT, PAGE_PREVIOUS_STUDIES, PAGE_RESUME, PAGE_START, PAGE_UNIVERSITY_ENTRANCE_QUALIFICATION } from "../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Page/PAGE.mjs";
+import { PAGE_CHOICE_SUBJECT, PAGE_COMPLETED, PAGE_CREATE, PAGE_IDENTIFICATION_NUMBER, PAGE_INTENDED_DEGREE_PROGRAM, PAGE_INTENDED_DEGREE_PROGRAM_2, PAGE_LEGAL, PAGE_PERSONAL_DATA, PAGE_PORTRAIT, PAGE_PREVIOUS_STUDIES, PAGE_RESUME, PAGE_START, PAGE_UNIVERSITY_ENTRANCE_QUALIFICATION } from "../../../node_modules/flux-studies-selfservice-frontend/Adapter/Page/PAGE.mjs";
 
-/** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Legal/AcceptedLegal.mjs").AcceptedLegal} AcceptedLegal */
+/** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/Adapter/Legal/AcceptedLegal.mjs").AcceptedLegal} AcceptedLegal */
 /** @typedef {import("../Application/Application.mjs").Application} Application */
-/** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/AreaCode/AreaCode.mjs").AreaCode} AreaCode */
-/** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Canton/Canton.mjs").Canton} Canton */
-/** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Certificate/Certificate.mjs").Certificate} Certificate */
-/** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/CertificateType/CertificateType.mjs").CertificateType} CertificateType */
-/** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/ChoiceSubject/ChoiceSubject.mjs").ChoiceSubject} ChoiceSubject */
+/** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/Adapter/AreaCode/AreaCode.mjs").AreaCode} AreaCode */
+/** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/Adapter/Canton/Canton.mjs").Canton} Canton */
+/** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/Adapter/Certificate/Certificate.mjs").Certificate} Certificate */
+/** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/Adapter/CertificateType/CertificateType.mjs").CertificateType} CertificateType */
+/** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/Adapter/ChoiceSubject/ChoiceSubject.mjs").ChoiceSubject} ChoiceSubject */
 /** @typedef {import("../../../node_modules/flux-express-server-api/src/Adapter/Api/ExpressServerApi.mjs").ExpressServerApi} ExpressServerApi */
 /** @typedef {import("../../../node_modules/flux-fetch-api/src/Adapter/Api/FetchApi.mjs").FetchApi} FetchApi */
-/** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/IntendedDegreeProgram/ChosenIntendedDegreeProgram.mjs").ChosenIntendedDegreeProgram} ChosenIntendedDegreeProgram */
-/** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/IntendedDegreeProgram2/ChosenIntendedDegreeProgram2.mjs").ChosenIntendedDegreeProgram2} ChosenIntendedDegreeProgram2 */
-/** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Portrait/ChosenPortrait.mjs").ChosenPortrait} ChosenPortrait */
-/** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/PreviousStudies/ChosenPreviousStudies.mjs").ChosenPreviousStudies} ChosenPreviousStudies */
-/** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/ChoiceSubject/ChosenSubject.mjs").ChosenSubject} ChosenSubject */
-/** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/UniversityEntranceQualification/ChosenUniversityEntranceQualification.mjs").ChosenUniversityEntranceQualification} ChosenUniversityEntranceQualification */
-/** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/IdentificationNumber/ConfirmedIdentificationNumber.mjs").ConfirmedIdentificationNumber} ConfirmedIdentificationNumber */
-/** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Country/Country.mjs").Country} Country */
-/** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Create/Create.mjs").Create} Create */
-/** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Degree/Degree.mjs").Degree} Degree */
-/** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/DegreeProgram/DegreeProgram.mjs").DegreeProgram} DegreeProgram */
-/** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/PersonalData/FilledPersonalData.mjs").FilledPersonalData} FilledPersonalData */
-/** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/IdentificationNumber/IdentificationNumber.mjs").IdentificationNumber} IdentificationNumber */
-/** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/IntendedDegreeProgram/IntendedDegreeProgram.mjs").IntendedDegreeProgram} IntendedDegreeProgram */
-/** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/IntendedDegreeProgram2/IntendedDegreeProgram2.mjs").IntendedDegreeProgram2} IntendedDegreeProgram2 */
+/** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/Adapter/IntendedDegreeProgram/ChosenIntendedDegreeProgram.mjs").ChosenIntendedDegreeProgram} ChosenIntendedDegreeProgram */
+/** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/Adapter/IntendedDegreeProgram2/ChosenIntendedDegreeProgram2.mjs").ChosenIntendedDegreeProgram2} ChosenIntendedDegreeProgram2 */
+/** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/Adapter/Portrait/ChosenPortrait.mjs").ChosenPortrait} ChosenPortrait */
+/** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/Adapter/PreviousStudies/ChosenPreviousStudies.mjs").ChosenPreviousStudies} ChosenPreviousStudies */
+/** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/Adapter/ChoiceSubject/ChosenSubject.mjs").ChosenSubject} ChosenSubject */
+/** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/Adapter/UniversityEntranceQualification/ChosenUniversityEntranceQualification.mjs").ChosenUniversityEntranceQualification} ChosenUniversityEntranceQualification */
+/** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/Adapter/IdentificationNumber/ConfirmedIdentificationNumber.mjs").ConfirmedIdentificationNumber} ConfirmedIdentificationNumber */
+/** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/Adapter/Country/Country.mjs").Country} Country */
+/** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/Adapter/Create/Create.mjs").Create} Create */
+/** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/Adapter/Degree/Degree.mjs").Degree} Degree */
+/** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/Adapter/DegreeProgram/DegreeProgram.mjs").DegreeProgram} DegreeProgram */
+/** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/Adapter/PersonalData/FilledPersonalData.mjs").FilledPersonalData} FilledPersonalData */
+/** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/Adapter/IdentificationNumber/IdentificationNumber.mjs").IdentificationNumber} IdentificationNumber */
+/** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/Adapter/IntendedDegreeProgram/IntendedDegreeProgram.mjs").IntendedDegreeProgram} IntendedDegreeProgram */
+/** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/Adapter/IntendedDegreeProgram2/IntendedDegreeProgram2.mjs").IntendedDegreeProgram2} IntendedDegreeProgram2 */
 /** @typedef {import("../../../node_modules/flux-json-api/src/Adapter/Api/JsonApi.mjs").JsonApi} JsonApi */
-/** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Language/Language.mjs").Language} Language */
-/** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Legal/Legal.mjs").Legal} Legal */
-/** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/PersonalData/PersonalData.mjs").PersonalData} PersonalData */
-/** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Place/Place.mjs").Place} Place */
-/** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Portrait/Portrait.mjs").Portrait} Portrait */
-/** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/PreviousStudies/PreviousStudies.mjs").PreviousStudies} PreviousStudies */
-/** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Post/Post.mjs").Post} Post */
+/** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/Adapter/Language/Language.mjs").Language} Language */
+/** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/Adapter/Legal/Legal.mjs").Legal} Legal */
+/** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/Adapter/PersonalData/PersonalData.mjs").PersonalData} PersonalData */
+/** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/Adapter/Place/Place.mjs").Place} Place */
+/** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/Adapter/Portrait/Portrait.mjs").Portrait} Portrait */
+/** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/Adapter/PreviousStudies/PreviousStudies.mjs").PreviousStudies} PreviousStudies */
+/** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/Adapter/Post/Post.mjs").Post} Post */
 /** @typedef {import("../Response/Response.mjs").Response} Response */
-/** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Resume/Resume.mjs").Resume} Resume */
-/** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Salutation/Salutation.mjs").Salutation} Salutation */
-/** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/School/School.mjs").School} School */
-/** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Semester/Semester.mjs").Semester} Semester */
+/** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/Adapter/Resume/Resume.mjs").Resume} Resume */
+/** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/Adapter/Salutation/Salutation.mjs").Salutation} Salutation */
+/** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/Adapter/School/School.mjs").School} School */
+/** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/Adapter/Semester/Semester.mjs").Semester} Semester */
 /** @typedef {import("../../../node_modules/flux-shutdown-handler-api/src/Adapter/ShutdownHandler/ShutdownHandler.mjs").ShutdownHandler} ShutdownHandler */
 /** @typedef {import("../../../node_modules/flux-shutdown-handler-api/src/Adapter/Api/ShutdownHandlerApi.mjs").ShutdownHandlerApi} ShutdownHandlerApi */
-/** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Start/Start.mjs").Start} Start */
-/** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/Subject/SubjectWithCombinations.mjs").SubjectWithCombinations} SubjectWithCombinations */
-/** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/src/Adapter/UniversityEntranceQualification/UniversityEntranceQualification.mjs").UniversityEntranceQualification} UniversityEntranceQualification */
+/** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/Adapter/Start/Start.mjs").Start} Start */
+/** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/Adapter/Subject/SubjectWithCombinations.mjs").SubjectWithCombinations} SubjectWithCombinations */
+/** @typedef {import("../../../node_modules/flux-studies-selfservice-frontend/Adapter/UniversityEntranceQualification/UniversityEntranceQualification.mjs").UniversityEntranceQualification} UniversityEntranceQualification */
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -1576,7 +1576,7 @@ export class StudiesSelfserviceDemoBackendApi {
             }
         });
 
-        router.use("/", express.static(join(__dirname, "..", "..", "..", "node_modules", "flux-studies-selfservice-frontend", "src")));
+        router.use("/", express.static(join(__dirname, "..", "..", "..", "node_modules", "flux-studies-selfservice-frontend")));
 
         return router;
     }

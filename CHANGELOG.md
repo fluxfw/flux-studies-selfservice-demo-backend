@@ -6,6 +6,13 @@ Changes:
 
 \-
 
+## v2022-10-31-1
+
+Changes:
+
+- Frontend web root build
+- Remove `alpha`
+
 ## v2022-10-28-2-alpha
 
 Changes:
