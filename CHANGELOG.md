@@ -6,6 +6,12 @@ Changes:
 
 \-
 
+## v2022-11-02-1
+
+Changes:
+
+- Improved crop photo
+
 ## v2022-11-01-1
 
 Changes:
