@@ -6,6 +6,12 @@ Changes:
 
 \-
 
+## v2022-11-03-2
+
+Changes:
+
+- de localization
+
 ## v2022-11-03-1
 
 Changes:
