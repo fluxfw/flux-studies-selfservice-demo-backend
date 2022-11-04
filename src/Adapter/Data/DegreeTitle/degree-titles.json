@@ -1,0 +1,23 @@
+[
+    {
+        "id": "degree_title_1",
+        "label": {
+            "en": "Title degree 1",
+            "de": "Abschluss 1"
+        }
+    },
+    {
+        "id": "degree_title_2",
+        "label": {
+            "en": "Title degree 2",
+            "de": "Abschluss 2"
+        }
+    },
+    {
+        "id": "degree_title_3",
+        "label": {
+            "en": "Title degree 3",
+            "de": "Abschluss 3"
+        }
+    }
+]

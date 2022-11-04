@@ -1,14 +1,23 @@
 [
     {
         "id": "country_1",
-        "label": "Country 1"
+        "label": {
+            "en": "Country 1",
+            "de": "Land 1"
+        }
     },
     {
         "id": "country_2",
-        "label": "Country 2"
+        "label": {
+            "en": "Country 2",
+            "de": "Land 2"
+        }
     },
     {
         "id": "country_3",
-        "label": "Country 3"
+        "label": {
+            "en": "Country 3",
+            "de": "Land 3"
+        }
     }
 ]

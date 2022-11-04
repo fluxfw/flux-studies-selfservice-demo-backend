@@ -1,14 +1,23 @@
 [
     {
         "id": "school_1",
-        "label": "School 1"
+        "label": {
+            "en": "School 1",
+            "de": "Schule 1"
+        }
     },
     {
         "id": "school_2",
-        "label": "School 2"
+        "label": {
+            "en": "School 2",
+            "de": "Schule 2"
+        }
     },
     {
         "id": "school_3",
-        "label": "School 3"
+        "label": {
+            "en": "School 3",
+            "de": "Schule 3"
+        }
     }
 ]

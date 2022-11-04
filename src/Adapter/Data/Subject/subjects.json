@@ -1,38 +1,59 @@
 [
     {
         "id": "subject_1",
-        "label": "Subject 1",
+        "label": {
+            "en": "Subject 1",
+            "de": "Studiengang 1"
+        },
         "ect": 180,
         "combinations": [
             {
                 "id": "combination_1",
-                "label": "Combination 1",
+                "label": {
+                    "en": "Combination of subject 1",
+                    "de": "Fächerwahl Variante 1"
+                },
                 "mandatory": [
                     {
                         "id": "mandatory_1",
-                        "label": "Mandatory 1",
+                        "label": {
+                            "en": "Mandatory subject 1",
+                            "de": "Pflichtfach 1"
+                        },
                         "ect": 150
                     }
                 ],
                 "single-choice": [
                     {
                         "id": "single_choice_1",
-                        "label": "Single choice 1",
+                        "label": {
+                            "en": "Single choice 1",
+                            "de": "Einzelwahl 1"
+                        },
                         "ect": 30,
                         "choices": [
                             {
                                 "id": "single_choice_1_1",
-                                "label": "Single choice 1-1",
+                                "label": {
+                                    "en": "Single choice 1-1",
+                                    "de": "Einzelwahl 1-1"
+                                },
                                 "ect": 30
                             },
                             {
                                 "id": "single_choice_1_2",
-                                "label": "Single choice 1-2",
+                                "label": {
+                                    "en": "Single choice 1-2",
+                                    "de": "Einzelwahl 1-2"
+                                },
                                 "ect": 30
                             },
                             {
                                 "id": "single_choice_1_3",
-                                "label": "Single choice 1-3",
+                                "label": {
+                                    "en": "Single choice 1-3",
+                                    "de": "Einzelwahl 1-3"
+                                },
                                 "ect": 30
                             }
                         ]
@@ -42,16 +63,25 @@
             },
             {
                 "id": "combination_2",
-                "label": "Combination 2",
+                "label": {
+                    "en": "Combination of subject 2",
+                    "de": "Fächerwahl Variante 2"
+                },
                 "mandatory": [
                     {
                         "id": "mandatory_2",
-                        "label": "Mandatory 2",
+                        "label": {
+                            "en": "Mandatory subject 2",
+                            "de": "Pflichtfach 2"
+                        },
                         "ect": 60
                     },
                     {
                         "id": "mandatory_3",
-                        "label": "Mandatory 3",
+                        "label": {
+                            "en": "Mandatory subject 3",
+                            "de": "Pflichtfach 3"
+                        },
                         "ect": 60
                     }
                 ],
@@ -59,37 +89,58 @@
                 "multiple-choice": [
                     {
                         "id": "multiple_choice_1",
-                        "label": "Multiple choice 1",
+                        "label": {
+                            "en": "Multiple choice 1",
+                            "de": "Mehrfachwahl 1"
+                        },
                         "ect": 60,
                         "choices": [
                             {
                                 "id": "multiple_choice_1_1",
-                                "label": "Multiple choice 1-1",
+                                "label": {
+                                    "en": "Multiple choice 1-1",
+                                    "de": "Mehrfachwahl 1-1"
+                                },
                                 "ect": 30
                             },
                             {
                                 "id": "multiple_choice_1_2",
-                                "label": "Multiple choice 1-2",
+                                "label": {
+                                    "en": "Multiple choice 1-2",
+                                    "de": "Mehrfachwahl 1-2"
+                                },
                                 "ect": 30
                             },
                             {
                                 "id": "multiple_choice_1_3",
-                                "label": "Multiple choice 1-3",
+                                "label": {
+                                    "en": "Multiple choice 1-3",
+                                    "de": "Mehrfachwahl 1-3"
+                                },
                                 "ect": 30
                             },
                             {
                                 "id": "multiple_choice_1_4",
-                                "label": "Multiple choice 1-4",
+                                "label": {
+                                    "en": "Multiple choice 1-4",
+                                    "de": "Mehrfachwahl 1-4"
+                                },
                                 "ect": 30
                             },
                             {
                                 "id": "multiple_choice_1_5",
-                                "label": "Multiple choice 1-5",
+                                "label": {
+                                    "en": "Multiple choice 1-5",
+                                    "de": "Mehrfachwahl 1-5"
+                                },
                                 "ect": 30
                             },
                             {
                                 "id": "multiple_choice_1_6",
-                                "label": "Multiple choice 1-6",
+                                "label": {
+                                    "en": "Multiple choice 1-6",
+                                    "de": "Mehrfachwahl 1-6"
+                                },
                                 "ect": 30
                             }
                         ]
@@ -100,43 +151,67 @@
     },
     {
         "id": "subject_2",
-        "label": "Subject 2",
+        "label": {
+            "en": "Subject 2",
+            "de": "Studiengang 2"
+        },
         "ect": 150,
         "combinations": [
             {
                 "id": "combination_3",
-                "label": "Combination 3",
+                "label": {
+                    "en": "Combination of subject 3",
+                    "de": "Fächerwahl Variante 3"
+                },
                 "mandatory": [
                     {
                         "id": "mandatory_4",
-                        "label": "Mandatory 4",
+                        "label": {
+                            "en": "Mandatory subject 4",
+                            "de": "Pflichtfach 4"
+                        },
                         "ect": 30
                     }
                 ],
                 "single-choice": [
                     {
                         "id": "single_choice_2",
-                        "label": "Single choice 2",
+                        "label": {
+                            "en": "Single choice 2",
+                            "de": "Einzelwahl 2"
+                        },
                         "ect": 30,
                         "choices": [
                             {
                                 "id": "single_choice_2_1",
-                                "label": "Single choice 2-1",
+                                "label": {
+                                    "en": "Single choice 2-1",
+                                    "de": "Einzelwahl 2-1"
+                                },
                                 "ect": 30
                             },
                             {
                                 "id": "single_choice_2_2",
-                                "label": "Single choice 2-2",
+                                "label": {
+                                    "en": "Single choice 2-2",
+                                    "de": "Einzelwahl 2-2"
+                                },
                                 "ect": 30
                             },
                             {
                                 "id": "single_choice_2_3",
-                                "label": "Single choice 2-3",
+                                "label": {
+                                    "en": "Single choice 2-3",
+                                    "de": "Einzelwahl 2-3"
+                                },
                                 "ect": 30
                             },
                             {
                                 "id": "single_choice_2_4",
-                                "label": "Single choice 2-4",
+                                "label": {
+                                    "en": "Single choice 2-4",
+                                    "de": "Einzelwahl 2-4"
+                                },
                                 "ect": 30
                             }
                         ]
@@ -145,37 +220,58 @@
                 "multiple-choice": [
                     {
                         "id": "multiple_choice_2",
-                        "label": "Multiple choice 2",
+                        "label": {
+                            "en": "Multiple choice 2",
+                            "de": "Mehrfachwahl 2"
+                        },
                         "ect": 90,
                         "choices": [
                             {
                                 "id": "multiple_choice_2_1",
-                                "label": "Multiple choice 2-1",
+                                "label": {
+                                    "en": "Multiple choice 2-1",
+                                    "de": "Mehrfachwahl 2-1"
+                                },
                                 "ect": 30
                             },
                             {
                                 "id": "multiple_choice_2_2",
-                                "label": "Multiple choice 2-2",
+                                "label": {
+                                    "en": "Multiple choice 2-2",
+                                    "de": "Mehrfachwahl 2-2"
+                                },
                                 "ect": 30
                             },
                             {
                                 "id": "multiple_choice_2_3",
-                                "label": "Multiple choice 2-3",
+                                "label": {
+                                    "en": "Multiple choice 2-3",
+                                    "de": "Mehrfachwahl 2-3"
+                                },
                                 "ect": 30
                             },
                             {
                                 "id": "multiple_choice_2_4",
-                                "label": "Multiple choice 2-4",
+                                "label": {
+                                    "en": "Multiple choice 2-4",
+                                    "de": "Mehrfachwahl 2-4"
+                                },
                                 "ect": 30
                             },
                             {
                                 "id": "multiple_choice_2_5",
-                                "label": "Multiple choice 2-5",
+                                "label": {
+                                    "en": "Multiple choice 2-5",
+                                    "de": "Mehrfachwahl 2-5"
+                                },
                                 "ect": 30
                             },
                             {
                                 "id": "multiple_choice_2_6",
-                                "label": "Multiple choice 2-6",
+                                "label": {
+                                    "en": "Multiple choice 2-6",
+                                    "de": "Mehrfachwahl 2-6"
+                                },
                                 "ect": 30
                             }
                         ]
@@ -184,11 +280,17 @@
             },
             {
                 "id": "combination_4",
-                "label": "Combination 4",
+                "label": {
+                    "en": "Combination of subject 4",
+                    "de": "Fächerwahl Variante 4"
+                },
                 "mandatory": [
                     {
                         "id": "mandatory_5",
-                        "label": "Mandatory 5",
+                        "label": {
+                            "en": "Mandatory subject 5",
+                            "de": "Pflichtfach 5"
+                        },
                         "ect": 150
                     }
                 ],
@@ -197,49 +299,76 @@
             },
             {
                 "id": "combination_5",
-                "label": "Combination 5",
+                "label": {
+                    "en": "Combination of subject 5",
+                    "de": "Fächerwahl Variante 5"
+                },
                 "mandatory": null,
                 "single-choice": [
                     {
                         "id": "single_choice_3",
-                        "label": "Single choice 3",
+                        "label": {
+                            "en": "Single choice 3",
+                            "de": "Einzelwahl 3"
+                        },
                         "ect": 120,
                         "choices": [
                             {
                                 "id": "single_choice_3_1",
-                                "label": "Single choice 3-1",
+                                "label": {
+                                    "en": "Single choice 3-1",
+                                    "de": "Einzelwahl 3-1"
+                                },
                                 "ect": 120
                             },
                             {
                                 "id": "single_choice_3_2",
-                                "label": "Single choice 3-2",
+                                "label": {
+                                    "en": "Single choice 3-2",
+                                    "de": "Einzelwahl 3-2"
+                                },
                                 "ect": 120
                             },
                             {
                                 "id": "single_choice_3_3",
-                                "label": "Single choice 3-3",
+                                "label": {
+                                    "en": "Single choice 3-3",
+                                    "de": "Einzelwahl 3-3"
+                                },
                                 "ect": 120
                             }
                         ]
                     },
                     {
                         "id": "single_choice_4",
-                        "label": "Single choice 4",
+                        "label": {
+                            "en": "Single choice 4",
+                            "de": "Einzelwahl 4"
+                        },
                         "ect": 30,
                         "choices": [
                             {
                                 "id": "single_choice_4_1",
-                                "label": "Single choice 4-1",
+                                "label": {
+                                    "en": "Single choice 4-1",
+                                    "de": "Einzelwahl 4-1"
+                                },
                                 "ect": 30
                             },
                             {
                                 "id": "single_choice_4_2",
-                                "label": "Single choice 4-2",
+                                "label": {
+                                    "en": "Single choice 4-2",
+                                    "de": "Einzelwahl 4-2"
+                                },
                                 "ect": 30
                             },
                             {
                                 "id": "single_choice_4_3",
-                                "label": "Single choice 4-3",
+                                "label": {
+                                    "en": "Single choice 4-3",
+                                    "de": "Einzelwahl 4-3"
+                                },
                                 "ect": 30
                             }
                         ]

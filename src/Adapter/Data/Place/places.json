@@ -1,14 +1,23 @@
 [
     {
         "id": "place_1",
-        "label": "Place 1"
+        "label": {
+            "en": "Place 1",
+            "de": "Ort 1"
+        }
     },
     {
         "id": "place_2",
-        "label": "Place 2"
+        "label": {
+            "en": "Place 2",
+            "de": "Ort 2"
+        }
     },
     {
         "id": "place_3",
-        "label": "Place 3"
+        "label": {
+            "en": "Place 3",
+            "de": "Ort 3"
+        }
     }
 ]

@@ -1,14 +1,23 @@
 [
     {
         "id": "certificate_1",
-        "label": "Certificate 1"
+        "label": {
+            "en": "Certificate 1",
+            "de": "Ausweis 1"
+        }
     },
     {
         "id": "certificate_2",
-        "label": "Certificate 2"
+        "label": {
+            "en": "Certificate 2",
+            "de": "Ausweis 2"
+        }
     },
     {
         "id": "certificate_3",
-        "label": "Certificate 3"
+        "label": {
+            "en": "Certificate 3",
+            "de": "Ausweis 3"
+        }
     }
 ]

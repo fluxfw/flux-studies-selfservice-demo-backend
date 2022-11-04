@@ -1,48 +1,75 @@
 [
     {
         "id": "degree_program_1",
-        "label": "Degree program 1",
+        "label": {
+            "en": "Degree program 1",
+            "de": "Studiengang 1"
+        },
         "qualifications": [
             {
                 "id": "qualification_1",
-                "label": "Qualification 1",
+                "label": {
+                    "en": "Qualification 1",
+                    "de": "Vorbildung 1"
+                },
                 "required": true
             },
             {
                 "id": "qualification_2",
-                "label": "Qualification 2",
+                "label": {
+                    "en": "Qualification 2",
+                    "de": "Vorbildung 2"
+                },
                 "required": false
             },
             {
-                "id": "qualification_3",
-                "label": "Qualification 3",
+                "id": "previous_studies_page",
+                "label": {
+                    "en": "\"Your previous studies\" page",
+                    "de": "\"Ihre bisherigen Hochschulstudien\"-Seite"
+                },
                 "required": false
             }
         ]
     },
     {
         "id": "degree_program_2",
-        "label": "Degree program 2",
+        "label": {
+            "en": "Degree program 2",
+            "de": "Studiengang 2"
+        },
         "qualifications": [
             {
-                "id": "qualification_4",
-                "label": "Qualification 4",
+                "id": "qualification_3",
+                "label": {
+                    "en": "Qualification 3",
+                    "de": "Vorbildung 3"
+                },
                 "required": false
             }
         ]
     },
     {
         "id": "degree_program_3",
-        "label": "Degree program 3",
+        "label": {
+            "en": "Degree program 3",
+            "de": "Studiengang 3"
+        },
         "qualifications": [
             {
-                "id": "qualification_5",
-                "label": "Qualification 5",
+                "id": "qualification_4",
+                "label": {
+                    "en": "Qualification 4",
+                    "de": "Vorbildung 4"
+                },
                 "required": true
             },
             {
-                "id": "qualification_6",
-                "label": "Qualification 6",
+                "id": "qualification_5",
+                "label": {
+                    "en": "Qualification 5",
+                    "de": "Vorbildung 5"
+                },
                 "required": true
             }
         ]

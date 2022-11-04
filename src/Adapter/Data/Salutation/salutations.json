@@ -1,14 +1,23 @@
 [
     {
         "id": "salutation_1",
-        "label": "Salutation 1"
+        "label": {
+            "en": "Salutation 1",
+            "de": "Anrede 1"
+        }
     },
     {
         "id": "salutation_2",
-        "label": "Salutation 2"
+        "label": {
+            "en": "Salutation 2",
+            "de": "Anrede 2"
+        }
     },
     {
         "id": "salutation_3",
-        "label": "Salutation 3"
+        "label": {
+            "en": "Salutation 3",
+            "de": "Anrede 3"
+        }
     }
 ]

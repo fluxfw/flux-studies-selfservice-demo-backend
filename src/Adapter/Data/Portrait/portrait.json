@@ -1,8 +1,13 @@
 {
+    "photo-type": "image/webp",
+    "photo-quality": 0.5,
+    "photo-max-width": 200,
+    "photo-max-height": 200,
+    "photo-grayscale": true,
     "required-photo": false,
     "photo-criteria-links": {
-        "de": "https://link-to-photo-criteria/de",
-        "en": "https://link-to-photo-criteria/en"
+        "en": "https://link-to-photo-criteria/en",
+        "de": "https://link-to-photo-criteria/de"
     },
     "values": null
 }

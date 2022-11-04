@@ -1,14 +1,23 @@
 [
     {
         "id": "area_code_1",
-        "label": "Area code 1"
+        "label": {
+            "en": "Area code 1",
+            "de": "Vorwahl 1"
+        }
     },
     {
         "id": "area_code_2",
-        "label": "Area code 2"
+        "label": {
+            "en": "Area code 2",
+            "de": "Vorwahl 2"
+        }
     },
     {
         "id": "area_code_3",
-        "label": "Area code 3"
+        "label": {
+            "en": "Area code 3",
+            "de": "Vorwahl 3"
+        }
     }
 ]
