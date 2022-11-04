@@ -1,14 +1,23 @@
 [
     {
         "id": "semester_1",
-        "label": "Semester 1"
+        "label": {
+            "en": "Semester 1",
+            "de": "Semester 1"
+        }
     },
     {
         "id": "semester_2",
-        "label": "Semester 2"
+        "label": {
+            "en": "Semester 2",
+            "de": "Semester 2"
+        }
     },
     {
         "id": "semester_3",
-        "label": "Semester 3"
+        "label": {
+            "en": "Semester 3",
+            "de": "Semester 3"
+        }
     }
 ]

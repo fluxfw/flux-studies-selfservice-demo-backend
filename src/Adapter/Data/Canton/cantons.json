@@ -1,14 +1,23 @@
 [
     {
         "id": "canton_1",
-        "label": "Canton 1"
+        "label": {
+            "en": "Canton 1",
+            "de": "Kanton 1"
+        }
     },
     {
         "id": "canton_2",
-        "label": "Canton 2"
+        "label": {
+            "en": "Canton 2",
+            "de": "Kanton 2"
+        }
     },
     {
         "id": "canton_3",
-        "label": "Canton 3"
+        "label": {
+            "en": "Canton 3",
+            "de": "Kanton 3"
+        }
     }
 ]

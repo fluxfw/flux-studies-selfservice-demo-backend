@@ -4,10 +4,13 @@
     "combination": {},
     "single-choice": null,
     "multiple-choice": null,
-    "agb-title": "AGB",
+    "agb-label": {
+        "en": "AGB",
+        "de": "AGB"
+    },
     "agb-links": {
-        "de": "https://link-to-agb/de",
-        "en": "https://link-to-agb/en"
+        "en": "https://link-to-agb/en",
+        "de": "https://link-to-agb/de"
     },
     "max-comments-length": 2000,
     "values": null

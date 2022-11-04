@@ -1,14 +1,23 @@
 [
     {
         "id": "certificate_type_1",
-        "label": "Certificate type 1"
+        "label": {
+            "en": "Type of certificate 1",
+            "de": "Ausweistyp 1"
+        }
     },
     {
         "id": "certificate_type_2",
-        "label": "Certificate type 2"
+        "label": {
+            "en": "Type of certificate 2",
+            "de": "Ausweistyp 2"
+        }
     },
     {
         "id": "certificate_type_3",
-        "label": "Certificate type 3"
+        "label": {
+            "en": "Type of certificate 3",
+            "de": "Ausweistyp 3"
+        }
     }
 ]
