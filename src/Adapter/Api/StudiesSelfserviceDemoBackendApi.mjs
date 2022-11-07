@@ -42,6 +42,7 @@ import { PAGE_CHOICE_SUBJECT, PAGE_COMPLETED, PAGE_CREATE, PAGE_IDENTIFICATION_N
 /** @typedef {import("../../../../flux-studies-selfservice-frontend/src/Adapter/IntendedDegreeProgram/IntendedDegreeProgram.mjs").IntendedDegreeProgram} IntendedDegreeProgram */
 /** @typedef {import("../../../../flux-studies-selfservice-frontend/src/Adapter/IntendedDegreeProgram2/IntendedDegreeProgram2.mjs").IntendedDegreeProgram2} IntendedDegreeProgram2 */
 /** @typedef {import("../../../../flux-json-api/src/Adapter/Api/JsonApi.mjs").JsonApi} JsonApi */
+/** @typedef {import("../../../../flux-studies-selfservice-frontend/src/Adapter/Label/Label.mjs").Label} Label */
 /** @typedef {import("../../../../flux-studies-selfservice-frontend/src/Adapter/Language/Language.mjs").Language} Language */
 /** @typedef {import("../../../../flux-studies-selfservice-frontend/src/Adapter/Legal/Legal.mjs").Legal} Legal */
 /** @typedef {import("../../../../flux-studies-selfservice-frontend/src/Adapter/PersonalData/PersonalData.mjs").PersonalData} PersonalData */
@@ -117,7 +118,7 @@ export class StudiesSelfserviceDemoBackendApi {
     /**
      * @param {Application} application
      * @param {Post & {data: AcceptedLegal}} post
-     * @returns {Promise<boolean>}
+     * @returns {Promise<boolean | Label[]>}
      */
     async #acceptedLegal(application, post) {
         if (application.page !== PAGE_LEGAL || post.page !== application.page) {
@@ -252,7 +253,7 @@ export class StudiesSelfserviceDemoBackendApi {
     /**
      * @param {Application} application
      * @param {Post & {data: ChosenIntendedDegreeProgram}} post
-     * @returns {Promise<boolean>}
+     * @returns {Promise<boolean | Label[]>}
      */
     async #chosenIntendedDegreeProgram(application, post) {
         if (application.page !== PAGE_INTENDED_DEGREE_PROGRAM || post.page !== application.page) {
@@ -299,7 +300,7 @@ export class StudiesSelfserviceDemoBackendApi {
     /**
      * @param {Application} application
      * @param {Post & {data: ChosenIntendedDegreeProgram2}} post
-     * @returns {Promise<boolean>}
+     * @returns {Promise<boolean | Label[]>}
      */
     async #chosenIntendedDegreeProgram2(application, post) {
         if (application.page !== PAGE_INTENDED_DEGREE_PROGRAM_2 || post.page !== application.page) {
@@ -391,7 +392,7 @@ export class StudiesSelfserviceDemoBackendApi {
     /**
      * @param {Application} application
      * @param {Post & {data: Portrait}} post
-     * @returns {Promise<boolean>}
+     * @returns {Promise<boolean | Label[]>}
      */
     async #chosenPortrait(application, post) {
         if (application.page !== PAGE_PORTRAIT || post.page !== application.page) {
@@ -424,7 +425,7 @@ export class StudiesSelfserviceDemoBackendApi {
     /**
      * @param {Application} application
      * @param {Post & {data: ChosenPreviousStudies}} post
-     * @returns {Promise<boolean>}
+     * @returns {Promise<boolean | Label[]>}
      */
     async #chosenPreviousStudies(application, post) {
         if (application.page !== PAGE_PREVIOUS_STUDIES || post.page !== application.page) {
@@ -576,7 +577,7 @@ export class StudiesSelfserviceDemoBackendApi {
     /**
      * @param {Application} application
      * @param {Post & {data: ChosenSubject}} post
-     * @returns {Promise<boolean>}
+     * @returns {Promise<boolean | Label[]>}
      */
     async #chosenSubject(application, post) {
         if (application.page !== PAGE_CHOICE_SUBJECT || post.page !== application.page) {
@@ -635,7 +636,7 @@ export class StudiesSelfserviceDemoBackendApi {
     /**
      * @param {Application} application
      * @param {Post & {data: ChosenUniversityEntranceQualification}} post
-     * @returns {Promise<boolean>}
+     * @returns {Promise<boolean | Label[]>}
      */
     async #chosenUniversityEntranceQualification(application, post) {
         if (application.page !== PAGE_UNIVERSITY_ENTRANCE_QUALIFICATION || post.page !== application.page) {
@@ -746,7 +747,7 @@ export class StudiesSelfserviceDemoBackendApi {
     /**
      * @param {Application} application
      * @param {Post & {data: ConfirmedIdentificationNumber}} post
-     * @returns {Promise<boolean>}
+     * @returns {Promise<boolean | Label[]>}
      */
     async #confirmedIdentificationNumber(application, post) {
         if (application.page !== PAGE_IDENTIFICATION_NUMBER || post.page !== application.page) {
@@ -769,7 +770,7 @@ export class StudiesSelfserviceDemoBackendApi {
 
     /**
      * @param {Post & {data: Create}} post
-     * @returns {Promise<string | false>}
+     * @returns {Promise<string | false | Label[]>}
      */
     async #create(post) {
         if (post.page !== PAGE_CREATE) {
@@ -838,7 +839,7 @@ export class StudiesSelfserviceDemoBackendApi {
     /**
      * @param {Application} application
      * @param {Post & {data: FilledPersonalData}} post
-     * @returns {Promise<boolean>}
+     * @returns {Promise<boolean | Label[]>}
      */
     async #filledPersonalData(application, post) {
         if (application.page !== PAGE_PERSONAL_DATA || post.page !== application.page) {
@@ -1836,71 +1837,144 @@ export class StudiesSelfserviceDemoBackendApi {
     async #post(post, application = null) {
         let ok = true;
         let identification_number = null;
+        let error_messages = null;
 
         if (typeof post === "object") {
             if (application !== null) {
                 switch (application.page) {
-                    case PAGE_CHOICE_SUBJECT:
-                        ok = await this.#chosenSubject(
+                    case PAGE_CHOICE_SUBJECT: {
+                        const result = await this.#chosenSubject(
                             application,
                             post
                         );
+
+                        if (typeof result === "boolean") {
+                            ok = result;
+                        } else {
+                            ok = false;
+                            error_messages = result;
+                        }
+                    }
                         break;
 
-                    case PAGE_IDENTIFICATION_NUMBER:
-                        ok = await this.#confirmedIdentificationNumber(
+                    case PAGE_IDENTIFICATION_NUMBER: {
+                        const result = await this.#confirmedIdentificationNumber(
                             application,
                             post
                         );
+
+                        if (typeof result === "boolean") {
+                            ok = result;
+                        } else {
+                            ok = false;
+                            error_messages = result;
+                        }
+                    }
                         break;
 
-                    case PAGE_INTENDED_DEGREE_PROGRAM:
-                        ok = await this.#chosenIntendedDegreeProgram(
+                    case PAGE_INTENDED_DEGREE_PROGRAM: {
+                        const result = await this.#chosenIntendedDegreeProgram(
                             application,
                             post
                         );
+
+                        if (typeof result === "boolean") {
+                            ok = result;
+                        } else {
+                            ok = false;
+                            error_messages = result;
+                        }
+                    }
                         break;
 
-                    case PAGE_INTENDED_DEGREE_PROGRAM_2:
-                        ok = await this.#chosenIntendedDegreeProgram2(
+                    case PAGE_INTENDED_DEGREE_PROGRAM_2: {
+                        const result = await this.#chosenIntendedDegreeProgram2(
                             application,
                             post
                         );
+
+                        if (typeof result === "boolean") {
+                            ok = result;
+                        } else {
+                            ok = false;
+                            error_messages = result;
+                        }
+                    }
                         break;
 
-                    case PAGE_LEGAL:
-                        ok = await this.#acceptedLegal(
+                    case PAGE_LEGAL: {
+                        const result = await this.#acceptedLegal(
                             application,
                             post
                         );
+
+                        if (typeof result === "boolean") {
+                            ok = result;
+                        } else {
+                            ok = false;
+                            error_messages = result;
+                        }
+                    }
                         break;
 
-                    case PAGE_PERSONAL_DATA:
-                        ok = await this.#filledPersonalData(
+                    case PAGE_PERSONAL_DATA: {
+                        const result = await this.#filledPersonalData(
                             application,
                             post
                         );
+
+                        if (typeof result === "boolean") {
+                            ok = result;
+                        } else {
+                            ok = false;
+                            error_messages = result;
+                        }
+                    }
                         break;
 
-                    case PAGE_PORTRAIT:
-                        ok = await this.#chosenPortrait(
+                    case PAGE_PORTRAIT: {
+                        const result = await this.#chosenPortrait(
                             application,
                             post
                         );
+
+                        if (typeof result === "boolean") {
+                            ok = result;
+                        } else {
+                            ok = false;
+                            error_messages = result;
+                        }
+                    }
                         break;
 
-                    case PAGE_PREVIOUS_STUDIES:
-                        ok = await this.#chosenPreviousStudies(
+                    case PAGE_PREVIOUS_STUDIES: {
+                        const result = await this.#chosenPreviousStudies(
                             application,
                             post
                         );
+
+                        if (typeof result === "boolean") {
+                            ok = result;
+                        } else {
+                            ok = false;
+                            error_messages = result;
+                        }
+                    }
                         break;
 
-                    case PAGE_UNIVERSITY_ENTRANCE_QUALIFICATION:
-                        ok = await this.#chosenUniversityEntranceQualification(
+                    case PAGE_UNIVERSITY_ENTRANCE_QUALIFICATION: {
+                        const result = await this.#chosenUniversityEntranceQualification(
                             application,
                             post
                         );
+
+                        if (typeof result === "boolean") {
+                            ok = result;
+                        } else {
+                            ok = false;
+                            error_messages = result;
+                        }
+                    }
                         break;
 
                     default:
@@ -1910,27 +1984,37 @@ export class StudiesSelfserviceDemoBackendApi {
             } else {
                 switch (post.page) {
                     case PAGE_CREATE: {
-                        const _identification_number = await this.#create(
+                        const result = await this.#create(
                             post
                         );
 
-                        if (_identification_number !== false) {
-                            identification_number = _identification_number;
+                        if (typeof result === "string") {
+                            identification_number = result;
                         } else {
-                            ok = _identification_number;
+                            if (result === false) {
+                                ok = result;
+                            } else {
+                                ok = false;
+                                error_messages = result;
+                            }
                         }
                     }
                         break;
 
                     case PAGE_RESUME: {
-                        const _identification_number = await this.#resume(
+                        const result = await this.#resume(
                             post
                         );
 
-                        if (_identification_number !== false) {
-                            identification_number = _identification_number;
+                        if (typeof result === "string") {
+                            identification_number = result;
                         } else {
-                            ok = _identification_number;
+                            if (result === false) {
+                                ok = result;
+                            } else {
+                                ok = false;
+                                error_messages = result;
+                            }
                         }
                     }
                         break;
@@ -1946,7 +2030,8 @@ export class StudiesSelfserviceDemoBackendApi {
 
         return {
             data: {
-                ok
+                ok,
+                "error-messages": error_messages
             },
             "identification-number": identification_number
         };
@@ -1982,7 +2067,7 @@ export class StudiesSelfserviceDemoBackendApi {
 
     /**
      * @param {Post & {data: Resume}} post
-     * @returns {Promise<string | false>}
+     * @returns {Promise<string | false | Label[]>}
      */
     async #resume(post) {
         if (post.page !== PAGE_RESUME) {
@@ -2038,6 +2123,6 @@ export class StudiesSelfserviceDemoBackendApi {
         return this.#getPost(
             application,
             PAGE_CHOICE_SUBJECT
-        )?.data?.qualifications?.previous_studies_page ?? false;
+        )?.data?.qualifications?.already_studied ?? false;
     }
 }

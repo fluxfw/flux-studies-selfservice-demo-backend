@@ -23,10 +23,18 @@
                 "required": false
             },
             {
-                "id": "previous_studies_page",
+                "id": "qualification_3",
                 "label": {
-                    "en": "\"Your previous studies\" page",
-                    "de": "\"Ihre bisherigen Hochschulstudien\"-Seite"
+                    "en": "Qualification 3",
+                    "de": "Vorbildung 3"
+                },
+                "required": false
+            },
+            {
+                "id": "already_studied",
+                "label": {
+                    "en": "Already studied",
+                    "de": "Bereits studiert"
                 },
                 "required": false
             }
@@ -40,10 +48,18 @@
         },
         "qualifications": [
             {
-                "id": "qualification_3",
+                "id": "qualification_4",
                 "label": {
-                    "en": "Qualification 3",
-                    "de": "Vorbildung 3"
+                    "en": "Qualification 4",
+                    "de": "Vorbildung 4"
+                },
+                "required": false
+            },
+            {
+                "id": "already_studied",
+                "label": {
+                    "en": "Already studied",
+                    "de": "Bereits studiert"
                 },
                 "required": false
             }
@@ -57,20 +73,28 @@
         },
         "qualifications": [
             {
-                "id": "qualification_4",
-                "label": {
-                    "en": "Qualification 4",
-                    "de": "Vorbildung 4"
-                },
-                "required": true
-            },
-            {
                 "id": "qualification_5",
                 "label": {
                     "en": "Qualification 5",
                     "de": "Vorbildung 5"
                 },
                 "required": true
+            },
+            {
+                "id": "qualification_6",
+                "label": {
+                    "en": "Qualification 6",
+                    "de": "Vorbildung 6"
+                },
+                "required": true
+            },
+            {
+                "id": "already_studied",
+                "label": {
+                    "en": "Already studied",
+                    "de": "Bereits studiert"
+                },
+                "required": false
             }
         ]
     }
