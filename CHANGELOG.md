@@ -6,6 +6,12 @@ Changes:
 
 \-
 
+## v2022-11-08-1
+
+Changes:
+
+- Photo size validation
+
 ## v2022-11-07-2
 
 Changes:

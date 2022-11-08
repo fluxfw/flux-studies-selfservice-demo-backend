@@ -1,9 +1,16 @@
 {
     "photo-type": "image/webp",
     "photo-quality": 0.5,
-    "photo-max-width": 200,
-    "photo-max-height": 200,
     "photo-grayscale": true,
+    "photo-preview-max-width": 1000,
+    "photo-preview-max-height": 1000,
+    "photo-min-width": 247,
+    "photo-max-width": 273,
+    "photo-min-height": 323,
+    "photo-max-height": 357,
+    "photo-min-aspect-ratio": 0.7,
+    "photo-max-aspect-ratio": 0.85,
+    "photo-max-data-size": 102400,
     "required-photo": false,
     "photo-criteria-links": {
         "en": "https://link-to-photo-criteria/en",
