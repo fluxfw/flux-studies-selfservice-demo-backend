@@ -405,7 +405,7 @@ export class StudiesSelfserviceDemoBackendApi {
 
         const portrait = await this.#getPortrait();
 
-        if (post.data.photo !== null && !(Array.isArray(post.data.photo) && post.data.photo.length > 0 && post.data.photo.every(char => typeof char === "number" && Number.isInteger(char) && char >= 0))) {
+        if (post.data.photo !== null && !(Array.isArray(post.data.photo) && post.data.photo.length > 0 && post.data.photo.every(char => typeof char === "number" && Number.isInteger(char) && char >= 0) && post.data.photo.length < portrait["photo-max-data-size"])) {
             return false;
         }
         if (portrait["required-photo"] && post.data.photo === null) {
@@ -1668,7 +1668,7 @@ export class StudiesSelfserviceDemoBackendApi {
         const router = express.Router();
 
         router.use(express.json({
-            limit: "100KB"
+            limit: "500KB"
         }));
 
         router.use(cookieParser());
