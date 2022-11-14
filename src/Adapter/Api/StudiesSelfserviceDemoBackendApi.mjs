@@ -15,7 +15,7 @@ import { MIN_START_DATE } from "../Data/PreviousStudies/MIN_START_DATE.mjs";
 import { OLD_AGE_SURVIVAR_INSURANCE_NUMBER_FORMAT } from "../Data/PersonalData/OLD_AGE_SURVIVAR_INSURANCE_NUMBER_FORMAT.mjs";
 import { PHONE_NUMBER_FORMAT } from "../Data/PersonalData/PHONE_NUMBER_FORMAT.mjs";
 import { REGISTRATION_NUMBER_FORMAT } from "../Data/PersonalData/REGISTRATION_NUMBER_FORMAT.mjs";
-import { dirname, join } from "node:path";
+import { dirname, join } from "node:path/posix";
 import { PAGE_CHOICE_SUBJECT, PAGE_COMPLETED, PAGE_CREATE, PAGE_IDENTIFICATION_NUMBER, PAGE_INTENDED_DEGREE_PROGRAM, PAGE_INTENDED_DEGREE_PROGRAM_2, PAGE_LEGAL, PAGE_PERSONAL_DATA, PAGE_PORTRAIT, PAGE_PREVIOUS_STUDIES, PAGE_RESUME, PAGE_START, PAGE_UNIVERSITY_ENTRANCE_QUALIFICATION } from "../../../../flux-studies-selfservice-frontend/src/Adapter/Page/PAGE.mjs";
 
 /** @typedef {import("../../../../flux-studies-selfservice-frontend/src/Adapter/Legal/AcceptedLegal.mjs").AcceptedLegal} AcceptedLegal */
@@ -44,6 +44,7 @@ import { PAGE_CHOICE_SUBJECT, PAGE_COMPLETED, PAGE_CREATE, PAGE_IDENTIFICATION_N
 /** @typedef {import("../../../../flux-json-api/src/Adapter/Api/JsonApi.mjs").JsonApi} JsonApi */
 /** @typedef {import("../../../../flux-studies-selfservice-frontend/src/Adapter/Label/Label.mjs").Label} Label */
 /** @typedef {import("../../../../flux-studies-selfservice-frontend/src/Adapter/Language/Language.mjs").Language} Language */
+/** @typedef {import("../../../../flux-studies-selfservice-frontend/src/Adapter/Layout/Layout.mjs").Layout} Layout */
 /** @typedef {import("../../../../flux-studies-selfservice-frontend/src/Adapter/Legal/Legal.mjs").Legal} Legal */
 /** @typedef {import("../../../../flux-studies-selfservice-frontend/src/Adapter/PersonalData/PersonalData.mjs").PersonalData} PersonalData */
 /** @typedef {import("../../../../flux-studies-selfservice-frontend/src/Adapter/Place/Place.mjs").Place} Place */
@@ -1559,6 +1560,15 @@ export class StudiesSelfserviceDemoBackendApi {
     }
 
     /**
+     * @returns {Promise<Layout[]>}
+     */
+    async #getLayout() {
+        return (await this.#getJsonApi()).importJson(
+            `${__dirname}/../Data/Layout/layout.json`
+        );
+    }
+
+    /**
      * @param {ChosenSubject} chosen_subject
      * @param {ChosenIntendedDegreeProgram} chosen_intended_degree_program
      * @param {ChosenIntendedDegreeProgram2} chosen_intended_degree_program_2
@@ -1701,6 +1711,23 @@ export class StudiesSelfserviceDemoBackendApi {
                             req
                         )
                     )
+                );
+            } catch (error) {
+                console.error(error);
+
+                res.status(500).end();
+            }
+        });
+
+        router.get("/api/layout", async (req, res) => {
+            try {
+                this.#response(
+                    req,
+                    res,
+                    {
+                        data: await this.#getLayout(),
+                        "identification-number": null
+                    }
                 );
             } catch (error) {
                 console.error(error);
