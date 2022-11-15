@@ -1,4 +1,4 @@
-# flux-studies-selfservice-demo-backend
+# flux-studis-selfservice-demo-backend
 
 ```shell
 docker run --rm -p [%host_ip%:]80:8080 fluxfw/flux-studies-selfservice-demo-backend:vYYYY-MM-DD-I

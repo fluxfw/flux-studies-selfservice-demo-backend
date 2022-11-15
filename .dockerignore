@@ -1,5 +1,5 @@
 *
-!bin/flux-studies-selfservice-demo-backend-server.mjs
+!bin/flux-studis-selfservice-demo-backend-server.mjs
 !bin/install-dependencies.sh
 !src
 !src/**
