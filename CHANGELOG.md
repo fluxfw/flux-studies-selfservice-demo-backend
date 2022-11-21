@@ -6,6 +6,12 @@ Changes:
 
 \-
 
+## v2022-11-21-1
+
+Changes:
+
+- Logo
+
 ## v2022-11-16-1
 
 Changes:
