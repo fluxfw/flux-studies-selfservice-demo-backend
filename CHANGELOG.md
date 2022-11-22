@@ -6,6 +6,12 @@ Changes:
 
 \-
 
+## v2022-11-22-1
+
+Changes:
+
+- Settings
+
 ## v2022-11-21-1
 
 Changes:
