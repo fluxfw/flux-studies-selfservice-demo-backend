@@ -2079,11 +2079,18 @@ export class StudisSelfserviceDemoBackendApi {
      */
     #response(req, res, response) {
         if (response["identification-number"] === false) {
-            res.clearCookie(COOKIE_IDENTIFICATION_NUMBER);
+            if ((req.cookies[COOKIE_IDENTIFICATION_NUMBER] ?? null) !== null) {
+                res.clearCookie(COOKIE_IDENTIFICATION_NUMBER, {
+                    httpOnly: true,
+                    sameSite: "lax",
+                    secure: req.secure
+                });
+            }
         } else {
             if (response["identification-number"] !== null) {
                 res.cookie(COOKIE_IDENTIFICATION_NUMBER, response["identification-number"], {
                     httpOnly: true,
+                    sameSite: "lax",
                     secure: req.secure
                 });
             }

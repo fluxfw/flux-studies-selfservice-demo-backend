@@ -8,7 +8,7 @@
     "photo-max-width": 300,
     "photo-min-height": 300,
     "photo-max-height": 400,
-    "photo-min-aspect-ratio": 0.65,
+    "photo-min-aspect-ratio": 0.5,
     "photo-max-aspect-ratio": 0.75,
     "photo-max-data-size": 102400,
     "required-photo": false,
