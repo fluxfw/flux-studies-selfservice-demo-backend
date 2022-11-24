@@ -12,7 +12,7 @@ FROM node:19-alpine
 
 USER node:node
 
-ENTRYPOINT ["/flux-studis-selfservice-demo-backend/bin/flux-studis-selfservice-demo-backend-server.mjs"]
+ENTRYPOINT ["/flux-studis-selfservice-demo-backend/bin/server.mjs"]
 
 COPY --from=build /build /
 
