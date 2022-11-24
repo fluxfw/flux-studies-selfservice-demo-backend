@@ -1478,13 +1478,9 @@ export class StudisSelfserviceDemoBackendApi {
      * @returns {Promise<ExpressServerApi>}
      */
     async #getExpressServerApi() {
-        if (this.#express_server_api === null) {
-            this.#express_server_api ??= (await import("../../../../flux-express-server-api/src/Adapter/Api/ExpressServerApi.mjs")).ExpressServerApi.new(
-                await this.#getShutdownHandler()
-            );
-
-            await this.#express_server_api.init();
-        }
+        this.#express_server_api ??= (await import("../../../../flux-express-server-api/src/Adapter/Api/ExpressServerApi.mjs")).ExpressServerApi.new(
+            await this.#getShutdownHandler()
+        );
 
         return this.#express_server_api;
     }
@@ -1541,11 +1537,7 @@ export class StudisSelfserviceDemoBackendApi {
      * @returns {Promise<JsonApi>}
      */
     async #getJsonApi() {
-        if (this.#json_api === null) {
-            this.#json_api ??= (await import("../../../../flux-json-api/src/Adapter/Api/JsonApi.mjs")).JsonApi.new();
-
-            await this.#json_api.init();
-        }
+        this.#json_api ??= (await import("../../../../flux-json-api/src/Adapter/Api/JsonApi.mjs")).JsonApi.new();
 
         return this.#json_api;
     }
@@ -1805,11 +1797,7 @@ export class StudisSelfserviceDemoBackendApi {
      * @returns {Promise<ShutdownHandlerApi>}
      */
     async #getShutdownHandlerApi() {
-        if (this.#shutdown_handler_api === null) {
-            this.#shutdown_handler_api ??= (await import("../../../../flux-shutdown-handler-api/src/Adapter/Api/ShutdownHandlerApi.mjs")).ShutdownHandlerApi.new();
-
-            await this.#shutdown_handler_api.init();
-        }
+        this.#shutdown_handler_api ??= (await import("../../../../flux-shutdown-handler-api/src/Adapter/Api/ShutdownHandlerApi.mjs")).ShutdownHandlerApi.new();
 
         return this.#shutdown_handler_api;
     }
