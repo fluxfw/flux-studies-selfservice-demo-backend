@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 let shutdown_handler = null;
 try {
-    shutdown_handler = await (await import("../../flux-shutdown-handler-api/src/Adapter/Api/ShutdownHandlerApi.mjs")).ShutdownHandlerApi.new().getShutdownHandler();
+    shutdown_handler = await (await import("../../flux-shutdown-handler-api/src/Adapter/Api/ShutdownHandlerApi.mjs")).ShutdownHandlerApi.new()
+        .getShutdownHandler();
 
     const studis_selfservice_demo_backend_api = (await import("../src/Adapter/Api/StudisSelfserviceDemoBackendApi.mjs")).StudisSelfserviceDemoBackendApi.new(
         shutdown_handler
