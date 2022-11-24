@@ -6,6 +6,12 @@ Changes:
 
 \-
 
+## v2022-11-24-2
+
+Changes:
+
+- shutdown handler
+
 ## v2022-11-24-1
 
 Changes:

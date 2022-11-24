@@ -57,7 +57,6 @@ import { PAGE_CHOICE_SUBJECT, PAGE_COMPLETED, PAGE_CREATE, PAGE_IDENTIFICATION_N
 /** @typedef {import("../../../../flux-studis-selfservice-frontend/src/Adapter/School/School.mjs").School} School */
 /** @typedef {import("../../../../flux-studis-selfservice-frontend/src/Adapter/Semester/Semester.mjs").Semester} Semester */
 /** @typedef {import("../../../../flux-shutdown-handler-api/src/Adapter/ShutdownHandler/ShutdownHandler.mjs").ShutdownHandler} ShutdownHandler */
-/** @typedef {import("../../../../flux-shutdown-handler-api/src/Adapter/Api/ShutdownHandlerApi.mjs").ShutdownHandlerApi} ShutdownHandlerApi */
 /** @typedef {import("../../../../flux-studis-selfservice-frontend/src/Adapter/Start/Start.mjs").Start} Start */
 /** @typedef {import("../../../../flux-studis-selfservice-frontend/src/Adapter/Subject/SubjectWithCombinations.mjs").SubjectWithCombinations} SubjectWithCombinations */
 /** @typedef {import("../../../../flux-studis-selfservice-frontend/src/Adapter/UniversityEntranceQualification/UniversityEntranceQualification.mjs").UniversityEntranceQualification} UniversityEntranceQualification */
@@ -78,33 +77,27 @@ export class StudisSelfserviceDemoBackendApi {
      */
     #json_api = null;
     /**
-     * @type {ShutdownHandler | null}
+     * @type {ShutdownHandler}
      */
-    #shutdown_handler = null;
-    /**
-     * @type {ShutdownHandlerApi | null}
-     */
-    #shutdown_handler_api = null;
+    #shutdown_handler;
 
     /**
+     * @param {ShutdownHandler} shutdown_handler
      * @returns {StudisSelfserviceDemoBackendApi}
      */
-    static new() {
-        return new this();
+    static new(shutdown_handler) {
+        return new this(
+            shutdown_handler
+        );
     }
 
     /**
+     * @param {ShutdownHandler} shutdown_handler
      * @private
      */
-    constructor() {
+    constructor(shutdown_handler) {
+        this.#shutdown_handler = shutdown_handler;
         this.#applications = [];
-    }
-
-    /**
-     * @returns {Promise<void>}
-     */
-    async init() {
-        await this.#getShutdownHandler();
     }
 
     /**
@@ -1479,7 +1472,7 @@ export class StudisSelfserviceDemoBackendApi {
      */
     async #getExpressServerApi() {
         this.#express_server_api ??= (await import("../../../../flux-express-server-api/src/Adapter/Api/ExpressServerApi.mjs")).ExpressServerApi.new(
-            await this.#getShutdownHandler()
+            this.#shutdown_handler
         );
 
         return this.#express_server_api;
@@ -1782,24 +1775,6 @@ export class StudisSelfserviceDemoBackendApi {
         return (await this.#getJsonApi()).importJson(
             `${__dirname}/../Data/Semester/semesters.json`
         );
-    }
-
-    /**
-     * @returns {Promise<ShutdownHandler>}
-     */
-    async #getShutdownHandler() {
-        this.#shutdown_handler ??= await (await this.#getShutdownHandlerApi()).getShutdownHandler();
-
-        return this.#shutdown_handler;
-    }
-
-    /**
-     * @returns {Promise<ShutdownHandlerApi>}
-     */
-    async #getShutdownHandlerApi() {
-        this.#shutdown_handler_api ??= (await import("../../../../flux-shutdown-handler-api/src/Adapter/Api/ShutdownHandlerApi.mjs")).ShutdownHandlerApi.new();
-
-        return this.#shutdown_handler_api;
     }
 
     /**

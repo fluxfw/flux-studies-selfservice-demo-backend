@@ -1,6 +1,6 @@
 *
-!bin/flux-studis-selfservice-demo-backend-server.mjs
 !bin/install-dependencies.sh
+!bin/server.mjs
 !src
 !src/**
 !package.json
