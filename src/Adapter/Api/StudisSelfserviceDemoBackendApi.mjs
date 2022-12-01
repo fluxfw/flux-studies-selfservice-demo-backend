@@ -1,4 +1,5 @@
 import { BIRTH_DATE_FORMAT } from "../Data/PersonalData/BIRTH_DATE_FORMAT.mjs";
+import { CONFIG_ENV_PREFIX } from "../Config/CONFIG.mjs";
 import { COOKIE_IDENTIFICATION_NUMBER } from "../Response/COOKIE.mjs";
 import cookieParser from "cookie-parser";
 import { EMAIL_FORMAT } from "../Data/PersonalData/EMAIL_FORMAT.mjs";
@@ -17,6 +18,7 @@ import { PHONE_NUMBER_FORMAT } from "../Data/PersonalData/PHONE_NUMBER_FORMAT.mj
 import { REGISTRATION_NUMBER_FORMAT } from "../Data/PersonalData/REGISTRATION_NUMBER_FORMAT.mjs";
 import { dirname, join } from "node:path/posix";
 import { PAGE_CHOICE_SUBJECT, PAGE_COMPLETED, PAGE_CREATE, PAGE_IDENTIFICATION_NUMBER, PAGE_INTENDED_DEGREE_PROGRAM, PAGE_INTENDED_DEGREE_PROGRAM_2, PAGE_LEGAL, PAGE_PERSONAL_DATA, PAGE_PORTRAIT, PAGE_PREVIOUS_STUDIES, PAGE_RESUME, PAGE_START, PAGE_UNIVERSITY_ENTRANCE_QUALIFICATION } from "../../../../flux-studis-selfservice-frontend/src/Adapter/Page/PAGE.mjs";
+import { SERVER_CONFIG_HTTPS_CERT_KEY, SERVER_CONFIG_HTTPS_DHPARAM_KEY, SERVER_CONFIG_HTTPS_KEY_KEY, SERVER_CONFIG_LISTEN_HTTP_PORT_KEY, SERVER_CONFIG_LISTEN_HTTPS_PORT_KEY, SERVER_CONFIG_LISTEN_INTERFACE_KEY, SERVER_CONFIG_REDIRECT_HTTP_TO_HTTPS_KEY, SERVER_CONFIG_REDIRECT_HTTP_TO_HTTPS_PORT_KEY, SERVER_CONFIG_REDIRECT_HTTP_TO_HTTPS_STATUS_CODE_KEY } from "../Server/SERVER_CONFIG.mjs";
 
 /** @typedef {import("../../../../flux-studis-selfservice-frontend/src/Adapter/Legal/AcceptedLegal.mjs").AcceptedLegal} AcceptedLegal */
 /** @typedef {import("../Application/Application.mjs").Application} Application */
@@ -25,6 +27,7 @@ import { PAGE_CHOICE_SUBJECT, PAGE_COMPLETED, PAGE_CREATE, PAGE_IDENTIFICATION_N
 /** @typedef {import("../../../../flux-studis-selfservice-frontend/src/Adapter/Certificate/Certificate.mjs").Certificate} Certificate */
 /** @typedef {import("../../../../flux-studis-selfservice-frontend/src/Adapter/CertificateType/CertificateType.mjs").CertificateType} CertificateType */
 /** @typedef {import("../../../../flux-studis-selfservice-frontend/src/Adapter/ChoiceSubject/ChoiceSubject.mjs").ChoiceSubject} ChoiceSubject */
+/** @typedef {import("../../../../flux-config-api/src/Adapter/Api/ConfigApi.mjs").ConfigApi} ConfigApi */
 /** @typedef {import("../../../../flux-express-server-api/src/Adapter/Api/ExpressServerApi.mjs").ExpressServerApi} ExpressServerApi */
 /** @typedef {import("../../../../flux-studis-selfservice-frontend/src/Adapter/IntendedDegreeProgram/ChosenIntendedDegreeProgram.mjs").ChosenIntendedDegreeProgram} ChosenIntendedDegreeProgram */
 /** @typedef {import("../../../../flux-studis-selfservice-frontend/src/Adapter/IntendedDegreeProgram2/ChosenIntendedDegreeProgram2.mjs").ChosenIntendedDegreeProgram2} ChosenIntendedDegreeProgram2 */
@@ -69,6 +72,10 @@ export class StudisSelfserviceDemoBackendApi {
      */
     #applications;
     /**
+     * @type {ConfigApi | null}
+     */
+    #config_api = null;
+    /**
      * @type {ExpressServerApi | null}
      */
     #express_server_api = null;
@@ -104,8 +111,39 @@ export class StudisSelfserviceDemoBackendApi {
      * @returns {Promise<void>}
      */
     async runServer() {
+        const config_api = await this.#getConfigApi();
+
         await (await this.#getExpressServerApi()).runExpressServer(
-            async () => this.#getRouter()
+            async () => this.#getRouter(),
+            {
+                https_cert: await config_api.getConfig(
+                    SERVER_CONFIG_HTTPS_CERT_KEY
+                ),
+                https_dhparam: await config_api.getConfig(
+                    SERVER_CONFIG_HTTPS_DHPARAM_KEY
+                ),
+                https_key: await config_api.getConfig(
+                    SERVER_CONFIG_HTTPS_KEY_KEY
+                ),
+                listen_http_port: await config_api.getConfig(
+                    SERVER_CONFIG_LISTEN_HTTP_PORT_KEY
+                ),
+                listen_https_port: await config_api.getConfig(
+                    SERVER_CONFIG_LISTEN_HTTPS_PORT_KEY
+                ),
+                listen_interface: await config_api.getConfig(
+                    SERVER_CONFIG_LISTEN_INTERFACE_KEY
+                ),
+                redirect_http_to_https: await config_api.getConfig(
+                    SERVER_CONFIG_REDIRECT_HTTP_TO_HTTPS_KEY
+                ),
+                redirect_http_to_https_port: await config_api.getConfig(
+                    SERVER_CONFIG_REDIRECT_HTTP_TO_HTTPS_PORT_KEY
+                ),
+                redirect_http_to_https_status_code: await config_api.getConfig(
+                    SERVER_CONFIG_REDIRECT_HTTP_TO_HTTPS_STATUS_CODE_KEY
+                )
+            }
         );
     }
 
@@ -1438,6 +1476,19 @@ export class StudisSelfserviceDemoBackendApi {
             "degree-programs": await this.#getDegreePrograms(),
             values
         };
+    }
+
+    /**
+     * @returns {Promise<ConfigApi>}
+     */
+    async #getConfigApi() {
+        this.#config_api ??= (await import("../../../../flux-config-api/src/Adapter/Api/ConfigApi.mjs")).ConfigApi.new(
+            await (await import("../../../../flux-config-api/src/Adapter/ValueProviderImplementation/getValueProviderImplementations.mjs")).getValueProviderImplementations(
+                CONFIG_ENV_PREFIX
+            )
+        );
+
+        return this.#config_api;
     }
 
     /**
