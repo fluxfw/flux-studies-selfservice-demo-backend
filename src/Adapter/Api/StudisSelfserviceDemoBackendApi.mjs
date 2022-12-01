@@ -17,6 +17,7 @@ import { OLD_AGE_SURVIVAR_INSURANCE_NUMBER_FORMAT } from "../Data/PersonalData/O
 import { PHONE_NUMBER_FORMAT } from "../Data/PersonalData/PHONE_NUMBER_FORMAT.mjs";
 import { REGISTRATION_NUMBER_FORMAT } from "../Data/PersonalData/REGISTRATION_NUMBER_FORMAT.mjs";
 import { dirname, join } from "node:path/posix";
+import { EXPRESS_SERVER_DEFAULT_LISTEN_HTTP_PORT, EXPRESS_SERVER_DEFAULT_LISTEN_HTTPS_PORT, EXPRESS_SERVER_DEFAULT_REDIRECT_HTTP_TO_HTTPS, EXPRESS_SERVER_DEFAULT_REDIRECT_HTTP_TO_HTTPS_PORT, EXPRESS_SERVER_DEFAULT_REDIRECT_HTTP_TO_HTTPS_STATUS_CODE } from "../../../../flux-express-server-api/src/Adapter/ExpressServer/EXPRESS_SERVER.mjs";
 import { PAGE_CHOICE_SUBJECT, PAGE_COMPLETED, PAGE_CREATE, PAGE_IDENTIFICATION_NUMBER, PAGE_INTENDED_DEGREE_PROGRAM, PAGE_INTENDED_DEGREE_PROGRAM_2, PAGE_LEGAL, PAGE_PERSONAL_DATA, PAGE_PORTRAIT, PAGE_PREVIOUS_STUDIES, PAGE_RESUME, PAGE_START, PAGE_UNIVERSITY_ENTRANCE_QUALIFICATION } from "../../../../flux-studis-selfservice-frontend/src/Adapter/Page/PAGE.mjs";
 import { SERVER_CONFIG_HTTPS_CERT_KEY, SERVER_CONFIG_HTTPS_DHPARAM_KEY, SERVER_CONFIG_HTTPS_KEY_KEY, SERVER_CONFIG_LISTEN_HTTP_PORT_KEY, SERVER_CONFIG_LISTEN_HTTPS_PORT_KEY, SERVER_CONFIG_LISTEN_INTERFACE_KEY, SERVER_CONFIG_REDIRECT_HTTP_TO_HTTPS_KEY, SERVER_CONFIG_REDIRECT_HTTP_TO_HTTPS_PORT_KEY, SERVER_CONFIG_REDIRECT_HTTP_TO_HTTPS_STATUS_CODE_KEY } from "../Server/SERVER_CONFIG.mjs";
 
@@ -126,22 +127,27 @@ export class StudisSelfserviceDemoBackendApi {
                     SERVER_CONFIG_HTTPS_KEY_KEY
                 ),
                 listen_http_port: await config_api.getConfig(
-                    SERVER_CONFIG_LISTEN_HTTP_PORT_KEY
+                    SERVER_CONFIG_LISTEN_HTTP_PORT_KEY,
+                    EXPRESS_SERVER_DEFAULT_LISTEN_HTTP_PORT
                 ),
                 listen_https_port: await config_api.getConfig(
-                    SERVER_CONFIG_LISTEN_HTTPS_PORT_KEY
+                    SERVER_CONFIG_LISTEN_HTTPS_PORT_KEY,
+                    EXPRESS_SERVER_DEFAULT_LISTEN_HTTPS_PORT
                 ),
                 listen_interface: await config_api.getConfig(
                     SERVER_CONFIG_LISTEN_INTERFACE_KEY
                 ),
                 redirect_http_to_https: await config_api.getConfig(
-                    SERVER_CONFIG_REDIRECT_HTTP_TO_HTTPS_KEY
+                    SERVER_CONFIG_REDIRECT_HTTP_TO_HTTPS_KEY,
+                    EXPRESS_SERVER_DEFAULT_REDIRECT_HTTP_TO_HTTPS
                 ),
                 redirect_http_to_https_port: await config_api.getConfig(
-                    SERVER_CONFIG_REDIRECT_HTTP_TO_HTTPS_PORT_KEY
+                    SERVER_CONFIG_REDIRECT_HTTP_TO_HTTPS_PORT_KEY,
+                    EXPRESS_SERVER_DEFAULT_REDIRECT_HTTP_TO_HTTPS_PORT
                 ),
                 redirect_http_to_https_status_code: await config_api.getConfig(
-                    SERVER_CONFIG_REDIRECT_HTTP_TO_HTTPS_STATUS_CODE_KEY
+                    SERVER_CONFIG_REDIRECT_HTTP_TO_HTTPS_STATUS_CODE_KEY,
+                    EXPRESS_SERVER_DEFAULT_REDIRECT_HTTP_TO_HTTPS_STATUS_CODE
                 )
             }
         );
