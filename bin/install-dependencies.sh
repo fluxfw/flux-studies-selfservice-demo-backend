@@ -12,7 +12,7 @@ installDependency() {
     (mkdir -p "$node_modules/$1" && cd "$node_modules/$1" && wget -O - "$2" | tar -xz --strip-components=1)
 }
 
-installDependency flux-config-api https://github.com/fluxfw/flux-config-api/archive/refs/tags/v2022-12-01-2.tar.gz
+installDependency flux-config-api https://github.com/fluxfw/flux-config-api/archive/refs/tags/v2022-12-01-3.tar.gz
 
 installDependency flux-express-server-api https://github.com/fluxfw/flux-express-server-api/archive/refs/tags/v2022-11-24-2.tar.gz
 
