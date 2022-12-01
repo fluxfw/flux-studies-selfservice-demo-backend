@@ -1,1 +1,1 @@
-export const COOKIE_IDENTIFICATION_NUMBER = "demo-backend-identification-number";
+export const COOKIE_IDENTIFICATION_NUMBER = "flux-studis-selfservice-demo-backend-identification-number";
