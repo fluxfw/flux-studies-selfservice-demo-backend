@@ -22,4 +22,4 @@ installDependency flux-json-api https://github.com/fluxfw/flux-json-api/archive/
 
 installDependency flux-shutdown-handler-api https://github.com/fluxfw/flux-shutdown-handler-api/archive/refs/tags/v2022-11-24-1.tar.gz
 
-installDependency flux-studis-selfservice-frontend/src https://github.com/fluxfw/flux-studis-selfservice-frontend/releases/download/v2022-12-05-1/flux-studis-selfservice-frontend-v2022-12-05-1-build.tar.gz
+installDependency flux-studis-selfservice-frontend/src https://github.com/fluxfw/flux-studis-selfservice-frontend/releases/download/v2022-12-06-1/flux-studis-selfservice-frontend-v2022-12-06-1-build.tar.gz
