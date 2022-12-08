@@ -6,6 +6,12 @@ Changes:
 
 \-
 
+## v2022-12-08-2
+
+Changes:
+
+- frontend
+
 ## v2022-12-08-1
 
 Changes:
