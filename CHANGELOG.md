@@ -6,6 +6,13 @@ Changes:
 
 \-
 
+## v2022-12-08-1
+
+Changes:
+
+- config
+- libraries
+
 ## v2022-12-07-1
 
 Changes:
