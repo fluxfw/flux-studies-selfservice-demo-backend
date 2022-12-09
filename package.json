@@ -1,16 +1,7 @@
 {
-    "name": "flux-studis-selfservice-demo-backend",
-    "productName": "flux-studis-selfservice-demo-backend",
-    "version": "2022-12-08-3",
-    "description": "",
-    "keywords": [],
-    "homepage": "",
     "dependencies": {
         "cookie-parser": "1.4.6",
         "express": "4.18.2"
-    },
-    "scripts": {
-        "postinstall": "bin/install-dependencies.sh"
     },
     "private": true
 }
