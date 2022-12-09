@@ -1,5 +1,5 @@
 *
-!bin/install-dependencies.sh
+!bin/install-libraries.sh
 !bin/server.mjs
 !src
 !src/**
