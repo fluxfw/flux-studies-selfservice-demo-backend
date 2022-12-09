@@ -6,6 +6,12 @@ Changes:
 
 \-
 
+## v2022-12-09-2
+
+Changes:
+
+- Validate postal code and place
+
 ## v2022-12-09-1
 
 Changes:

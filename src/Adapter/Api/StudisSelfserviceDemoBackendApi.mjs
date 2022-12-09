@@ -989,7 +989,11 @@ export class StudisSelfserviceDemoBackendApi {
         if (post.data.place === "") {
             return false;
         }
-        if (!personal_data.places.some(place => place.id === post.data.place)) {
+        const place = personal_data.places.find(_place => _place.id === post.data.place) ?? null;
+        if (place === null) {
+            return false;
+        }
+        if (place["postal-code"] !== post.data["postal-code"]) {
             return false;
         }
 
@@ -1094,7 +1098,7 @@ export class StudisSelfserviceDemoBackendApi {
         if (post.data["origin-place"] === "") {
             return false;
         }
-        if (!personal_data.places.some(place => place.id === post.data["origin-place"])) {
+        if (!personal_data.places.some(_place => _place.id === post.data["origin-place"])) {
             return false;
         }
 
@@ -1188,7 +1192,11 @@ export class StudisSelfserviceDemoBackendApi {
                 if (post.data["parents-address-place"] === "") {
                     return false;
                 }
-                if (!personal_data.places.some(place => place.id === post.data["parents-address-place"])) {
+                const parents_address_place = personal_data.places.find(_place => _place.id === post.data["parents-address-place"]) ?? null;
+                if (parents_address_place === null) {
+                    return false;
+                }
+                if (parents_address_place["postal-code"] !== post.data["parents-address-postal-code"]) {
                     return false;
                 }
             } else {
