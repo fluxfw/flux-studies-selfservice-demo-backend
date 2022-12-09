@@ -12,6 +12,9 @@ FROM node:19-alpine
 
 USER node:node
 
+EXPOSE 8080
+EXPOSE 8443
+
 ENTRYPOINT ["/flux-studis-selfservice-demo-backend/bin/server.mjs"]
 
 COPY --from=build /build /

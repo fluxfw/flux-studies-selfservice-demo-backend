@@ -1,6 +1,7 @@
 [
     {
         "id": "place_1",
+        "postal-code": 1001,
         "label": {
             "en": "Place 1",
             "de": "Ort 1"
@@ -8,6 +9,7 @@
     },
     {
         "id": "place_2",
+        "postal-code": 1002,
         "label": {
             "en": "Place 2",
             "de": "Ort 2"
@@ -15,6 +17,7 @@
     },
     {
         "id": "place_3",
+        "postal-code": 1003,
         "label": {
             "en": "Place 3",
             "de": "Ort 3"
