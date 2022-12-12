@@ -28,10 +28,10 @@ installLibrary flux-config-api https://github.com/fluxfw/flux-config-api/archive
 
 installLibrary flux-express-server-api https://github.com/fluxfw/flux-express-server-api/archive/refs/tags/v2022-12-08-1.tar.gz
 
-installLibrary flux-fetch-api https://github.com/fluxfw/flux-fetch-api/archive/refs/tags/v2022-12-08-1.tar.gz
+installLibrary flux-fetch-api https://github.com/fluxfw/flux-fetch-api/archive/refs/tags/v2022-12-12-1.tar.gz
 
 installLibrary flux-json-api https://github.com/fluxfw/flux-json-api/archive/refs/tags/v2022-12-08-1.tar.gz
 
 installLibrary flux-shutdown-handler-api https://github.com/fluxfw/flux-shutdown-handler-api/archive/refs/tags/v2022-12-08-1.tar.gz
 
-installLibrary flux-studis-selfservice-frontend/src https://github.com/fluxfw/flux-studis-selfservice-frontend/releases/download/v2022-12-09-2/flux-studis-selfservice-frontend-v2022-12-09-2-build.tar.gz
+installLibrary flux-studis-selfservice-frontend/src https://github.com/fluxfw/flux-studis-selfservice-frontend/releases/download/v2022-12-12-1/flux-studis-selfservice-frontend-v2022-12-12-1-build.tar.gz
