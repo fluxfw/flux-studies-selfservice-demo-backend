@@ -1300,6 +1300,7 @@ export class StudisSelfserviceDemoBackendApi {
         let page = application?.page ?? null;
         let data = {};
         let can_back = true;
+        let can_logout = true;
         let identification_number = null;
 
         switch (page) {
@@ -1406,6 +1407,7 @@ export class StudisSelfserviceDemoBackendApi {
                 page = PAGE_START;
                 data = await this.#getStart();
                 can_back = false;
+                can_logout = false;
                 identification_number = false;
                 break;
         }
@@ -1414,7 +1416,8 @@ export class StudisSelfserviceDemoBackendApi {
             data: {
                 page,
                 data,
-                "can-back": can_back
+                "can-back": can_back,
+                "can-logout": can_logout
             },
             "identification-number": identification_number
         };
@@ -1774,10 +1777,21 @@ export class StudisSelfserviceDemoBackendApi {
                 this.#response(
                     req,
                     res,
-                    {
-                        data: await this.#getLayout(),
-                        "identification-number": null
-                    }
+                    await this.#layout()
+                );
+            } catch (error) {
+                console.error(error);
+
+                res.status(500).end();
+            }
+        });
+
+        router.post("/api/logout", async (req, res) => {
+            try {
+                this.#response(
+                    req,
+                    res,
+                    await this.#logout()
                 );
             } catch (error) {
                 console.error(error);
@@ -1881,6 +1895,26 @@ export class StudisSelfserviceDemoBackendApi {
             countries: await this.#getCountries(),
             places: await this.#getPlaces(),
             values
+        };
+    }
+
+    /**
+     * @returns {Promise<Response>}
+     */
+    async #layout() {
+        return {
+            data: await this.#getLayout(),
+            "identification-number": null
+        };
+    }
+
+    /**
+     * @returns {Promise<Response>}
+     */
+    async #logout() {
+        return {
+            data: null,
+            "identification-number": false
         };
     }
 
