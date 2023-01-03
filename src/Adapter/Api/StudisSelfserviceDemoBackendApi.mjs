@@ -1,7 +1,7 @@
 import { BIRTH_DATE_FORMAT } from "../Data/PersonalData/BIRTH_DATE_FORMAT.mjs";
 import { CONFIG_ENV_PREFIX } from "../Config/CONFIG.mjs";
 import { CONTENT_TYPE_JSON } from "../../../../flux-http-api/src/Adapter/ContentType/CONTENT_TYPE.mjs";
-import { COOKIE_IDENTIFICATION_NUMBER } from "../Response/COOKIE.mjs";
+import { COOKIE_SESSION_NUMBER } from "../Response/COOKIE.mjs";
 import cookieParser from "cookie-parser";
 import { EMAIL_FORMAT } from "../Data/PersonalData/EMAIL_FORMAT.mjs";
 import express from "express";
@@ -57,6 +57,7 @@ import { STATUS_400, STATUS_500 } from "../../../../flux-http-api/src/Adapter/St
 /** @typedef {import("../../../../flux-studis-selfservice-frontend/src/Adapter/Legal/Legal.mjs").Legal} Legal */
 /** @typedef {import("../../../../flux-studis-selfservice-frontend/src/Adapter/PersonalData/PersonalData.mjs").PersonalData} PersonalData */
 /** @typedef {import("../../../../flux-studis-selfservice-frontend/src/Adapter/Place/Place.mjs").Place} Place */
+/** @typedef {import("../../../../flux-studis-selfservice-frontend/src/Adapter/Place/PlaceWithPostalCode.mjs").PlaceWithPostalCode} PlaceWithPostalCode */
 /** @typedef {import("../../../../flux-studis-selfservice-frontend/src/Adapter/Portrait/Portrait.mjs").Portrait} Portrait */
 /** @typedef {import("../../../../flux-studis-selfservice-frontend/src/Adapter/PreviousStudies/PreviousStudies.mjs").PreviousStudies} PreviousStudies */
 /** @typedef {import("../../../../flux-studis-selfservice-frontend/src/Adapter/Post/Post.mjs").Post} Post */
@@ -65,6 +66,7 @@ import { STATUS_400, STATUS_500 } from "../../../../flux-http-api/src/Adapter/St
 /** @typedef {import("../../../../flux-studis-selfservice-frontend/src/Adapter/Salutation/Salutation.mjs").Salutation} Salutation */
 /** @typedef {import("../../../../flux-studis-selfservice-frontend/src/Adapter/School/School.mjs").School} School */
 /** @typedef {import("../../../../flux-studis-selfservice-frontend/src/Adapter/Semester/Semester.mjs").Semester} Semester */
+/** @typedef {import("../Session/Session.mjs").Session} Session */
 /** @typedef {import("../../../../flux-shutdown-handler-api/src/Adapter/ShutdownHandler/ShutdownHandler.mjs").ShutdownHandler} ShutdownHandler */
 /** @typedef {import("../../../../flux-studis-selfservice-frontend/src/Adapter/Start/Start.mjs").Start} Start */
 /** @typedef {import("../../../../flux-studis-selfservice-frontend/src/Adapter/Subject/SubjectWithCombinations.mjs").SubjectWithCombinations} SubjectWithCombinations */
@@ -90,6 +92,10 @@ export class StudisSelfserviceDemoBackendApi {
      */
     #json_api = null;
     /**
+     * @type {Session[]}}
+     */
+    #sessions;
+    /**
      * @type {ShutdownHandler}
      */
     #shutdown_handler;
@@ -111,6 +117,7 @@ export class StudisSelfserviceDemoBackendApi {
     constructor(shutdown_handler) {
         this.#shutdown_handler = shutdown_handler;
         this.#applications = [];
+        this.#sessions = [];
     }
 
     /**
@@ -245,7 +252,7 @@ export class StudisSelfserviceDemoBackendApi {
      * @returns {Promise<Response>}
      */
     async #back(application = null) {
-        let identification_number = null;
+        let session_number = null;
 
         switch (application?.page ?? null) {
             case PAGE_COMPLETED:
@@ -283,13 +290,13 @@ export class StudisSelfserviceDemoBackendApi {
                 break;
 
             default:
-                identification_number = false;
+                session_number = false;
                 break;
         }
 
         return {
             data: null,
-            "identification-number": identification_number
+            "session-number": session_number
         };
     }
 
@@ -882,7 +889,9 @@ export class StudisSelfserviceDemoBackendApi {
             post
         );
 
-        return application["identification-number"];
+        return this.#newSession(
+            application["identification-number"]
+        );
     }
 
     /**
@@ -1310,9 +1319,10 @@ export class StudisSelfserviceDemoBackendApi {
     async #get(application = null) {
         let page = application?.page ?? null;
         let data = {};
+        const identification_number = application?.["identification-number"] ?? null;
         let can_back = true;
         let can_logout = true;
-        let identification_number = null;
+        let session_number = null;
 
         switch (page) {
             case PAGE_CHOICE_SUBJECT:
@@ -1330,7 +1340,7 @@ export class StudisSelfserviceDemoBackendApi {
 
             case PAGE_IDENTIFICATION_NUMBER:
                 data = await this.#getIdentificationNumber(
-                    application["identification-number"]
+                    identification_number
                 );
                 can_back = false;
                 break;
@@ -1419,7 +1429,7 @@ export class StudisSelfserviceDemoBackendApi {
                 data = await this.#getStart();
                 can_back = false;
                 can_logout = false;
-                identification_number = false;
+                session_number = false;
                 break;
         }
 
@@ -1427,22 +1437,19 @@ export class StudisSelfserviceDemoBackendApi {
             data: {
                 page,
                 data,
+                "identification-number": identification_number,
                 "can-back": can_back,
                 "can-logout": can_logout
             },
-            "identification-number": identification_number
+            "session-number": session_number
         };
     }
 
     /**
-     * @param {string | null} identification_number
+     * @param {string} identification_number
      * @returns {Application | null}
      */
-    #getApplication(identification_number = null) {
-        if (identification_number === null) {
-            return null;
-        }
-
+    #getApplicationByIdentificationNumber(identification_number) {
         return this.#applications.find(application => application["identification-number"] === identification_number) ?? null;
     }
 
@@ -1450,9 +1457,33 @@ export class StudisSelfserviceDemoBackendApi {
      * @param {http.IncomingMessage} req
      * @returns {Application | null}
      */
-    #getApplicationFromRequest(req) {
-        return this.#getApplication(
-            req.cookies[COOKIE_IDENTIFICATION_NUMBER] ?? null
+    #getApplicationByRequest(req) {
+        const session_number = this.#getSessionNumberFromRequest(
+            req
+        );
+
+        if (session_number === null) {
+            return null;
+        }
+
+        return this.#getApplicationBySessionNumber(
+            session_number
+        );
+    }
+
+    /**
+     * @param {string} session_number
+     * @returns {Application | null}
+     */
+    #getApplicationBySessionNumber(session_number) {
+        const identification_number = this.#sessions.find(session => session["session-number"] === session_number)?.["identification-number"] ?? null;
+
+        if (identification_number === null) {
+            return null;
+        }
+
+        return this.#getApplicationByIdentificationNumber(
+            identification_number
         );
     }
 
@@ -1670,7 +1701,7 @@ export class StudisSelfserviceDemoBackendApi {
             salutations: await this.#getSalutations(),
             "registration-number-format": `${REGISTRATION_NUMBER_FORMAT}`,
             countries: await this.#getCountries(),
-            places: await this.#getPlaces(),
+            places: await this.#getPlacesWithPostalCode(),
             "area-codes": await this.#getAreaCodes(),
             "phone-number-format": `${PHONE_NUMBER_FORMAT}`,
             languages: await this.#getLanguages(),
@@ -1685,6 +1716,17 @@ export class StudisSelfserviceDemoBackendApi {
      * @returns {Promise<Place[]>}
      */
     async #getPlaces() {
+        return (await this.#getPlacesWithPostalCode()).map(place => {
+            const _place = structuredClone(place);
+            delete _place["postal-code"];
+            return _place;
+        });
+    }
+
+    /**
+     * @returns {Promise<PlaceWithPostalCode[]>}
+     */
+    async #getPlacesWithPostalCode() {
         return (await this.#getJsonApi()).importJson(
             `${__dirname}/../Data/Place/places.json`
         );
@@ -1749,7 +1791,7 @@ export class StudisSelfserviceDemoBackendApi {
                     req,
                     res,
                     await this.#back(
-                        this.#getApplicationFromRequest(
+                        this.#getApplicationByRequest(
                             req
                         )
                     )
@@ -1768,7 +1810,7 @@ export class StudisSelfserviceDemoBackendApi {
                     req,
                     res,
                     await this.#get(
-                        this.#getApplicationFromRequest(
+                        this.#getApplicationByRequest(
                             req
                         )
                     )
@@ -1824,7 +1866,7 @@ export class StudisSelfserviceDemoBackendApi {
                     res,
                     await this.#post(
                         await new Response(Readable.toWeb(req)).json(),
-                        this.#getApplicationFromRequest(
+                        this.#getApplicationByRequest(
                             req
                         )
                     )
@@ -1867,6 +1909,14 @@ export class StudisSelfserviceDemoBackendApi {
         return (await this.#getJsonApi()).importJson(
             `${__dirname}/../Data/Semester/semesters.json`
         );
+    }
+
+    /**
+     * @param {http.IncomingMessage} req
+     * @returns {string | null}
+     */
+    #getSessionNumberFromRequest(req) {
+        return req.cookies[COOKIE_SESSION_NUMBER] ?? null;
     }
 
     /**
@@ -1944,7 +1994,7 @@ export class StudisSelfserviceDemoBackendApi {
     async #layout() {
         return {
             data: await this.#getLayout(),
-            "identification-number": null
+            "session-number": null
         };
     }
 
@@ -1954,8 +2004,23 @@ export class StudisSelfserviceDemoBackendApi {
     async #logout() {
         return {
             data: null,
-            "identification-number": false
+            "session-number": false
         };
+    }
+
+    /**
+     * @param {string} identification_number
+     * @returns {string}
+     */
+    #newSession(identification_number) {
+        const session_number = this.#randomSessionNumber();
+
+        this.#sessions.push({
+            "session-number": session_number,
+            "identification-number": identification_number
+        });
+
+        return session_number;
     }
 
     /**
@@ -1965,7 +2030,7 @@ export class StudisSelfserviceDemoBackendApi {
      */
     async #post(post, application = null) {
         let ok = true;
-        let identification_number = null;
+        let session_number = null;
         let error_messages = null;
 
         if (typeof post === "object") {
@@ -2118,7 +2183,7 @@ export class StudisSelfserviceDemoBackendApi {
                         );
 
                         if (typeof result === "string") {
-                            identification_number = result;
+                            session_number = result;
                         } else {
                             if (result === false) {
                                 ok = result;
@@ -2136,7 +2201,7 @@ export class StudisSelfserviceDemoBackendApi {
                         );
 
                         if (typeof result === "string") {
-                            identification_number = result;
+                            session_number = result;
                         } else {
                             if (result === false) {
                                 ok = result;
@@ -2162,7 +2227,7 @@ export class StudisSelfserviceDemoBackendApi {
                 ok,
                 "error-messages": error_messages
             },
-            "identification-number": identification_number
+            "session-number": session_number
         };
     }
 
@@ -2174,23 +2239,48 @@ export class StudisSelfserviceDemoBackendApi {
     }
 
     /**
+     * @returns {string}
+     */
+    #randomSessionNumber() {
+        return this.#randomIdentificationNumber();
+    }
+
+    /**
+     * @param {string} session_number
+     * @returns {void}
+     */
+    #removeSession(session_number) {
+        const index = this.#sessions.findIndex(session => session["session-number"] === session_number);
+
+        if (index !== -1) {
+            this.#sessions.splice(index, 1);
+        }
+    }
+
+    /**
      * @param {http.IncomingMessage} req
      * @param {http.ServerResponse} res
      * @param {Response} response
      * @returns {void}
      */
     #response(req, res, response) {
-        if (response["identification-number"] === false) {
-            if ((req.cookies[COOKIE_IDENTIFICATION_NUMBER] ?? null) !== null) {
-                res.clearCookie(COOKIE_IDENTIFICATION_NUMBER, {
+        if (response["session-number"] === false) {
+            const session_number = this.#getSessionNumberFromRequest(
+                req
+            );
+            if (session_number !== null) {
+                res.clearCookie(COOKIE_SESSION_NUMBER, {
                     httpOnly: true,
                     sameSite: "lax",
                     secure: req.socket.encrypted
                 });
+                this.#removeSession(
+                    session_number
+                );
             }
         } else {
-            if (response["identification-number"] !== null) {
-                res.cookie(COOKIE_IDENTIFICATION_NUMBER, response["identification-number"], {
+            if (response["session-number"] !== null) {
+                res.cookie(COOKIE_SESSION_NUMBER, response["session-number"], {
                     httpOnly: true,
                     sameSite: "lax",
                     secure: req.socket.encrypted
@@ -2235,7 +2325,7 @@ export class StudisSelfserviceDemoBackendApi {
             return false;
         }
 
-        const application = this.#getApplication(
+        const application = this.#getApplicationByIdentificationNumber(
             post.data["identification-number"]
         );
 
@@ -2250,7 +2340,9 @@ export class StudisSelfserviceDemoBackendApi {
             return false;
         }
 
-        return application["identification-number"];
+        return this.#newSession(
+            application["identification-number"]
+        );
     }
 
     /**
