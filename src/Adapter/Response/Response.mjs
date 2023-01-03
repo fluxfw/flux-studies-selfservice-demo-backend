@@ -1,3 +1,3 @@
 /**
- * @typedef {{data: *, "identification-number": string | false | null}} Response
+ * @typedef {{data: *, "session-number": string | false | null}} Response
  */
