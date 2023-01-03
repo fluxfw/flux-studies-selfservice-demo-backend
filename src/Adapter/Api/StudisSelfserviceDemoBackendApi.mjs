@@ -45,7 +45,7 @@ import { STATUS_400, STATUS_500 } from "../../../../flux-http-api/src/Adapter/St
 /** @typedef {import("../../../../flux-studis-selfservice-frontend/src/Adapter/DegreeProgram/DegreeProgram.mjs").DegreeProgram} DegreeProgram */
 /** @typedef {import("../../../../flux-studis-selfservice-frontend/src/Adapter/DegreeTitle/DegreeTitle.mjs").DegreeTitle} DegreeTitle */
 /** @typedef {import("../../../../flux-studis-selfservice-frontend/src/Adapter/PersonalData/FilledPersonalData.mjs").FilledPersonalData} FilledPersonalData */
-/** @typedef {import("http")} http */
+/** @typedef {import("node:http")} http */
 /** @typedef {import("../../../../flux-http-api/src/Adapter/Api/HttpApi.mjs").HttpApi} HttpApi */
 /** @typedef {import("../../../../flux-studis-selfservice-frontend/src/Adapter/IdentificationNumber/IdentificationNumber.mjs").IdentificationNumber} IdentificationNumber */
 /** @typedef {import("../../../../flux-studis-selfservice-frontend/src/Adapter/IntendedDegreeProgram/IntendedDegreeProgram.mjs").IntendedDegreeProgram} IntendedDegreeProgram */
@@ -698,7 +698,8 @@ export class StudisSelfserviceDemoBackendApi {
         if (post.data["certificate-type"] === "") {
             return false;
         }
-        if (!university_entrance_qualification["certificate-types"].some(certificate_type => certificate_type.id === post.data["certificate-type"])) {
+        const certificate_type = university_entrance_qualification["certificate-types"].find(_certificate_type => _certificate_type.id === post.data["certificate-type"]) ?? null;
+        if (certificate_type === null) {
             return false;
         }
 
@@ -708,10 +709,10 @@ export class StudisSelfserviceDemoBackendApi {
         if (!Number.isInteger(post.data["issue-date"])) {
             return false;
         }
-        if (post.data["issue-date"] < university_entrance_qualification["min-issue-date"]) {
+        if (post.data["issue-date"] < certificate_type["min-issue-date"]) {
             return false;
         }
-        if (post.data["issue-date"] > university_entrance_qualification["max-issue-date"]) {
+        if (post.data["issue-date"] > certificate_type["max-issue-date"]) {
             return false;
         }
 
@@ -721,7 +722,8 @@ export class StudisSelfserviceDemoBackendApi {
         if (post.data.certificate === "") {
             return false;
         }
-        if (!university_entrance_qualification.certificates.some(certificate => certificate.id === post.data.certificate)) {
+        const certificate = certificate_type.certificates.find(_certificate => _certificate.id === post.data.certificate) ?? null;
+        if (certificate === null) {
             return false;
         }
 
@@ -731,7 +733,8 @@ export class StudisSelfserviceDemoBackendApi {
         if (post.data["matura-canton"] === "") {
             return false;
         }
-        if (!university_entrance_qualification.cantons.some(canton => canton.id === post.data["matura-canton"])) {
+        const matura_canton = certificate.cantons.find(canton => canton.id === post.data["matura-canton"]) ?? null;
+        if (matura_canton === null) {
             return false;
         }
 
@@ -741,7 +744,8 @@ export class StudisSelfserviceDemoBackendApi {
         if (post.data["upper-secondary-school"] === "") {
             return false;
         }
-        if (!university_entrance_qualification.schools.some(school => school.id === post.data["upper-secondary-school"])) {
+        const upper_secondary_school = matura_canton.schools.find(school => school.id === post.data["upper-secondary-school"]) ?? null;
+        if (upper_secondary_school === null) {
             return false;
         }
 
@@ -751,7 +755,8 @@ export class StudisSelfserviceDemoBackendApi {
         if (post.data["certificate-country"] === "") {
             return false;
         }
-        if (!university_entrance_qualification.countries.some(country => country.id === post.data["certificate-country"])) {
+        const certificate_country = upper_secondary_school.countries.find(country => country.id === post.data["certificate-country"]) ?? null;
+        if (certificate_country === null) {
             return false;
         }
 
@@ -761,7 +766,8 @@ export class StudisSelfserviceDemoBackendApi {
         if (post.data["certificate-canton"] === "") {
             return false;
         }
-        if (!university_entrance_qualification.cantons.some(canton => canton.id === post.data["certificate-canton"])) {
+        const certificate_canton = certificate_country.cantons.find(canton => canton.id === post.data["certificate-canton"]) ?? null;
+        if (certificate_canton === null) {
             return false;
         }
 
@@ -771,7 +777,7 @@ export class StudisSelfserviceDemoBackendApi {
         if (post.data["certificate-place"] === "") {
             return false;
         }
-        if (!university_entrance_qualification.places.some(place => place.id === post.data["certificate-place"])) {
+        if (!certificate_canton.places.some(place => place.id === post.data["certificate-place"])) {
             return false;
         }
 
@@ -1889,18 +1895,45 @@ export class StudisSelfserviceDemoBackendApi {
      * @returns {Promise<UniversityEntranceQualification>}
      */
     async #getUniversityEntranceQualification(values = null) {
+        const certificates = await this.#getCertificates();
+        const cantons = await this.#getCantons();
+        const schools = await this.#getSchools();
+        const countries = await this.#getCountries();
+        const places = await this.#getPlaces();
+
         return {
             ...await (await this.#getJsonApi()).importJson(
                 `${__dirname}/../Data/UniversityEntranceQualification/university-entrance-qualification.json`
             ),
-            "certificate-types": await this.#getCertificateTypes(),
-            "min-issue-date": MIN_ISSUE_DATE,
-            "max-issue-date": MAX_ISSUE_DATE,
-            certificates: await this.#getCertificates(),
-            cantons: await this.#getCantons(),
-            schools: await this.#getSchools(),
-            countries: await this.#getCountries(),
-            places: await this.#getPlaces(),
+            "certificate-types": (await this.#getCertificateTypes()).map(certificate_type => ({
+                ...certificate_type,
+                "min-issue-date": MIN_ISSUE_DATE,
+                "max-issue-date": MAX_ISSUE_DATE,
+                certificates: certificates.map(certificate => ({
+                    ...certificate,
+                    id: `${certificate_type.id}_${certificate.id}`,
+                    cantons: cantons.map(canton => ({
+                        ...canton,
+                        id: `${certificate_type.id}_${certificate.id}_${canton.id}`,
+                        schools: schools.map(school => ({
+                            ...school,
+                            id: `${certificate_type.id}_${certificate.id}_${canton.id}_${school.id}`,
+                            countries: countries.map(country => ({
+                                ...country,
+                                id: `${certificate_type.id}_${certificate.id}_${canton.id}_${school.id}_${country.id}`,
+                                cantons: cantons.map(canton_2 => ({
+                                    ...canton_2,
+                                    id: `${certificate_type.id}_${certificate.id}_${canton.id}_${school.id}_${country.id}_${canton_2.id}`,
+                                    places: places.map(place => ({
+                                        ...place,
+                                        id: `${certificate_type.id}_${certificate.id}_${canton.id}_${school.id}_${country.id}_${canton_2.id}_${place.id}`
+                                    }))
+                                }))
+                            }))
+                        }))
+                    }))
+                }))
+            })),
             values
         };
     }

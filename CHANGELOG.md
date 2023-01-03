@@ -6,6 +6,12 @@ Changes:
 
 \-
 
+## v2023-01-03-2
+
+Changes:
+
+- Dependent fields on university entrance qualification
+
 ## v2023-01-03-1
 
 Changes:
