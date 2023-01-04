@@ -16,13 +16,14 @@ import { MIN_END_DATE } from "../Data/PreviousStudies/MIN_END_DATE.mjs";
 import { MIN_ISSUE_DATE } from "../Data/UniversityEntranceQualification/MIN_ISSUE_DATE.mjs";
 import { MIN_START_DATE } from "../Data/PreviousStudies/MIN_START_DATE.mjs";
 import { OLD_AGE_SURVIVAR_INSURANCE_NUMBER_FORMAT } from "../Data/PersonalData/OLD_AGE_SURVIVAR_INSURANCE_NUMBER_FORMAT.mjs";
-import { PHONE_NUMBER_FORMAT } from "../Data/PersonalData/PHONE_NUMBER_FORMAT.mjs";
 import { PHONE_TYPES } from "../../../../flux-studis-selfservice-frontend/src/Adapter/PersonalData/PHONE_TYPES.mjs";
 import { Readable } from "node:stream";
+import { regExpStringToRegExp } from "../../../../flux-studis-selfservice-frontend/src/Adapter/PersonalData/regExpStringToRegExp.mjs";
 import { REGISTRATION_NUMBER_FORMAT } from "../Data/PersonalData/REGISTRATION_NUMBER_FORMAT.mjs";
 import { dirname, join } from "node:path/posix";
 import { HTTP_SERVER_DEFAULT_LISTEN_HTTP_PORT, HTTP_SERVER_DEFAULT_LISTEN_HTTPS_PORT, HTTP_SERVER_DEFAULT_REDIRECT_HTTP_TO_HTTPS, HTTP_SERVER_DEFAULT_REDIRECT_HTTP_TO_HTTPS_PORT, HTTP_SERVER_DEFAULT_REDIRECT_HTTP_TO_HTTPS_STATUS_CODE } from "../../../../flux-http-api/src/Adapter/HttpServer/HTTP_SERVER.mjs";
 import { PAGE_CHOICE_SUBJECT, PAGE_COMPLETED, PAGE_CREATE, PAGE_IDENTIFICATION_NUMBER, PAGE_INTENDED_DEGREE_PROGRAM, PAGE_INTENDED_DEGREE_PROGRAM_2, PAGE_LEGAL, PAGE_PERSONAL_DATA, PAGE_PORTRAIT, PAGE_PREVIOUS_STUDIES, PAGE_RESUME, PAGE_START, PAGE_UNIVERSITY_ENTRANCE_QUALIFICATION } from "../../../../flux-studis-selfservice-frontend/src/Adapter/Page/PAGE.mjs";
+import { PHONE_NUMBER_EXAMPLE, PHONE_NUMBER_FORMAT } from "../Data/PersonalData/PHONE_NUMBER.mjs";
 import { SERVER_CONFIG_HTTPS_CERT_KEY, SERVER_CONFIG_HTTPS_DHPARAM_KEY, SERVER_CONFIG_HTTPS_KEY_KEY, SERVER_CONFIG_LISTEN_HTTP_PORT_KEY, SERVER_CONFIG_LISTEN_HTTPS_PORT_KEY, SERVER_CONFIG_LISTEN_INTERFACE_KEY, SERVER_CONFIG_REDIRECT_HTTP_TO_HTTPS_KEY, SERVER_CONFIG_REDIRECT_HTTP_TO_HTTPS_PORT_KEY, SERVER_CONFIG_REDIRECT_HTTP_TO_HTTPS_STATUS_CODE_KEY } from "../Server/SERVER_CONFIG.mjs";
 import { STATUS_400, STATUS_500 } from "../../../../flux-http-api/src/Adapter/Status/STATUS.mjs";
 
@@ -949,7 +950,9 @@ export class StudisSelfserviceDemoBackendApi {
         if (typeof post.data["registration-number"] !== "string") {
             return false;
         }
-        if (post.data["registration-number"] !== "" && !REGISTRATION_NUMBER_FORMAT.test(post.data["registration-number"])) {
+        if (post.data["registration-number"] !== "" && !regExpStringToRegExp(
+            personal_data["registration-number-format"]
+        ).test(post.data["registration-number"])) {
             return false;
         }
 
@@ -1025,9 +1028,6 @@ export class StudisSelfserviceDemoBackendApi {
             if (personal_data[`required-phone-${phone_type}`] && post.data[`${phone_type}-phone-area-code`] === "") {
                 return false;
             }
-            if (post.data[`${phone_type}-phone-area-code`] !== "" && !personal_data["area-codes"].some(area_code => area_code.id === post.data[`${phone_type}-phone-area-code`])) {
-                return false;
-            }
             if (post.data[`${phone_type}-phone-area-code`] === "" && post.data[`${phone_type}-phone-number`] !== "") {
                 return false;
             }
@@ -1038,10 +1038,17 @@ export class StudisSelfserviceDemoBackendApi {
             if (personal_data[`required-phone-${phone_type}`] && post.data[`${phone_type}-phone-number`] === "") {
                 return false;
             }
-            if (post.data[`${phone_type}-phone-number`] !== "" && !PHONE_NUMBER_FORMAT.test(post.data[`${phone_type}-phone-number`])) {
+            if (post.data[`${phone_type}-phone-area-code`] !== "" && post.data[`${phone_type}-phone-number`] === "") {
                 return false;
             }
-            if (post.data[`${phone_type}-phone-area-code`] !== "" && post.data[`${phone_type}-phone-number`] === "") {
+
+            const area_code = post.data[`${phone_type}-phone-area-code`] !== "" ? personal_data["area-codes"].find(_area_code => _area_code.id === post.data[`${phone_type}-phone-area-code`]) ?? null : null;
+            if (post.data[`${phone_type}-phone-area-code`] !== "" && area_code === null) {
+                return false;
+            }
+            if (post.data[`${phone_type}-phone-number`] !== "" && !regExpStringToRegExp(
+                area_code["phone-number-format"]
+            ).test(post.data[`${phone_type}-phone-number`])) {
                 return false;
             }
         }
@@ -1101,7 +1108,9 @@ export class StudisSelfserviceDemoBackendApi {
         if (typeof post.data["old-age-survivar-insurance-number"] !== "string") {
             return false;
         }
-        if (post.data["old-age-survivar-insurance-number"] !== "" && !OLD_AGE_SURVIVAR_INSURANCE_NUMBER_FORMAT.test(post.data["old-age-survivar-insurance-number"])) {
+        if (post.data["old-age-survivar-insurance-number"] !== "" && !regExpStringToRegExp(
+            personal_data["old-age-survivar-insurance-number-format"]
+        ).test(post.data["old-age-survivar-insurance-number"])) {
             return false;
         }
 
@@ -1494,9 +1503,14 @@ export class StudisSelfserviceDemoBackendApi {
      * @returns {Promise<AreaCode[]>}
      */
     async #getAreaCodes() {
-        return (await this.#getJsonApi()).importJson(
+        return (await (await this.#getJsonApi()).importJson(
             `${__dirname}/../Data/AreaCode/area-codes.json`
-        );
+        )).map(area_code => {
+            const _area_code = structuredClone(area_code);
+            _area_code["phone-number-format"] = `${PHONE_NUMBER_FORMAT}`;
+            _area_code["phone-number-example"] = PHONE_NUMBER_EXAMPLE;
+            return _area_code;
+        });
     }
 
     /**
@@ -1706,7 +1720,6 @@ export class StudisSelfserviceDemoBackendApi {
             countries: await this.#getCountries(),
             places: await this.#getPlacesWithPostalCode(),
             "area-codes": await this.#getAreaCodes(),
-            "phone-number-format": `${PHONE_NUMBER_FORMAT}`,
             languages: await this.#getLanguages(),
             "min-birth-date": MIN_BIRTH_DATE,
             "max-birth-date": MAX_BIRTH_DATE,

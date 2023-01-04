@@ -10,8 +10,6 @@
     "max-postal-code": 9999,
     "places": [],
     "area-codes": [],
-    "phone-number-format": "",
-    "phone-number-example": "000 000 00 00",
     "required-phone": false,
     "required-phone-home": false,
     "required-phone-mobile": false,
