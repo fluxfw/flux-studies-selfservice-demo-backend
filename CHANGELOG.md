@@ -6,6 +6,12 @@ Changes:
 
 \-
 
+## v2023-01-04-2
+
+Changes:
+
+- Dependent phone number format from area code
+
 ## v2023-01-04-1
 
 Changes:
