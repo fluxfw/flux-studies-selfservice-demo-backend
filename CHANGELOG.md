@@ -6,6 +6,13 @@ Changes:
 
 \-
 
+## v2023-01-04-1
+
+Changes:
+
+- `required-phone` variant
+- Fix `required-phone-{type}`
+
 ## v2023-01-03-3
 
 Changes:

@@ -17,6 +17,7 @@ import { MIN_ISSUE_DATE } from "../Data/UniversityEntranceQualification/MIN_ISSU
 import { MIN_START_DATE } from "../Data/PreviousStudies/MIN_START_DATE.mjs";
 import { OLD_AGE_SURVIVAR_INSURANCE_NUMBER_FORMAT } from "../Data/PersonalData/OLD_AGE_SURVIVAR_INSURANCE_NUMBER_FORMAT.mjs";
 import { PHONE_NUMBER_FORMAT } from "../Data/PersonalData/PHONE_NUMBER_FORMAT.mjs";
+import { PHONE_TYPES } from "../../../../flux-studis-selfservice-frontend/src/Adapter/PersonalData/PHONE_TYPES.mjs";
 import { Readable } from "node:stream";
 import { REGISTRATION_NUMBER_FORMAT } from "../Data/PersonalData/REGISTRATION_NUMBER_FORMAT.mjs";
 import { dirname, join } from "node:path/posix";
@@ -1017,11 +1018,7 @@ export class StudisSelfserviceDemoBackendApi {
             return false;
         }
 
-        for (const phone_type of [
-            "home",
-            "mobile",
-            "business"
-        ]) {
+        for (const phone_type of PHONE_TYPES) {
             if (typeof post.data[`${phone_type}-phone-area-code`] !== "string") {
                 return false;
             }
@@ -1038,13 +1035,19 @@ export class StudisSelfserviceDemoBackendApi {
             if (typeof post.data[`${phone_type}-phone-number`] !== "string") {
                 return false;
             }
-            if (personal_data[`required-${phone_type}`] && post.data[`${phone_type}-phone-number`] === "") {
+            if (personal_data[`required-phone-${phone_type}`] && post.data[`${phone_type}-phone-number`] === "") {
                 return false;
             }
             if (post.data[`${phone_type}-phone-number`] !== "" && !PHONE_NUMBER_FORMAT.test(post.data[`${phone_type}-phone-number`])) {
                 return false;
             }
             if (post.data[`${phone_type}-phone-area-code`] !== "" && post.data[`${phone_type}-phone-number`] === "") {
+                return false;
+            }
+        }
+
+        if (personal_data["required-phone"]) {
+            if (!PHONE_TYPES.some(phone_type => post.data[`${phone_type}-phone-area-code`] !== "")) {
                 return false;
             }
         }
