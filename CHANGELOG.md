@@ -6,6 +6,12 @@ Changes:
 
 \-
 
+## v2023-01-05-2
+
+Changes:
+
+- `hash-password-on-client`
+
 ## v2023-01-05-1
 
 Changes:
