@@ -1,4 +1,5 @@
 {
     "semesters": [],
-    "min-password-length": 8
+    "min-password-length": 8,
+    "hash-password-on-client": true
 }
