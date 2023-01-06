@@ -2,6 +2,6 @@
     "semesters": [],
     "min-password-length": 8,
     "hash-password-on-client": true,
-    "hash-password-on-client-algorithm": "sha-512",
+    "hash-password-on-client-algorithm": "SHA-512",
     "hash-password-on-client-radix": 36
 }
