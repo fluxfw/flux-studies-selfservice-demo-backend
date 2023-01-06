@@ -2,7 +2,6 @@ import { BIRTH_DATE_FORMAT } from "../Data/PersonalData/BIRTH_DATE_FORMAT.mjs";
 import { CONFIG_ENV_PREFIX } from "../Config/CONFIG.mjs";
 import { CONTENT_TYPE_JSON } from "../../../../flux-http-api/src/Adapter/ContentType/CONTENT_TYPE.mjs";
 import { COOKIE_SESSION_NUMBER } from "../Response/COOKIE.mjs";
-import cookieParser from "cookie-parser";
 import { EMAIL_FORMAT } from "../Data/PersonalData/EMAIL_FORMAT.mjs";
 import express from "express";
 import { fileURLToPath } from "node:url";
@@ -17,7 +16,6 @@ import { MIN_ISSUE_DATE } from "../Data/UniversityEntranceQualification/MIN_ISSU
 import { MIN_START_DATE } from "../Data/PreviousStudies/MIN_START_DATE.mjs";
 import { OLD_AGE_SURVIVAR_INSURANCE_NUMBER_FORMAT } from "../Data/PersonalData/OLD_AGE_SURVIVAR_INSURANCE_NUMBER_FORMAT.mjs";
 import { PHONE_TYPES } from "../../../../flux-studis-selfservice-frontend/src/Adapter/PersonalData/PHONE_TYPES.mjs";
-import { Readable } from "node:stream";
 import { regExpStringToRegExp } from "../../../../flux-studis-selfservice-frontend/src/Adapter/PersonalData/regExpStringToRegExp.mjs";
 import { REGISTRATION_NUMBER_FORMAT } from "../Data/PersonalData/REGISTRATION_NUMBER_FORMAT.mjs";
 import { dirname, join } from "node:path/posix";
@@ -29,6 +27,7 @@ import { STATUS_400, STATUS_500 } from "../../../../flux-http-api/src/Adapter/St
 
 /** @typedef {import("../../../../flux-studis-selfservice-frontend/src/Adapter/Legal/AcceptedLegal.mjs").AcceptedLegal} AcceptedLegal */
 /** @typedef {import("../Application/Application.mjs").Application} Application */
+/** @typedef {import("../Response/ApiResponse.mjs").ApiResponse} ApiResponse */
 /** @typedef {import("../../../../flux-studis-selfservice-frontend/src/Adapter/AreaCode/AreaCode.mjs").AreaCode} AreaCode */
 /** @typedef {import("../../../../flux-studis-selfservice-frontend/src/Adapter/Canton/Canton.mjs").Canton} Canton */
 /** @typedef {import("../../../../flux-studis-selfservice-frontend/src/Adapter/Certificate/Certificate.mjs").Certificate} Certificate */
@@ -49,6 +48,8 @@ import { STATUS_400, STATUS_500 } from "../../../../flux-http-api/src/Adapter/St
 /** @typedef {import("../../../../flux-studis-selfservice-frontend/src/Adapter/PersonalData/FilledPersonalData.mjs").FilledPersonalData} FilledPersonalData */
 /** @typedef {import("node:http")} http */
 /** @typedef {import("../../../../flux-http-api/src/Adapter/Api/HttpApi.mjs").HttpApi} HttpApi */
+/** @typedef {import("../../../../flux-http-api/src/Adapter/Request/HttpServerRequest.mjs").HttpServerRequest} HttpServerRequest */
+/** @typedef {import("../../../../flux-http-api/src/Adapter/Response/HttpServerResponse.mjs").HttpServerResponse} HttpServerResponse */
 /** @typedef {import("../../../../flux-studis-selfservice-frontend/src/Adapter/IdentificationNumber/IdentificationNumber.mjs").IdentificationNumber} IdentificationNumber */
 /** @typedef {import("../../../../flux-studis-selfservice-frontend/src/Adapter/IntendedDegreeProgram/IntendedDegreeProgram.mjs").IntendedDegreeProgram} IntendedDegreeProgram */
 /** @typedef {import("../../../../flux-studis-selfservice-frontend/src/Adapter/IntendedDegreeProgram2/IntendedDegreeProgram2.mjs").IntendedDegreeProgram2} IntendedDegreeProgram2 */
@@ -63,7 +64,6 @@ import { STATUS_400, STATUS_500 } from "../../../../flux-http-api/src/Adapter/St
 /** @typedef {import("../../../../flux-studis-selfservice-frontend/src/Adapter/Portrait/Portrait.mjs").Portrait} Portrait */
 /** @typedef {import("../../../../flux-studis-selfservice-frontend/src/Adapter/PreviousStudies/PreviousStudies.mjs").PreviousStudies} PreviousStudies */
 /** @typedef {import("../../../../flux-studis-selfservice-frontend/src/Adapter/Post/Post.mjs").Post} Post */
-/** @typedef {import("../Response/Response.mjs").Response} Response */
 /** @typedef {import("../../../../flux-studis-selfservice-frontend/src/Adapter/Resume/Resume.mjs").Resume} Resume */
 /** @typedef {import("../../../../flux-studis-selfservice-frontend/src/Adapter/Salutation/Salutation.mjs").Salutation} Salutation */
 /** @typedef {import("../../../../flux-studis-selfservice-frontend/src/Adapter/School/School.mjs").School} School */
@@ -251,7 +251,7 @@ export class StudisSelfserviceDemoBackendApi {
 
     /**
      * @param {Application | null} application
-     * @returns {Promise<Response>}
+     * @returns {Promise<ApiResponse>}
      */
     async #back(application = null) {
         let session_number = null;
@@ -1326,7 +1326,7 @@ export class StudisSelfserviceDemoBackendApi {
 
     /**
      * @param {Application | null} application
-     * @returns {Promise<Response>}
+     * @returns {Promise<ApiResponse>}
      */
     async #get(application = null) {
         let page = application?.page ?? null;
@@ -1466,12 +1466,12 @@ export class StudisSelfserviceDemoBackendApi {
     }
 
     /**
-     * @param {http.IncomingMessage} req
+     * @param {HttpServerRequest} request
      * @returns {Application | null}
      */
-    #getApplicationByRequest(req) {
+    #getApplicationByRequest(request) {
         const session_number = this.#getSessionNumberFromRequest(
-            req
+            request
         );
 
         if (session_number === null) {
@@ -1799,99 +1799,228 @@ export class StudisSelfserviceDemoBackendApi {
     async #getRouter() {
         const router = express.Router();
 
-        router.use(cookieParser());
-
         router.post("/api/back", async (req, res) => {
+            let request;
             try {
-                this.#response(
-                    req,
-                    res,
-                    await this.#back(
-                        this.#getApplicationByRequest(
-                            req
-                        )
-                    )
+                request = await this.#http_api.mapServerRequestToRequest(
+                    req
                 );
             } catch (error) {
                 console.error(error);
 
-                res.statusCode = STATUS_500;
-                res.end();
+                await this.#http_api.mapResponseToServerResponse(
+                    new Response(null, {
+                        status: STATUS_400
+                    }),
+                    res
+                );
+                return;
+            }
+
+            try {
+                await this.#mapApiResponse(
+                    await this.#back(
+                        this.#getApplicationByRequest(
+                            request
+                        )
+                    ),
+                    res,
+                    request
+                );
+            } catch (error) {
+                console.error(error);
+
+                await this.#http_api.mapResponseToServerResponse(
+                    new Response(null, {
+                        status: STATUS_500
+                    }),
+                    res,
+                    request
+                );
             }
         });
 
         router.get("/api/get", async (req, res) => {
+            let request;
             try {
-                this.#response(
-                    req,
-                    res,
-                    await this.#get(
-                        this.#getApplicationByRequest(
-                            req
-                        )
-                    )
+                request = await this.#http_api.mapServerRequestToRequest(
+                    req
                 );
             } catch (error) {
                 console.error(error);
 
-                res.statusCode = STATUS_500;
-                res.end();
+                await this.#http_api.mapResponseToServerResponse(
+                    new Response(null, {
+                        status: STATUS_400
+                    }),
+                    res
+                );
+                return;
+            }
+
+            try {
+                await this.#mapApiResponse(
+                    await this.#get(
+                        this.#getApplicationByRequest(
+                            request
+                        )
+                    ),
+                    res,
+                    request
+                );
+            } catch (error) {
+                console.error(error);
+
+                await this.#http_api.mapResponseToServerResponse(
+                    new Response(null, {
+                        status: STATUS_500
+                    }),
+                    res,
+                    request
+                );
             }
         });
 
         router.get("/api/layout", async (req, res) => {
+            let request;
             try {
-                this.#response(
-                    req,
-                    res,
-                    await this.#layout()
+                request = await this.#http_api.mapServerRequestToRequest(
+                    req
                 );
             } catch (error) {
                 console.error(error);
 
-                res.statusCode = STATUS_500;
-                res.end();
+                await this.#http_api.mapResponseToServerResponse(
+                    new Response(null, {
+                        status: STATUS_400
+                    }),
+                    res
+                );
+                return;
+            }
+
+            try {
+                await this.#mapApiResponse(
+                    await this.#layout(),
+                    res,
+                    request
+                );
+            } catch (error) {
+                console.error(error);
+
+                await this.#http_api.mapResponseToServerResponse(
+                    new Response(null, {
+                        status: STATUS_500
+                    }),
+                    res,
+                    request
+                );
             }
         });
 
         router.post("/api/logout", async (req, res) => {
+            let request;
             try {
-                this.#response(
-                    req,
-                    res,
-                    await this.#logout()
+                request = await this.#http_api.mapServerRequestToRequest(
+                    req
                 );
             } catch (error) {
                 console.error(error);
 
-                res.statusCode = STATUS_500;
-                res.end();
+                await this.#http_api.mapResponseToServerResponse(
+                    new Response(null, {
+                        status: STATUS_400
+                    }),
+                    res
+                );
+                return;
+            }
+
+            try {
+                await this.#mapApiResponse(
+                    await this.#logout(),
+                    res,
+                    request
+                );
+            } catch (error) {
+                console.error(error);
+
+                await this.#http_api.mapResponseToServerResponse(
+                    new Response(null, {
+                        status: STATUS_500
+                    }),
+                    res,
+                    request
+                );
             }
         });
 
         router.post("/api/post", async (req, res) => {
+            let request;
             try {
-                if (!(HEADER_CONTENT_TYPE in req.headers) || !req.headers[HEADER_CONTENT_TYPE].includes(CONTENT_TYPE_JSON)) {
-                    res.statusCode = STATUS_400;
-                    res.end();
-                    return;
-                }
-
-                this.#response(
-                    req,
-                    res,
-                    await this.#post(
-                        await new Response(Readable.toWeb(req)).json(),
-                        this.#getApplicationByRequest(
-                            req
-                        )
-                    )
+                request = await this.#http_api.mapServerRequestToRequest(
+                    req
                 );
             } catch (error) {
                 console.error(error);
 
-                res.statusCode = STATUS_500;
-                res.end();
+                await this.#http_api.mapResponseToServerResponse(
+                    new Response(null, {
+                        status: STATUS_400
+                    }),
+                    res
+                );
+                return;
+            }
+
+            try {
+                if (!(request.headers.get(HEADER_CONTENT_TYPE)?.includes(CONTENT_TYPE_JSON) ?? false)) {
+                    await this.#http_api.mapResponseToServerResponse(
+                        new Response(null, {
+                            status: STATUS_400
+                        }),
+                        res,
+                        request
+                    );
+                    return;
+                }
+
+                let post;
+                try {
+                    post = await request.json();
+                } catch (error) {
+                    console.error(error);
+
+                    await this.#http_api.mapResponseToServerResponse(
+                        new Response(null, {
+                            status: STATUS_400
+                        }),
+                        res,
+                        request
+                    );
+                    return;
+                }
+
+                await this.#mapApiResponse(
+                    await this.#post(
+                        post,
+                        this.#getApplicationByRequest(
+                            request
+                        )
+                    ),
+                    res,
+                    request
+                );
+            } catch (error) {
+                console.error(error);
+
+                await this.#http_api.mapResponseToServerResponse(
+                    new Response(null, {
+                        status: STATUS_500
+                    }),
+                    res,
+                    request
+                );
             }
         });
 
@@ -1928,11 +2057,11 @@ export class StudisSelfserviceDemoBackendApi {
     }
 
     /**
-     * @param {http.IncomingMessage} req
+     * @param {HttpServerRequest} request
      * @returns {string | null}
      */
-    #getSessionNumberFromRequest(req) {
-        return req.cookies[COOKIE_SESSION_NUMBER] ?? null;
+    #getSessionNumberFromRequest(request) {
+        return request._cookies[COOKIE_SESSION_NUMBER] ?? null;
     }
 
     /**
@@ -2005,7 +2134,7 @@ export class StudisSelfserviceDemoBackendApi {
     }
 
     /**
-     * @returns {Promise<Response>}
+     * @returns {Promise<ApiResponse>}
      */
     async #layout() {
         return {
@@ -2015,13 +2144,50 @@ export class StudisSelfserviceDemoBackendApi {
     }
 
     /**
-     * @returns {Promise<Response>}
+     * @returns {Promise<ApiResponse>}
      */
     async #logout() {
         return {
             data: null,
             "session-number": false
         };
+    }
+
+    /**
+     * @param {ApiResponse} api_response
+     * @param {http.ServerResponse} res
+     * @param {HttpServerRequest} request
+     * @returns {Promise<void>}
+     */
+    async #mapApiResponse(api_response, res, request) {
+        const response = Response.json(api_response.data);
+
+        if (api_response["session-number"] === false) {
+            const session_number = this.#getSessionNumberFromRequest(
+                request
+            );
+            if (session_number !== null) {
+                response._cookies = {
+                    [COOKIE_SESSION_NUMBER]: null
+                };
+
+                this.#removeSession(
+                    session_number
+                );
+            }
+        } else {
+            if (api_response["session-number"] !== null) {
+                response._cookies = {
+                    [COOKIE_SESSION_NUMBER]: api_response["session-number"]
+                };
+            }
+        }
+
+        await this.#http_api.mapResponseToServerResponse(
+            response,
+            res,
+            request
+        );
     }
 
     /**
@@ -2042,7 +2208,7 @@ export class StudisSelfserviceDemoBackendApi {
     /**
      * @param {Post} post
      * @param {Application | null} application
-     * @returns {Promise<Response>}
+     * @returns {Promise<ApiResponse>}
      */
     async #post(post, application = null) {
         let ok = true;
@@ -2271,42 +2437,6 @@ export class StudisSelfserviceDemoBackendApi {
         if (index !== -1) {
             this.#sessions.splice(index, 1);
         }
-    }
-
-    /**
-     * @param {http.IncomingMessage} req
-     * @param {http.ServerResponse} res
-     * @param {Response} response
-     * @returns {void}
-     */
-    #response(req, res, response) {
-        if (response["session-number"] === false) {
-            const session_number = this.#getSessionNumberFromRequest(
-                req
-            );
-            if (session_number !== null) {
-                res.clearCookie(COOKIE_SESSION_NUMBER, {
-                    httpOnly: true,
-                    sameSite: "lax",
-                    secure: req.socket.encrypted
-                });
-                this.#removeSession(
-                    session_number
-                );
-            }
-        } else {
-            if (response["session-number"] !== null) {
-                res.cookie(COOKIE_SESSION_NUMBER, response["session-number"], {
-                    httpOnly: true,
-                    sameSite: "lax",
-                    secure: req.socket.encrypted
-                });
-            }
-        }
-
-        res.setHeader(HEADER_CONTENT_TYPE, CONTENT_TYPE_JSON);
-        res.write(JSON.stringify(response.data));
-        res.end();
     }
 
     /**
