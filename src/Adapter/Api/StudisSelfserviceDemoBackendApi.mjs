@@ -3,9 +3,7 @@ import { CONFIG_ENV_PREFIX } from "../Config/CONFIG.mjs";
 import { CONTENT_TYPE_JSON } from "../../../../flux-http-api/src/Adapter/ContentType/CONTENT_TYPE.mjs";
 import { COOKIE_SESSION_NUMBER } from "../Response/COOKIE.mjs";
 import { EMAIL_FORMAT } from "../Data/PersonalData/EMAIL_FORMAT.mjs";
-import express from "express";
 import { fileURLToPath } from "node:url";
-import { HEADER_CONTENT_TYPE } from "../../../../flux-http-api/src/Adapter/Header/HEADER.mjs";
 import { MAX_BIRTH_DATE } from "../Data/PersonalData/MAX_BIRTH_DATE.mjs";
 import { MAX_END_DATE } from "../Data/PreviousStudies/MAX_END_DATE.mjs";
 import { MAX_ISSUE_DATE } from "../Data/UniversityEntranceQualification/MAX_ISSUE_DATE.mjs";
@@ -19,11 +17,13 @@ import { PHONE_TYPES } from "../../../../flux-studis-selfservice-frontend/src/Ad
 import { regExpStringToRegExp } from "../../../../flux-studis-selfservice-frontend/src/Adapter/PersonalData/regExpStringToRegExp.mjs";
 import { REGISTRATION_NUMBER_FORMAT } from "../Data/PersonalData/REGISTRATION_NUMBER_FORMAT.mjs";
 import { dirname, join } from "node:path/posix";
+import { HEADER_ALLOW, HEADER_CONTENT_TYPE } from "../../../../flux-http-api/src/Adapter/Header/HEADER.mjs";
 import { HTTP_SERVER_DEFAULT_LISTEN_HTTP_PORT, HTTP_SERVER_DEFAULT_LISTEN_HTTPS_PORT, HTTP_SERVER_DEFAULT_REDIRECT_HTTP_TO_HTTPS, HTTP_SERVER_DEFAULT_REDIRECT_HTTP_TO_HTTPS_PORT, HTTP_SERVER_DEFAULT_REDIRECT_HTTP_TO_HTTPS_STATUS_CODE } from "../../../../flux-http-api/src/Adapter/HttpServer/HTTP_SERVER.mjs";
+import { METHOD_GET, METHOD_HEAD, METHOD_POST } from "../../../../flux-http-api/src/Adapter/Method/METHOD.mjs";
 import { PAGE_CHOICE_SUBJECT, PAGE_COMPLETED, PAGE_CREATE, PAGE_IDENTIFICATION_NUMBER, PAGE_INTENDED_DEGREE_PROGRAM, PAGE_INTENDED_DEGREE_PROGRAM_2, PAGE_LEGAL, PAGE_PERSONAL_DATA, PAGE_PORTRAIT, PAGE_PREVIOUS_STUDIES, PAGE_RESUME, PAGE_START, PAGE_UNIVERSITY_ENTRANCE_QUALIFICATION } from "../../../../flux-studis-selfservice-frontend/src/Adapter/Page/PAGE.mjs";
 import { PHONE_NUMBER_EXAMPLE, PHONE_NUMBER_FORMAT } from "../Data/PersonalData/PHONE_NUMBER.mjs";
 import { SERVER_CONFIG_HTTPS_CERT_KEY, SERVER_CONFIG_HTTPS_DHPARAM_KEY, SERVER_CONFIG_HTTPS_KEY_KEY, SERVER_CONFIG_LISTEN_HTTP_PORT_KEY, SERVER_CONFIG_LISTEN_HTTPS_PORT_KEY, SERVER_CONFIG_LISTEN_INTERFACE_KEY, SERVER_CONFIG_REDIRECT_HTTP_TO_HTTPS_KEY, SERVER_CONFIG_REDIRECT_HTTP_TO_HTTPS_PORT_KEY, SERVER_CONFIG_REDIRECT_HTTP_TO_HTTPS_STATUS_CODE_KEY } from "../Server/SERVER_CONFIG.mjs";
-import { STATUS_400, STATUS_500 } from "../../../../flux-http-api/src/Adapter/Status/STATUS.mjs";
+import { STATUS_400, STATUS_405 } from "../../../../flux-http-api/src/Adapter/Status/STATUS.mjs";
 
 /** @typedef {import("../../../../flux-studis-selfservice-frontend/src/Adapter/Legal/AcceptedLegal.mjs").AcceptedLegal} AcceptedLegal */
 /** @typedef {import("../Application/Application.mjs").Application} Application */
@@ -46,7 +46,6 @@ import { STATUS_400, STATUS_500 } from "../../../../flux-http-api/src/Adapter/St
 /** @typedef {import("../../../../flux-studis-selfservice-frontend/src/Adapter/DegreeProgram/DegreeProgram.mjs").DegreeProgram} DegreeProgram */
 /** @typedef {import("../../../../flux-studis-selfservice-frontend/src/Adapter/DegreeTitle/DegreeTitle.mjs").DegreeTitle} DegreeTitle */
 /** @typedef {import("../../../../flux-studis-selfservice-frontend/src/Adapter/PersonalData/FilledPersonalData.mjs").FilledPersonalData} FilledPersonalData */
-/** @typedef {import("node:http")} http */
 /** @typedef {import("../../../../flux-http-api/src/Adapter/Api/HttpApi.mjs").HttpApi} HttpApi */
 /** @typedef {import("../../../../flux-http-api/src/Adapter/Request/HttpServerRequest.mjs").HttpServerRequest} HttpServerRequest */
 /** @typedef {import("../../../../flux-http-api/src/Adapter/Response/HttpServerResponse.mjs").HttpServerResponse} HttpServerResponse */
@@ -129,7 +128,9 @@ export class StudisSelfserviceDemoBackendApi {
         const config_api = await this.#getConfigApi();
 
         await (await this.#getHttpApi()).runHttpServer(
-            async () => this.#getRouter(),
+            async request => this.#handleRequest(
+                request
+            ),
             {
                 https_cert: await config_api.getConfig(
                     SERVER_CONFIG_HTTPS_CERT_KEY
@@ -1794,242 +1795,6 @@ export class StudisSelfserviceDemoBackendApi {
     }
 
     /**
-     * @returns {Promise<express.Router>}
-     */
-    async #getRouter() {
-        const router = express.Router();
-
-        router.post("/api/back", async (req, res) => {
-            let request;
-            try {
-                request = await this.#http_api.mapServerRequestToRequest(
-                    req
-                );
-            } catch (error) {
-                console.error(error);
-
-                await this.#http_api.mapResponseToServerResponse(
-                    new Response(null, {
-                        status: STATUS_400
-                    }),
-                    res
-                );
-                return;
-            }
-
-            try {
-                await this.#mapApiResponse(
-                    await this.#back(
-                        this.#getApplicationByRequest(
-                            request
-                        )
-                    ),
-                    res,
-                    request
-                );
-            } catch (error) {
-                console.error(error);
-
-                await this.#http_api.mapResponseToServerResponse(
-                    new Response(null, {
-                        status: STATUS_500
-                    }),
-                    res,
-                    request
-                );
-            }
-        });
-
-        router.get("/api/get", async (req, res) => {
-            let request;
-            try {
-                request = await this.#http_api.mapServerRequestToRequest(
-                    req
-                );
-            } catch (error) {
-                console.error(error);
-
-                await this.#http_api.mapResponseToServerResponse(
-                    new Response(null, {
-                        status: STATUS_400
-                    }),
-                    res
-                );
-                return;
-            }
-
-            try {
-                await this.#mapApiResponse(
-                    await this.#get(
-                        this.#getApplicationByRequest(
-                            request
-                        )
-                    ),
-                    res,
-                    request
-                );
-            } catch (error) {
-                console.error(error);
-
-                await this.#http_api.mapResponseToServerResponse(
-                    new Response(null, {
-                        status: STATUS_500
-                    }),
-                    res,
-                    request
-                );
-            }
-        });
-
-        router.get("/api/layout", async (req, res) => {
-            let request;
-            try {
-                request = await this.#http_api.mapServerRequestToRequest(
-                    req
-                );
-            } catch (error) {
-                console.error(error);
-
-                await this.#http_api.mapResponseToServerResponse(
-                    new Response(null, {
-                        status: STATUS_400
-                    }),
-                    res
-                );
-                return;
-            }
-
-            try {
-                await this.#mapApiResponse(
-                    await this.#layout(),
-                    res,
-                    request
-                );
-            } catch (error) {
-                console.error(error);
-
-                await this.#http_api.mapResponseToServerResponse(
-                    new Response(null, {
-                        status: STATUS_500
-                    }),
-                    res,
-                    request
-                );
-            }
-        });
-
-        router.post("/api/logout", async (req, res) => {
-            let request;
-            try {
-                request = await this.#http_api.mapServerRequestToRequest(
-                    req
-                );
-            } catch (error) {
-                console.error(error);
-
-                await this.#http_api.mapResponseToServerResponse(
-                    new Response(null, {
-                        status: STATUS_400
-                    }),
-                    res
-                );
-                return;
-            }
-
-            try {
-                await this.#mapApiResponse(
-                    await this.#logout(),
-                    res,
-                    request
-                );
-            } catch (error) {
-                console.error(error);
-
-                await this.#http_api.mapResponseToServerResponse(
-                    new Response(null, {
-                        status: STATUS_500
-                    }),
-                    res,
-                    request
-                );
-            }
-        });
-
-        router.post("/api/post", async (req, res) => {
-            let request;
-            try {
-                request = await this.#http_api.mapServerRequestToRequest(
-                    req
-                );
-            } catch (error) {
-                console.error(error);
-
-                await this.#http_api.mapResponseToServerResponse(
-                    new Response(null, {
-                        status: STATUS_400
-                    }),
-                    res
-                );
-                return;
-            }
-
-            try {
-                if (!(request.headers.get(HEADER_CONTENT_TYPE)?.includes(CONTENT_TYPE_JSON) ?? false)) {
-                    await this.#http_api.mapResponseToServerResponse(
-                        new Response(null, {
-                            status: STATUS_400
-                        }),
-                        res,
-                        request
-                    );
-                    return;
-                }
-
-                let post;
-                try {
-                    post = await request.json();
-                } catch (error) {
-                    console.error(error);
-
-                    await this.#http_api.mapResponseToServerResponse(
-                        new Response(null, {
-                            status: STATUS_400
-                        }),
-                        res,
-                        request
-                    );
-                    return;
-                }
-
-                await this.#mapApiResponse(
-                    await this.#post(
-                        post,
-                        this.#getApplicationByRequest(
-                            request
-                        )
-                    ),
-                    res,
-                    request
-                );
-            } catch (error) {
-                console.error(error);
-
-                await this.#http_api.mapResponseToServerResponse(
-                    new Response(null, {
-                        status: STATUS_500
-                    }),
-                    res,
-                    request
-                );
-            }
-        });
-
-        router.use("/", express.static(join(__dirname, "..", "..", "..", "..", "flux-studis-selfservice-frontend", "src")));
-
-        return router;
-    }
-
-    /**
      * @returns {Promise<Salutation[]>}
      */
     async #getSalutations() {
@@ -2134,6 +1899,240 @@ export class StudisSelfserviceDemoBackendApi {
     }
 
     /**
+     * @param {HttpServerRequest} request
+     * @returns {HttpServerResponse | null}
+     */
+    async #handleApiRequest(request) {
+        if (request._urlObject.pathname.startsWith("/api/back/") || request._urlObject.pathname === "/api/back") {
+            return this.#handleBackRequest(
+                request
+            );
+        }
+
+        if (request._urlObject.pathname.startsWith("/api/get/") || request._urlObject.pathname === "/api/get") {
+            return this.#handleGetRequest(
+                request
+            );
+        }
+
+        if (request._urlObject.pathname.startsWith("/api/layout/") || request._urlObject.pathname === "/api/layout") {
+            return this.#handleLayoutRequest(
+                request
+            );
+        }
+
+        if (request._urlObject.pathname.startsWith("/api/logout/") || request._urlObject.pathname === "/api/logout") {
+            return this.#handleLogoutRequest(
+                request
+            );
+        }
+
+        if (request._urlObject.pathname.startsWith("/api/post/") || request._urlObject.pathname === "/api/post") {
+            return this.#handlePostRequest(
+                request
+            );
+        }
+
+        return null;
+    }
+
+    /**
+     * @param {HttpServerRequest} request
+     * @returns {HttpServerResponse | null}
+     */
+    async #handleBackRequest(request) {
+        if (request._urlObject.pathname !== "/api/back") {
+            return null;
+        }
+
+        if (request.method !== METHOD_POST) {
+            return new Response(null, {
+                status: STATUS_405,
+                headers: {
+                    [HEADER_ALLOW]: METHOD_POST
+                }
+            });
+        }
+
+        return this.#mapApiResponse(
+            await this.#back(
+                this.#getApplicationByRequest(
+                    request
+                )
+            ),
+            request
+        );
+    }
+
+    /**
+     * @param {HttpServerRequest} request
+     * @returns {HttpServerResponse | null}
+     */
+    async #handleFrontendRequest(request) {
+        if (request.method !== METHOD_GET && request.method !== METHOD_HEAD) {
+            return new Response(null, {
+                status: STATUS_405,
+                headers: {
+                    [HEADER_ALLOW]: [
+                        METHOD_GET,
+                        METHOD_HEAD
+                    ].join(", ")
+                }
+            });
+        }
+
+        return this.#http_api.getFilteredStaticFileResponse(
+            join(__dirname, "..", "..", "..", "..", "flux-studis-selfservice-frontend", "src"),
+            request._urlObject.pathname,
+            request
+        );
+    }
+
+    /**
+     * @param {HttpServerRequest} request
+     * @returns {HttpServerResponse | null}
+     */
+    async #handleGetRequest(request) {
+        if (request._urlObject.pathname !== "/api/get") {
+            return null;
+        }
+
+        if (request.method !== METHOD_GET && request.method !== METHOD_HEAD) {
+            return new Response(null, {
+                status: STATUS_405,
+                headers: {
+                    [HEADER_ALLOW]: [
+                        METHOD_GET,
+                        METHOD_HEAD
+                    ].join(", ")
+                }
+            });
+        }
+
+        return this.#mapApiResponse(
+            await this.#get(
+                this.#getApplicationByRequest(
+                    request
+                )
+            ),
+            request
+        );
+    }
+
+    /**
+     * @param {HttpServerRequest} request
+     * @returns {HttpServerResponse | null}
+     */
+    async #handleLayoutRequest(request) {
+        if (request._urlObject.pathname !== "/api/layout") {
+            return null;
+        }
+
+        if (request.method !== METHOD_GET && request.method !== METHOD_HEAD) {
+            return new Response(null, {
+                status: STATUS_405,
+                headers: {
+                    [HEADER_ALLOW]: [
+                        METHOD_GET,
+                        METHOD_HEAD
+                    ].join(", ")
+                }
+            });
+        }
+
+        return this.#mapApiResponse(
+            await this.#layout(),
+            request
+        );
+    }
+
+    /**
+     * @param {HttpServerRequest} request
+     * @returns {HttpServerResponse | null}
+     */
+    async #handleLogoutRequest(request) {
+        if (request._urlObject.pathname !== "/api/logout") {
+            return null;
+        }
+
+        if (request.method !== METHOD_POST) {
+            return new Response(null, {
+                status: STATUS_405,
+                headers: {
+                    [HEADER_ALLOW]: METHOD_POST
+                }
+            });
+        }
+
+        return this.#mapApiResponse(
+            await this.#logout(),
+            request
+        );
+    }
+
+    /**
+     * @param {HttpServerRequest} request
+     * @returns {HttpServerResponse | null}
+     */
+    async #handlePostRequest(request) {
+        if (request._urlObject.pathname !== "/api/post") {
+            return null;
+        }
+
+        if (request.method !== METHOD_POST) {
+            return new Response(null, {
+                status: STATUS_405,
+                headers: {
+                    [HEADER_ALLOW]: METHOD_POST
+                }
+            });
+        }
+
+        if (!(request.headers.get(HEADER_CONTENT_TYPE)?.includes(CONTENT_TYPE_JSON) ?? false)) {
+            return new Response(null, {
+                status: STATUS_400
+            });
+        }
+
+        let post;
+        try {
+            post = await request.json();
+        } catch (error) {
+            console.error(error);
+
+            return new Response(null, {
+                status: STATUS_400
+            });
+        }
+
+        return this.#mapApiResponse(
+            await this.#post(
+                post,
+                this.#getApplicationByRequest(
+                    request
+                )
+            ),
+            request
+        );
+    }
+
+    /**
+     * @param {HttpServerRequest} request
+     * @returns {HttpServerResponse | null}
+     */
+    async #handleRequest(request) {
+        if (request._urlObject.pathname.startsWith("/api/") || request._urlObject.pathname === "/api") {
+            return this.#handleApiRequest(
+                request
+            );
+        } else {
+            return this.#handleFrontendRequest(
+                request
+            );
+        }
+    }
+
+    /**
      * @returns {Promise<ApiResponse>}
      */
     async #layout() {
@@ -2155,11 +2154,10 @@ export class StudisSelfserviceDemoBackendApi {
 
     /**
      * @param {ApiResponse} api_response
-     * @param {http.ServerResponse} res
      * @param {HttpServerRequest} request
-     * @returns {Promise<void>}
+     * @returns {Promise<HttpServerResponse>}
      */
-    async #mapApiResponse(api_response, res, request) {
+    async #mapApiResponse(api_response, request) {
         const response = Response.json(api_response.data);
 
         if (api_response["session-number"] === false) {
@@ -2183,11 +2181,7 @@ export class StudisSelfserviceDemoBackendApi {
             }
         }
 
-        await this.#http_api.mapResponseToServerResponse(
-            response,
-            res,
-            request
-        );
+        return response;
     }
 
     /**
