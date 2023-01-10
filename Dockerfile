@@ -1,6 +1,5 @@
 FROM node:19-alpine AS build
 
-COPY package*.json /build/flux-studis-selfservice-demo-backend/libs/flux-studis-selfservice-demo-backend/
 COPY bin/install-libraries.sh /build/flux-studis-selfservice-demo-backend/libs/flux-studis-selfservice-demo-backend/bin/install-libraries.sh
 RUN /build/flux-studis-selfservice-demo-backend/libs/flux-studis-selfservice-demo-backend/bin/install-libraries.sh
 
