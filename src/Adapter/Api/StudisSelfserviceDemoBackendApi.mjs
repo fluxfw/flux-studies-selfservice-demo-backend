@@ -4,6 +4,7 @@ import { CONTENT_TYPE_JSON } from "../../../../flux-http-api/src/Adapter/Content
 import { COOKIE_SESSION_NUMBER } from "../Response/COOKIE.mjs";
 import { EMAIL_FORMAT } from "../Data/PersonalData/EMAIL_FORMAT.mjs";
 import { fileURLToPath } from "node:url";
+import { HEADER_CONTENT_TYPE } from "../../../../flux-http-api/src/Adapter/Header/HEADER.mjs";
 import { MAX_BIRTH_DATE } from "../Data/PersonalData/MAX_BIRTH_DATE.mjs";
 import { MAX_END_DATE } from "../Data/PreviousStudies/MAX_END_DATE.mjs";
 import { MAX_ISSUE_DATE } from "../Data/UniversityEntranceQualification/MAX_ISSUE_DATE.mjs";
@@ -16,14 +17,13 @@ import { OLD_AGE_SURVIVAR_INSURANCE_NUMBER_FORMAT } from "../Data/PersonalData/O
 import { PHONE_TYPES } from "../../../../flux-studis-selfservice-frontend/src/Adapter/PersonalData/PHONE_TYPES.mjs";
 import { regExpStringToRegExp } from "../../../../flux-studis-selfservice-frontend/src/Adapter/PersonalData/regExpStringToRegExp.mjs";
 import { REGISTRATION_NUMBER_FORMAT } from "../Data/PersonalData/REGISTRATION_NUMBER_FORMAT.mjs";
+import { STATUS_400 } from "../../../../flux-http-api/src/Adapter/Status/STATUS.mjs";
 import { dirname, join } from "node:path/posix";
-import { HEADER_ALLOW, HEADER_CONTENT_TYPE } from "../../../../flux-http-api/src/Adapter/Header/HEADER.mjs";
 import { HTTP_SERVER_DEFAULT_LISTEN_HTTP_PORT, HTTP_SERVER_DEFAULT_LISTEN_HTTPS_PORT, HTTP_SERVER_DEFAULT_REDIRECT_HTTP_TO_HTTPS, HTTP_SERVER_DEFAULT_REDIRECT_HTTP_TO_HTTPS_PORT, HTTP_SERVER_DEFAULT_REDIRECT_HTTP_TO_HTTPS_STATUS_CODE } from "../../../../flux-http-api/src/Adapter/HttpServer/HTTP_SERVER.mjs";
-import { METHOD_GET, METHOD_HEAD, METHOD_POST } from "../../../../flux-http-api/src/Adapter/Method/METHOD.mjs";
+import { METHOD_GET, METHOD_HEAD, METHOD_OPTIONS, METHOD_POST } from "../../../../flux-http-api/src/Adapter/Method/METHOD.mjs";
 import { PAGE_CHOICE_SUBJECT, PAGE_COMPLETED, PAGE_CREATE, PAGE_IDENTIFICATION_NUMBER, PAGE_INTENDED_DEGREE_PROGRAM, PAGE_INTENDED_DEGREE_PROGRAM_2, PAGE_LEGAL, PAGE_PERSONAL_DATA, PAGE_PORTRAIT, PAGE_PREVIOUS_STUDIES, PAGE_RESUME, PAGE_START, PAGE_UNIVERSITY_ENTRANCE_QUALIFICATION } from "../../../../flux-studis-selfservice-frontend/src/Adapter/Page/PAGE.mjs";
 import { PHONE_NUMBER_EXAMPLE, PHONE_NUMBER_FORMAT } from "../Data/PersonalData/PHONE_NUMBER.mjs";
 import { SERVER_CONFIG_HTTPS_CERT_KEY, SERVER_CONFIG_HTTPS_DHPARAM_KEY, SERVER_CONFIG_HTTPS_KEY_KEY, SERVER_CONFIG_LISTEN_HTTP_PORT_KEY, SERVER_CONFIG_LISTEN_HTTPS_PORT_KEY, SERVER_CONFIG_LISTEN_INTERFACE_KEY, SERVER_CONFIG_REDIRECT_HTTP_TO_HTTPS_KEY, SERVER_CONFIG_REDIRECT_HTTP_TO_HTTPS_PORT_KEY, SERVER_CONFIG_REDIRECT_HTTP_TO_HTTPS_STATUS_CODE_KEY } from "../Server/SERVER_CONFIG.mjs";
-import { STATUS_400, STATUS_405 } from "../../../../flux-http-api/src/Adapter/Status/STATUS.mjs";
 
 /** @typedef {import("../../../../flux-studis-selfservice-frontend/src/Adapter/Legal/AcceptedLegal.mjs").AcceptedLegal} AcceptedLegal */
 /** @typedef {import("../Application/Application.mjs").Application} Application */
@@ -1945,13 +1945,16 @@ export class StudisSelfserviceDemoBackendApi {
             return null;
         }
 
-        if (request.method !== METHOD_POST) {
-            return new Response(null, {
-                status: STATUS_405,
-                headers: {
-                    [HEADER_ALLOW]: METHOD_POST
-                }
-            });
+        const response = await this.#http_api.validateMethods(
+            request,
+            [
+                METHOD_OPTIONS,
+                METHOD_POST
+            ]
+        );
+
+        if (response !== null) {
+            return response;
         }
 
         return this.#mapApiResponse(
@@ -1969,16 +1972,17 @@ export class StudisSelfserviceDemoBackendApi {
      * @returns {HttpServerResponse | null}
      */
     async #handleFrontendRequest(request) {
-        if (request.method !== METHOD_GET && request.method !== METHOD_HEAD) {
-            return new Response(null, {
-                status: STATUS_405,
-                headers: {
-                    [HEADER_ALLOW]: [
-                        METHOD_GET,
-                        METHOD_HEAD
-                    ].join(", ")
-                }
-            });
+        const response = await this.#http_api.validateMethods(
+            request,
+            [
+                METHOD_GET,
+                METHOD_HEAD,
+                METHOD_OPTIONS
+            ]
+        );
+
+        if (response !== null) {
+            return response;
         }
 
         return this.#http_api.getFilteredStaticFileResponse(
@@ -1997,16 +2001,17 @@ export class StudisSelfserviceDemoBackendApi {
             return null;
         }
 
-        if (request.method !== METHOD_GET && request.method !== METHOD_HEAD) {
-            return new Response(null, {
-                status: STATUS_405,
-                headers: {
-                    [HEADER_ALLOW]: [
-                        METHOD_GET,
-                        METHOD_HEAD
-                    ].join(", ")
-                }
-            });
+        const response = await this.#http_api.validateMethods(
+            request,
+            [
+                METHOD_GET,
+                METHOD_HEAD,
+                METHOD_OPTIONS
+            ]
+        );
+
+        if (response !== null) {
+            return response;
         }
 
         return this.#mapApiResponse(
@@ -2028,16 +2033,17 @@ export class StudisSelfserviceDemoBackendApi {
             return null;
         }
 
-        if (request.method !== METHOD_GET && request.method !== METHOD_HEAD) {
-            return new Response(null, {
-                status: STATUS_405,
-                headers: {
-                    [HEADER_ALLOW]: [
-                        METHOD_GET,
-                        METHOD_HEAD
-                    ].join(", ")
-                }
-            });
+        const response = await this.#http_api.validateMethods(
+            request,
+            [
+                METHOD_GET,
+                METHOD_HEAD,
+                METHOD_OPTIONS
+            ]
+        );
+
+        if (response !== null) {
+            return response;
         }
 
         return this.#mapApiResponse(
@@ -2055,13 +2061,16 @@ export class StudisSelfserviceDemoBackendApi {
             return null;
         }
 
-        if (request.method !== METHOD_POST) {
-            return new Response(null, {
-                status: STATUS_405,
-                headers: {
-                    [HEADER_ALLOW]: METHOD_POST
-                }
-            });
+        const response = await this.#http_api.validateMethods(
+            request,
+            [
+                METHOD_OPTIONS,
+                METHOD_POST
+            ]
+        );
+
+        if (response !== null) {
+            return response;
         }
 
         return this.#mapApiResponse(
@@ -2079,13 +2088,16 @@ export class StudisSelfserviceDemoBackendApi {
             return null;
         }
 
-        if (request.method !== METHOD_POST) {
-            return new Response(null, {
-                status: STATUS_405,
-                headers: {
-                    [HEADER_ALLOW]: METHOD_POST
-                }
-            });
+        const response = await this.#http_api.validateMethods(
+            request,
+            [
+                METHOD_OPTIONS,
+                METHOD_POST
+            ]
+        );
+
+        if (response !== null) {
+            return response;
         }
 
         if (!(request.headers.get(HEADER_CONTENT_TYPE)?.includes(CONTENT_TYPE_JSON) ?? false)) {
