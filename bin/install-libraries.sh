@@ -20,7 +20,7 @@ checkAlreadyInstalled
 
 installLibrary flux-config-api https://github.com/fluxfw/flux-config-api/archive/refs/tags/v2022-12-08-1.tar.gz
 
-installLibrary flux-http-api https://github.com/fluxfw/flux-http-api/archive/refs/tags/v2023-01-16-1.tar.gz
+installLibrary flux-http-api https://github.com/fluxfw/flux-http-api/archive/refs/tags/v2023-01-16-2.tar.gz
 
 installLibrary flux-json-api https://github.com/fluxfw/flux-json-api/archive/refs/tags/v2023-01-06-1.tar.gz
 
