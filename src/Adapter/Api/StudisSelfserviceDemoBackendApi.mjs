@@ -2105,8 +2105,8 @@ export class StudisSelfserviceDemoBackendApi {
         if (!(request.getHeader(
             HEADER_CONTENT_TYPE
         )?.includes(CONTENT_TYPE_JSON) ?? false)) {
-            return HttpResponse.new(
-                null,
+            return HttpResponse.newFromTextBody(
+                "Invalid body",
                 STATUS_400
             );
         }
@@ -2117,8 +2117,8 @@ export class StudisSelfserviceDemoBackendApi {
         } catch (error) {
             console.error(error);
 
-            return HttpResponse.new(
-                null,
+            return HttpResponse.newFromTextBody(
+                "Invalid body",
                 STATUS_400
             );
         }
@@ -2199,7 +2199,7 @@ export class StudisSelfserviceDemoBackendApi {
             }
         }
 
-        return HttpResponse.newJsonBody(
+        return HttpResponse.newFromJsonBody(
             api_response.data,
             null,
             null,
