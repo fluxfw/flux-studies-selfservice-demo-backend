@@ -5,6 +5,7 @@ import { COOKIE_SESSION_NUMBER } from "../Response/COOKIE.mjs";
 import { EMAIL_FORMAT } from "../Data/PersonalData/EMAIL_FORMAT.mjs";
 import { fileURLToPath } from "node:url";
 import { HEADER_CONTENT_TYPE } from "../../../../flux-http-api/src/Adapter/Header/HEADER.mjs";
+import { HttpResponse } from "../../../../flux-http-api/src/Adapter/Response/HttpResponse.mjs";
 import { MAX_BIRTH_DATE } from "../Data/PersonalData/MAX_BIRTH_DATE.mjs";
 import { MAX_END_DATE } from "../Data/PreviousStudies/MAX_END_DATE.mjs";
 import { MAX_ISSUE_DATE } from "../Data/UniversityEntranceQualification/MAX_ISSUE_DATE.mjs";
@@ -19,11 +20,11 @@ import { regExpStringToRegExp } from "../../../../flux-studis-selfservice-fronte
 import { REGISTRATION_NUMBER_FORMAT } from "../Data/PersonalData/REGISTRATION_NUMBER_FORMAT.mjs";
 import { STATUS_400 } from "../../../../flux-http-api/src/Adapter/Status/STATUS.mjs";
 import { dirname, join } from "node:path/posix";
-import { HTTP_SERVER_DEFAULT_LISTEN_HTTP_PORT, HTTP_SERVER_DEFAULT_LISTEN_HTTPS_PORT, HTTP_SERVER_DEFAULT_REDIRECT_HTTP_TO_HTTPS, HTTP_SERVER_DEFAULT_REDIRECT_HTTP_TO_HTTPS_PORT, HTTP_SERVER_DEFAULT_REDIRECT_HTTP_TO_HTTPS_STATUS_CODE } from "../../../../flux-http-api/src/Adapter/HttpServer/HTTP_SERVER.mjs";
 import { METHOD_GET, METHOD_HEAD, METHOD_OPTIONS, METHOD_POST } from "../../../../flux-http-api/src/Adapter/Method/METHOD.mjs";
 import { PAGE_CHOICE_SUBJECT, PAGE_COMPLETED, PAGE_CREATE, PAGE_IDENTIFICATION_NUMBER, PAGE_INTENDED_DEGREE_PROGRAM, PAGE_INTENDED_DEGREE_PROGRAM_2, PAGE_LEGAL, PAGE_PERSONAL_DATA, PAGE_PORTRAIT, PAGE_PREVIOUS_STUDIES, PAGE_RESUME, PAGE_START, PAGE_UNIVERSITY_ENTRANCE_QUALIFICATION } from "../../../../flux-studis-selfservice-frontend/src/Adapter/Page/PAGE.mjs";
 import { PHONE_NUMBER_EXAMPLE, PHONE_NUMBER_FORMAT } from "../Data/PersonalData/PHONE_NUMBER.mjs";
 import { SERVER_CONFIG_HTTPS_CERT_KEY, SERVER_CONFIG_HTTPS_DHPARAM_KEY, SERVER_CONFIG_HTTPS_KEY_KEY, SERVER_CONFIG_LISTEN_HTTP_PORT_KEY, SERVER_CONFIG_LISTEN_HTTPS_PORT_KEY, SERVER_CONFIG_LISTEN_INTERFACE_KEY, SERVER_CONFIG_REDIRECT_HTTP_TO_HTTPS_KEY, SERVER_CONFIG_REDIRECT_HTTP_TO_HTTPS_PORT_KEY, SERVER_CONFIG_REDIRECT_HTTP_TO_HTTPS_STATUS_CODE_KEY } from "../Server/SERVER_CONFIG.mjs";
+import { SERVER_DEFAULT_LISTEN_HTTP_PORT, SERVER_DEFAULT_LISTEN_HTTPS_PORT, SERVER_DEFAULT_REDIRECT_HTTP_TO_HTTPS, SERVER_DEFAULT_REDIRECT_HTTP_TO_HTTPS_PORT, SERVER_DEFAULT_REDIRECT_HTTP_TO_HTTPS_STATUS_CODE } from "../../../../flux-http-api/src/Adapter/Server/SERVER.mjs";
 
 /** @typedef {import("../../../../flux-studis-selfservice-frontend/src/Adapter/Legal/AcceptedLegal.mjs").AcceptedLegal} AcceptedLegal */
 /** @typedef {import("../Application/Application.mjs").Application} Application */
@@ -47,8 +48,7 @@ import { SERVER_CONFIG_HTTPS_CERT_KEY, SERVER_CONFIG_HTTPS_DHPARAM_KEY, SERVER_C
 /** @typedef {import("../../../../flux-studis-selfservice-frontend/src/Adapter/DegreeTitle/DegreeTitle.mjs").DegreeTitle} DegreeTitle */
 /** @typedef {import("../../../../flux-studis-selfservice-frontend/src/Adapter/PersonalData/FilledPersonalData.mjs").FilledPersonalData} FilledPersonalData */
 /** @typedef {import("../../../../flux-http-api/src/Adapter/Api/HttpApi.mjs").HttpApi} HttpApi */
-/** @typedef {import("../../../../flux-http-api/src/Adapter/Request/HttpServerRequest.mjs").HttpServerRequest} HttpServerRequest */
-/** @typedef {import("../../../../flux-http-api/src/Adapter/Response/HttpServerResponse.mjs").HttpServerResponse} HttpServerResponse */
+/** @typedef {import("../../../../flux-http-api/src/Adapter/Request/HttpRequest.mjs").HttpRequest} HttpRequest */
 /** @typedef {import("../../../../flux-studis-selfservice-frontend/src/Adapter/IdentificationNumber/IdentificationNumber.mjs").IdentificationNumber} IdentificationNumber */
 /** @typedef {import("../../../../flux-studis-selfservice-frontend/src/Adapter/IntendedDegreeProgram/IntendedDegreeProgram.mjs").IntendedDegreeProgram} IntendedDegreeProgram */
 /** @typedef {import("../../../../flux-studis-selfservice-frontend/src/Adapter/IntendedDegreeProgram2/IntendedDegreeProgram2.mjs").IntendedDegreeProgram2} IntendedDegreeProgram2 */
@@ -127,7 +127,7 @@ export class StudisSelfserviceDemoBackendApi {
     async runServer() {
         const config_api = await this.#getConfigApi();
 
-        await (await this.#getHttpApi()).runHttpServer(
+        await (await this.#getHttpApi()).runServer(
             async request => this.#handleRequest(
                 request
             ),
@@ -143,26 +143,26 @@ export class StudisSelfserviceDemoBackendApi {
                 ),
                 listen_http_port: await config_api.getConfig(
                     SERVER_CONFIG_LISTEN_HTTP_PORT_KEY,
-                    HTTP_SERVER_DEFAULT_LISTEN_HTTP_PORT
+                    SERVER_DEFAULT_LISTEN_HTTP_PORT
                 ),
                 listen_https_port: await config_api.getConfig(
                     SERVER_CONFIG_LISTEN_HTTPS_PORT_KEY,
-                    HTTP_SERVER_DEFAULT_LISTEN_HTTPS_PORT
+                    SERVER_DEFAULT_LISTEN_HTTPS_PORT
                 ),
                 listen_interface: await config_api.getConfig(
                     SERVER_CONFIG_LISTEN_INTERFACE_KEY
                 ),
                 redirect_http_to_https: await config_api.getConfig(
                     SERVER_CONFIG_REDIRECT_HTTP_TO_HTTPS_KEY,
-                    HTTP_SERVER_DEFAULT_REDIRECT_HTTP_TO_HTTPS
+                    SERVER_DEFAULT_REDIRECT_HTTP_TO_HTTPS
                 ),
                 redirect_http_to_https_port: await config_api.getConfig(
                     SERVER_CONFIG_REDIRECT_HTTP_TO_HTTPS_PORT_KEY,
-                    HTTP_SERVER_DEFAULT_REDIRECT_HTTP_TO_HTTPS_PORT
+                    SERVER_DEFAULT_REDIRECT_HTTP_TO_HTTPS_PORT
                 ),
                 redirect_http_to_https_status_code: await config_api.getConfig(
                     SERVER_CONFIG_REDIRECT_HTTP_TO_HTTPS_STATUS_CODE_KEY,
-                    HTTP_SERVER_DEFAULT_REDIRECT_HTTP_TO_HTTPS_STATUS_CODE
+                    SERVER_DEFAULT_REDIRECT_HTTP_TO_HTTPS_STATUS_CODE
                 )
             }
         );
@@ -1467,7 +1467,7 @@ export class StudisSelfserviceDemoBackendApi {
     }
 
     /**
-     * @param {HttpServerRequest} request
+     * @param {HttpRequest} request
      * @returns {Application | null}
      */
     #getApplicationByRequest(request) {
@@ -1822,11 +1822,13 @@ export class StudisSelfserviceDemoBackendApi {
     }
 
     /**
-     * @param {HttpServerRequest} request
+     * @param {HttpRequest} request
      * @returns {string | null}
      */
     #getSessionNumberFromRequest(request) {
-        return request._cookies[COOKIE_SESSION_NUMBER] ?? null;
+        return request.getCookie(
+            COOKIE_SESSION_NUMBER
+        );
     }
 
     /**
@@ -1899,35 +1901,35 @@ export class StudisSelfserviceDemoBackendApi {
     }
 
     /**
-     * @param {HttpServerRequest} request
-     * @returns {HttpServerResponse | null}
+     * @param {HttpRequest} request
+     * @returns {HttpResponse | null}
      */
     async #handleApiRequest(request) {
-        if (request._urlObject.pathname.startsWith("/api/back/") || request._urlObject.pathname === "/api/back") {
+        if (request.url.pathname.startsWith("/api/back/") || request.url.pathname === "/api/back") {
             return this.#handleBackRequest(
                 request
             );
         }
 
-        if (request._urlObject.pathname.startsWith("/api/get/") || request._urlObject.pathname === "/api/get") {
+        if (request.url.pathname.startsWith("/api/get/") || request.url.pathname === "/api/get") {
             return this.#handleGetRequest(
                 request
             );
         }
 
-        if (request._urlObject.pathname.startsWith("/api/layout/") || request._urlObject.pathname === "/api/layout") {
+        if (request.url.pathname.startsWith("/api/layout/") || request.url.pathname === "/api/layout") {
             return this.#handleLayoutRequest(
                 request
             );
         }
 
-        if (request._urlObject.pathname.startsWith("/api/logout/") || request._urlObject.pathname === "/api/logout") {
+        if (request.url.pathname.startsWith("/api/logout/") || request.url.pathname === "/api/logout") {
             return this.#handleLogoutRequest(
                 request
             );
         }
 
-        if (request._urlObject.pathname.startsWith("/api/post/") || request._urlObject.pathname === "/api/post") {
+        if (request.url.pathname.startsWith("/api/post/") || request.url.pathname === "/api/post") {
             return this.#handlePostRequest(
                 request
             );
@@ -1937,11 +1939,11 @@ export class StudisSelfserviceDemoBackendApi {
     }
 
     /**
-     * @param {HttpServerRequest} request
-     * @returns {HttpServerResponse | null}
+     * @param {HttpRequest} request
+     * @returns {HttpResponse | null}
      */
     async #handleBackRequest(request) {
-        if (request._urlObject.pathname !== "/api/back") {
+        if (request.url.pathname !== "/api/back") {
             return null;
         }
 
@@ -1968,8 +1970,8 @@ export class StudisSelfserviceDemoBackendApi {
     }
 
     /**
-     * @param {HttpServerRequest} request
-     * @returns {HttpServerResponse | null}
+     * @param {HttpRequest} request
+     * @returns {HttpResponse | null}
      */
     async #handleFrontendRequest(request) {
         const response = await this.#http_api.validateMethods(
@@ -1987,17 +1989,17 @@ export class StudisSelfserviceDemoBackendApi {
 
         return this.#http_api.getFilteredStaticFileResponse(
             join(__dirname, "..", "..", "..", "..", "flux-studis-selfservice-frontend", "src"),
-            request._urlObject.pathname,
+            request.url.pathname,
             request
         );
     }
 
     /**
-     * @param {HttpServerRequest} request
-     * @returns {HttpServerResponse | null}
+     * @param {HttpRequest} request
+     * @returns {HttpResponse | null}
      */
     async #handleGetRequest(request) {
-        if (request._urlObject.pathname !== "/api/get") {
+        if (request.url.pathname !== "/api/get") {
             return null;
         }
 
@@ -2025,11 +2027,11 @@ export class StudisSelfserviceDemoBackendApi {
     }
 
     /**
-     * @param {HttpServerRequest} request
-     * @returns {HttpServerResponse | null}
+     * @param {HttpRequest} request
+     * @returns {HttpResponse | null}
      */
     async #handleLayoutRequest(request) {
-        if (request._urlObject.pathname !== "/api/layout") {
+        if (request.url.pathname !== "/api/layout") {
             return null;
         }
 
@@ -2053,11 +2055,11 @@ export class StudisSelfserviceDemoBackendApi {
     }
 
     /**
-     * @param {HttpServerRequest} request
-     * @returns {HttpServerResponse | null}
+     * @param {HttpRequest} request
+     * @returns {HttpResponse | null}
      */
     async #handleLogoutRequest(request) {
-        if (request._urlObject.pathname !== "/api/logout") {
+        if (request.url.pathname !== "/api/logout") {
             return null;
         }
 
@@ -2080,11 +2082,11 @@ export class StudisSelfserviceDemoBackendApi {
     }
 
     /**
-     * @param {HttpServerRequest} request
-     * @returns {HttpServerResponse | null}
+     * @param {HttpRequest} request
+     * @returns {HttpResponse | null}
      */
     async #handlePostRequest(request) {
-        if (request._urlObject.pathname !== "/api/post") {
+        if (request.url.pathname !== "/api/post") {
             return null;
         }
 
@@ -2100,21 +2102,25 @@ export class StudisSelfserviceDemoBackendApi {
             return response;
         }
 
-        if (!(request.headers.get(HEADER_CONTENT_TYPE)?.includes(CONTENT_TYPE_JSON) ?? false)) {
-            return new Response(null, {
-                status: STATUS_400
-            });
+        if (!(request.getHeader(
+            HEADER_CONTENT_TYPE
+        )?.includes(CONTENT_TYPE_JSON) ?? false)) {
+            return HttpResponse.new(
+                null,
+                STATUS_400
+            );
         }
 
         let post;
         try {
-            post = await request.json();
+            post = await request.web_body_parse.json();
         } catch (error) {
             console.error(error);
 
-            return new Response(null, {
-                status: STATUS_400
-            });
+            return HttpResponse.new(
+                null,
+                STATUS_400
+            );
         }
 
         return this.#mapApiResponse(
@@ -2129,11 +2135,11 @@ export class StudisSelfserviceDemoBackendApi {
     }
 
     /**
-     * @param {HttpServerRequest} request
-     * @returns {HttpServerResponse | null}
+     * @param {HttpRequest} request
+     * @returns {HttpResponse | null}
      */
     async #handleRequest(request) {
-        if (request._urlObject.pathname.startsWith("/api/") || request._urlObject.pathname === "/api") {
+        if (request.url.pathname.startsWith("/api/") || request.url.pathname === "/api") {
             return this.#handleApiRequest(
                 request
             );
@@ -2166,18 +2172,18 @@ export class StudisSelfserviceDemoBackendApi {
 
     /**
      * @param {ApiResponse} api_response
-     * @param {HttpServerRequest} request
-     * @returns {Promise<HttpServerResponse>}
+     * @param {HttpRequest} request
+     * @returns {Promise<HttpResponse>}
      */
     async #mapApiResponse(api_response, request) {
-        const response = Response.json(api_response.data);
+        let cookies = null;
 
         if (api_response["session-number"] === false) {
             const session_number = this.#getSessionNumberFromRequest(
                 request
             );
             if (session_number !== null) {
-                response._cookies = {
+                cookies = {
                     [COOKIE_SESSION_NUMBER]: null
                 };
 
@@ -2187,13 +2193,18 @@ export class StudisSelfserviceDemoBackendApi {
             }
         } else {
             if (api_response["session-number"] !== null) {
-                response._cookies = {
+                cookies = {
                     [COOKIE_SESSION_NUMBER]: api_response["session-number"]
                 };
             }
         }
 
-        return response;
+        return HttpResponse.newJsonBody(
+            api_response.data,
+            null,
+            null,
+            cookies
+        );
     }
 
     /**
