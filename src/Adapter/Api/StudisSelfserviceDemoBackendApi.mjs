@@ -1,10 +1,8 @@
 import { BIRTH_DATE_FORMAT } from "../Data/PersonalData/BIRTH_DATE_FORMAT.mjs";
 import { CONFIG_ENV_PREFIX } from "../Config/CONFIG.mjs";
-import { CONTENT_TYPE_JSON } from "../../../../flux-http-api/src/Adapter/ContentType/CONTENT_TYPE.mjs";
 import { COOKIE_SESSION_NUMBER } from "../Response/COOKIE.mjs";
 import { EMAIL_FORMAT } from "../Data/PersonalData/EMAIL_FORMAT.mjs";
 import { fileURLToPath } from "node:url";
-import { HEADER_CONTENT_TYPE } from "../../../../flux-http-api/src/Adapter/Header/HEADER.mjs";
 import { HttpResponse } from "../../../../flux-http-api/src/Adapter/Response/HttpResponse.mjs";
 import { MAX_BIRTH_DATE } from "../Data/PersonalData/MAX_BIRTH_DATE.mjs";
 import { MAX_END_DATE } from "../Data/PreviousStudies/MAX_END_DATE.mjs";
@@ -2102,22 +2100,13 @@ export class StudisSelfserviceDemoBackendApi {
             return response;
         }
 
-        if (!(request.getHeader(
-            HEADER_CONTENT_TYPE
-        )?.includes(CONTENT_TYPE_JSON) ?? false)) {
-            return HttpResponse.newFromTextBody(
-                "Invalid body",
-                STATUS_400
-            );
-        }
-
         let post;
         try {
-            post = await request.web_body_parse.json();
+            post = await request.bodyAsJson();
         } catch (error) {
             console.error(error);
 
-            return HttpResponse.newFromTextBody(
+            return HttpResponse.newFromText(
                 "Invalid body",
                 STATUS_400
             );
@@ -2199,7 +2188,7 @@ export class StudisSelfserviceDemoBackendApi {
             }
         }
 
-        return HttpResponse.newFromJsonBody(
+        return HttpResponse.newFromJson(
             api_response.data,
             null,
             null,
