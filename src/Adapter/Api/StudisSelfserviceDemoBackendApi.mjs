@@ -1824,7 +1824,7 @@ export class StudisSelfserviceDemoBackendApi {
      * @returns {string | null}
      */
     #getSessionNumberFromRequest(request) {
-        return request.getCookie(
+        return request.cookie(
             COOKIE_SESSION_NUMBER
         );
     }
@@ -2102,11 +2102,11 @@ export class StudisSelfserviceDemoBackendApi {
 
         let post;
         try {
-            post = await request.bodyAsJson();
+            post = await request.json();
         } catch (error) {
             console.error(error);
 
-            return HttpResponse.newFromText(
+            return HttpResponse.text(
                 "Invalid body",
                 STATUS_400
             );
@@ -2188,7 +2188,7 @@ export class StudisSelfserviceDemoBackendApi {
             }
         }
 
-        return HttpResponse.newFromJson(
+        return HttpResponse.json(
             api_response.data,
             null,
             null,
