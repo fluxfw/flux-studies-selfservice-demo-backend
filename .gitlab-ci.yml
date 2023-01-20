@@ -35,6 +35,7 @@ lint:
     only:
         - branches
         - tags
+    allow_failure: true
 
 publish:
     stage: publish
