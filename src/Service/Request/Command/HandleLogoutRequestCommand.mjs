@@ -2,8 +2,8 @@ import { METHOD_OPTIONS, METHOD_POST } from "../../../../../flux-http-api/src/Ad
 
 /** @typedef {import("../../Data/Port/DataService.mjs").DataService} DataService */
 /** @typedef {import("../../../../../flux-http-api/src/Adapter/Api/HttpApi.mjs").HttpApi} HttpApi */
-/** @typedef {import("../../../../../flux-http-api/src/Adapter/Request/HttpRequest.mjs").HttpRequest} HttpRequest */
-/** @typedef {import("../../../../../flux-http-api/src/Adapter/Response/HttpResponse.mjs").HttpResponse} HttpResponse */
+/** @typedef {import("../../../../../flux-http-api/src/Adapter/Server/HttpServerRequest.mjs").HttpServerRequest} HttpServerRequest */
+/** @typedef {import("../../../../../flux-http-api/src/Adapter/Server/HttpServerResponse.mjs").HttpServerResponse} HttpServerResponse */
 /** @typedef {import("../../Request/Port/RequestService.mjs").RequestService} RequestService */
 
 export class HandleLogoutRequestCommand {
@@ -47,8 +47,8 @@ export class HandleLogoutRequestCommand {
     }
 
     /**
-     * @param {HttpRequest} request
-     * @returns {HttpResponse | null}
+     * @param {HttpServerRequest} request
+     * @returns {HttpServerResponse | null}
      */
     async handleLogoutRequest(request) {
         if (request.url.pathname !== "/api/logout") {

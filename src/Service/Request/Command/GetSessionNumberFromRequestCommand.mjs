@@ -1,6 +1,6 @@
 import { COOKIE_SESSION_NUMBER } from "../../../Adapter/Response/COOKIE.mjs";
 
-/** @typedef {import("../../../../../flux-http-api/src/Adapter/Request/HttpRequest.mjs").HttpRequest} HttpRequest */
+/** @typedef {import("../../../../../flux-http-api/src/Adapter/Server/HttpServerRequest.mjs").HttpServerRequest} HttpServerRequest */
 
 export class GetSessionNumberFromRequestCommand {
     /**
@@ -18,7 +18,7 @@ export class GetSessionNumberFromRequestCommand {
     }
 
     /**
-     * @param {HttpRequest} request
+     * @param {HttpServerRequest} request
      * @returns {Promise<string | null>}
      */
     async getSessionNumberFromRequest(request) {

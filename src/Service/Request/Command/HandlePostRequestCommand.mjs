@@ -1,10 +1,10 @@
-import { HttpResponse } from "../../../../../flux-http-api/src/Adapter/Response/HttpResponse.mjs";
-import { STATUS_400 } from "../../../../../flux-http-api/src/Adapter/Status/STATUS.mjs";
+import { HttpServerResponse } from "../../../../../flux-http-api/src/Adapter/Server/HttpServerResponse.mjs";
+import { STATUS_CODE_400 } from "../../../../../flux-http-api/src/Adapter/Status/STATUS_CODE.mjs";
 import { METHOD_OPTIONS, METHOD_POST } from "../../../../../flux-http-api/src/Adapter/Method/METHOD.mjs";
 
 /** @typedef {import("../../Data/Port/DataService.mjs").DataService} DataService */
 /** @typedef {import("../../../../../flux-http-api/src/Adapter/Api/HttpApi.mjs").HttpApi} HttpApi */
-/** @typedef {import("../../../../../flux-http-api/src/Adapter/Request/HttpRequest.mjs").HttpRequest} HttpRequest */
+/** @typedef {import("../../../../../flux-http-api/src/Adapter/Server/HttpServerRequest.mjs").HttpServerRequest} HttpServerRequest */
 /** @typedef {import("../../Request/Port/RequestService.mjs").RequestService} RequestService */
 
 export class HandlePostRequestCommand {
@@ -48,8 +48,8 @@ export class HandlePostRequestCommand {
     }
 
     /**
-     * @param {HttpRequest} request
-     * @returns {HttpResponse | null}
+     * @param {HttpServerRequest} request
+     * @returns {HttpServerResponse | null}
      */
     async handlePostRequest(request) {
         if (request.url.pathname !== "/api/post") {
@@ -70,13 +70,13 @@ export class HandlePostRequestCommand {
 
         let post;
         try {
-            post = await request.json();
+            post = await request.body.json();
         } catch (error) {
             console.error(error);
 
-            return HttpResponse.text(
+            return HttpServerResponse.text(
                 "Invalid body",
-                STATUS_400
+                STATUS_CODE_400
             );
         }
 

@@ -1,8 +1,8 @@
 /** @typedef {import("../../../Adapter/Response/ApiResponse.mjs").ApiResponse} ApiResponse */
 /** @typedef {import("../../Data/Port/DataService.mjs").DataService} DataService */
 /** @typedef {import("../../../../../flux-http-api/src/Adapter/Api/HttpApi.mjs").HttpApi} HttpApi */
-/** @typedef {import("../../../../../flux-http-api/src/Adapter/Request/HttpRequest.mjs").HttpRequest} HttpRequest */
-/** @typedef {import("../../../../../flux-http-api/src/Adapter/Response/HttpResponse.mjs").HttpResponse} HttpResponse */
+/** @typedef {import("../../../../../flux-http-api/src/Adapter/Server/HttpServerRequest.mjs").HttpServerRequest} HttpServerRequest */
+/** @typedef {import("../../../../../flux-http-api/src/Adapter/Server/HttpServerResponse.mjs").HttpServerResponse} HttpServerResponse */
 
 export class RequestService {
     /**
@@ -37,7 +37,7 @@ export class RequestService {
     }
 
     /**
-     * @param {HttpRequest} request
+     * @param {HttpServerRequest} request
      * @returns {Promise<string | null>}
      */
     async getSessionNumberFromRequest(request) {
@@ -48,8 +48,8 @@ export class RequestService {
     }
 
     /**
-     * @param {HttpRequest} request
-     * @returns {HttpResponse | null}
+     * @param {HttpServerRequest} request
+     * @returns {HttpServerResponse | null}
      */
     async handleApiRequest(request) {
         return (await import("../Command/HandleApiRequestCommand.mjs")).HandleApiRequestCommand.new(
@@ -61,8 +61,8 @@ export class RequestService {
     }
 
     /**
-     * @param {HttpRequest} request
-     * @returns {HttpResponse | null}
+     * @param {HttpServerRequest} request
+     * @returns {HttpServerResponse | null}
      */
     async handleBackRequest(request) {
         return (await import("../Command/HandleBackRequestCommand.mjs")).HandleBackRequestCommand.new(
@@ -76,8 +76,8 @@ export class RequestService {
     }
 
     /**
-     * @param {HttpRequest} request
-     * @returns {HttpResponse}
+     * @param {HttpServerRequest} request
+     * @returns {HttpServerResponse}
      */
     async handleFrontendRequest(request) {
         return (await import("../Command/HandleFrontendRequestCommand.mjs")).HandleFrontendRequestCommand.new(
@@ -89,8 +89,8 @@ export class RequestService {
     }
 
     /**
-     * @param {HttpRequest} request
-     * @returns {HttpResponse | null}
+     * @param {HttpServerRequest} request
+     * @returns {HttpServerResponse | null}
      */
     async handleGetRequest(request) {
         return (await import("../Command/HandleGetRequestCommand.mjs")).HandleGetRequestCommand.new(
@@ -104,8 +104,8 @@ export class RequestService {
     }
 
     /**
-     * @param {HttpRequest} request
-     * @returns {HttpResponse | null}
+     * @param {HttpServerRequest} request
+     * @returns {HttpServerResponse | null}
      */
     async handleLayoutRequest(request) {
         return (await import("../Command/HandleLayoutRequestCommand.mjs")).HandleLayoutRequestCommand.new(
@@ -119,8 +119,8 @@ export class RequestService {
     }
 
     /**
-     * @param {HttpRequest} request
-     * @returns {HttpResponse | null}
+     * @param {HttpServerRequest} request
+     * @returns {HttpServerResponse | null}
      */
     async handleLogoutRequest(request) {
         return (await import("../Command/HandleLogoutRequestCommand.mjs")).HandleLogoutRequestCommand.new(
@@ -134,8 +134,8 @@ export class RequestService {
     }
 
     /**
-     * @param {HttpRequest} request
-     * @returns {HttpResponse | null}
+     * @param {HttpServerRequest} request
+     * @returns {HttpServerResponse | null}
      */
     async handlePostRequest(request) {
         return (await import("../Command/HandlePostRequestCommand.mjs")).HandlePostRequestCommand.new(
@@ -149,8 +149,8 @@ export class RequestService {
     }
 
     /**
-     * @param {HttpRequest} request
-     * @returns {HttpResponse | null}
+     * @param {HttpServerRequest} request
+     * @returns {HttpServerResponse | null}
      */
     async handleRequest(request) {
         return (await import("../Command/HandleRequestCommand.mjs")).HandleRequestCommand.new(
@@ -163,7 +163,7 @@ export class RequestService {
 
     /**
      * @param {ApiResponse} api_response
-     * @returns {Promise<HttpResponse>}
+     * @returns {Promise<HttpServerResponse>}
      */
     async mapApiResponse(api_response) {
         return (await import("../Command/MapApiResponseCommand.mjs")).MapApiResponseCommand.new()

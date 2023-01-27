@@ -1,5 +1,5 @@
 import { COOKIE_SESSION_NUMBER } from "../../../Adapter/Response/COOKIE.mjs";
-import { HttpResponse } from "../../../../../flux-http-api/src/Adapter/Response/HttpResponse.mjs";
+import { HttpServerResponse } from "../../../../../flux-http-api/src/Adapter/Server/HttpServerResponse.mjs";
 
 /** @typedef {import("../../../Adapter/Response/ApiResponse.mjs").ApiResponse} ApiResponse */
 
@@ -20,18 +20,25 @@ export class MapApiResponseCommand {
 
     /**
      * @param {ApiResponse} api_response
-     * @returns {Promise<HttpResponse>}
+     * @returns {Promise<HttpServerResponse>}
      */
     async mapApiResponse(api_response) {
-        return HttpResponse.json(
+        const cookies = api_response["session-number"] === false ? {
+            [COOKIE_SESSION_NUMBER]: null
+        } : api_response["session-number"] !== null ? {
+            [COOKIE_SESSION_NUMBER]: api_response["session-number"]
+        } : null;
+
+        return (api_response.data ?? null) !== null ? HttpServerResponse.json(
             api_response.data,
             null,
             null,
-            api_response["session-number"] === false ? {
-                [COOKIE_SESSION_NUMBER]: null
-            } : api_response["session-number"] !== null ? {
-                [COOKIE_SESSION_NUMBER]: api_response["session-number"]
-            } : null
+            cookies
+        ) : HttpServerResponse.new(
+            null,
+            null,
+            null,
+            cookies
         );
     }
 }

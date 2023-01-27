@@ -1,5 +1,5 @@
-/** @typedef {import("../../../../../flux-http-api/src/Adapter/Request/HttpRequest.mjs").HttpRequest} HttpRequest */
-/** @typedef {import("../../../../../flux-http-api/src/Adapter/Response/HttpResponse.mjs").HttpResponse} HttpResponse */
+/** @typedef {import("../../../../../flux-http-api/src/Adapter/Server/HttpServerRequest.mjs").HttpServerRequest} HttpServerRequest */
+/** @typedef {import("../../../../../flux-http-api/src/Adapter/Server/HttpServerResponse.mjs").HttpServerResponse} HttpServerResponse */
 /** @typedef {import("../../Request/Port/RequestService.mjs").RequestService} RequestService */
 
 export class HandleRequestCommand {
@@ -27,8 +27,8 @@ export class HandleRequestCommand {
     }
 
     /**
-     * @param {HttpRequest} request
-     * @returns {HttpResponse | null}
+     * @param {HttpServerRequest} request
+     * @returns {HttpServerResponse | null}
      */
     async handleRequest(request) {
         if (request.url.pathname.startsWith("/api/") || request.url.pathname === "/api") {

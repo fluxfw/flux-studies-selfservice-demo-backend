@@ -3,8 +3,8 @@ import { dirname, join } from "node:path/posix";
 import { METHOD_GET, METHOD_HEAD, METHOD_OPTIONS } from "../../../../../flux-http-api/src/Adapter/Method/METHOD.mjs";
 
 /** @typedef {import("../../../../../flux-http-api/src/Adapter/Api/HttpApi.mjs").HttpApi} HttpApi */
-/** @typedef {import("../../../../../flux-http-api/src/Adapter/Request/HttpRequest.mjs").HttpRequest} HttpRequest */
-/** @typedef {import("../../../../../flux-http-api/src/Adapter/Response/HttpResponse.mjs").HttpResponse} HttpResponse */
+/** @typedef {import("../../../../../flux-http-api/src/Adapter/Server/HttpServerRequest.mjs").HttpServerRequest} HttpServerRequest */
+/** @typedef {import("../../../../../flux-http-api/src/Adapter/Server/HttpServerResponse.mjs").HttpServerResponse} HttpServerResponse */
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -33,8 +33,8 @@ export class HandleFrontendRequestCommand {
     }
 
     /**
-     * @param {HttpRequest} request
-     * @returns {HttpResponse}
+     * @param {HttpServerRequest} request
+     * @returns {HttpServerResponse}
      */
     async handleFrontendRequest(request) {
         const response = await this.#http_api.validateMethods(
