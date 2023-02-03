@@ -1,4 +1,7 @@
 {
-    "certificate-types": [],
+    "data": [],
+    "select-to-data": [],
+    "selects": [],
+    "select-index": 0,
     "values": null
 }

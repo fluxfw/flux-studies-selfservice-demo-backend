@@ -21,6 +21,7 @@
 /** @typedef {import("../../../../../flux-studis-selfservice-frontend/src/Adapter/IdentificationNumber/IdentificationNumber.mjs").IdentificationNumber} IdentificationNumber */
 /** @typedef {import("../../../../../flux-studis-selfservice-frontend/src/Adapter/IntendedDegreeProgram/IntendedDegreeProgram.mjs").IntendedDegreeProgram} IntendedDegreeProgram */
 /** @typedef {import("../../../../../flux-studis-selfservice-frontend/src/Adapter/IntendedDegreeProgram2/IntendedDegreeProgram2.mjs").IntendedDegreeProgram2} IntendedDegreeProgram2 */
+/** @typedef {import("../../../../../flux-studis-selfservice-frontend/src/Adapter/IssueYear/IssueYear.mjs").IssueYear} IssueYear */
 /** @typedef {import("../../../../../flux-studis-selfservice-frontend/src/Adapter/Label/Label.mjs").Label} Label */
 /** @typedef {import("../../../../../flux-studis-selfservice-frontend/src/Adapter/Language/Language.mjs").Language} Language */
 /** @typedef {import("../../../../../flux-studis-selfservice-frontend/src/Adapter/Layout/Layout.mjs").Layout} Layout */
@@ -389,6 +390,14 @@ export class DataService {
     }
 
     /**
+     * @returns {Promise<IssueYear[]>}
+     */
+    async getIssueYears() {
+        return (await import("../Command/GetIssueYearsCommand.mjs")).GetIssueYearsCommand.new()
+            .getIssueYears();
+    }
+
+    /**
      * @returns {Promise<Language[]>}
      */
     async getLanguages() {
@@ -610,9 +619,7 @@ export class DataService {
      * @returns {Promise<string>}
      */
     async randomSessionNumber() {
-        return (await import("../Command/RandomSessionNumberCommand.mjs")).RandomSessionNumberCommand.new(
-            this
-        )
+        return (await import("../Command/RandomSessionNumberCommand.mjs")).RandomSessionNumberCommand.new()
             .randomSessionNumber();
     }
 
