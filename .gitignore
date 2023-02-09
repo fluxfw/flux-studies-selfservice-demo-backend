@@ -5,7 +5,6 @@
 !src/**
 !.dockerignore
 !.gitignore
-!.gitlab-ci.yml
 !CHANGELOG.md
 !Dockerfile
 !metadata.json
