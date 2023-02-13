@@ -1,3 +1,4 @@
+import { MENU_ID_APPLICATION_LOGIN } from "../../../../../flux-studis-selfservice-frontend/src/Adapter/Menu/MENU_ID.mjs";
 import { PAGE_CHOICE_SUBJECT, PAGE_CREATE, PAGE_IDENTIFICATION_NUMBER, PAGE_INTENDED_DEGREE_PROGRAM, PAGE_INTENDED_DEGREE_PROGRAM_2, PAGE_LEGAL, PAGE_PERSONAL_DATA, PAGE_PORTRAIT, PAGE_PREVIOUS_STUDIES, PAGE_RESUME, PAGE_UNIVERSITY_ENTRANCE_QUALIFICATION } from "../../../../../flux-studis-selfservice-frontend/src/Adapter/Page/PAGE.mjs";
 
 /** @typedef {import("../../../Adapter/Response/ApiResponse.mjs").ApiResponse} ApiResponse */
@@ -38,197 +39,198 @@ export class PostCommand {
             session_number
         ) : null;
 
-        let ok = true;
+        const menu = await this.#data_service.getMenu(
+            application
+        );
+
+        let ok = false;
         let response_session_number = null;
         let error_messages = null;
 
         if (typeof post === "object") {
             if (application !== null) {
-                switch (application.page) {
-                    case PAGE_CHOICE_SUBJECT: {
-                        const result = await this.#data_service.chosenSubject(
-                            application,
-                            post
-                        );
+                switch (menu.id) {
+                    case MENU_ID_APPLICATION_LOGIN:
+                        switch (application.page) {
+                            case PAGE_CHOICE_SUBJECT: {
+                                const result = await this.#data_service.chosenSubject(
+                                    application,
+                                    post
+                                );
 
-                        if (typeof result === "boolean") {
-                            ok = result;
-                        } else {
-                            ok = false;
-                            error_messages = result;
+                                if (typeof result === "boolean") {
+                                    ok = result;
+                                } else {
+                                    error_messages = result;
+                                }
+                            }
+                                break;
+
+                            case PAGE_IDENTIFICATION_NUMBER: {
+                                const result = await this.#data_service.confirmedIdentificationNumber(
+                                    application,
+                                    post
+                                );
+
+                                if (typeof result === "boolean") {
+                                    ok = result;
+                                } else {
+                                    error_messages = result;
+                                }
+                            }
+                                break;
+
+                            case PAGE_INTENDED_DEGREE_PROGRAM: {
+                                const result = await this.#data_service.chosenIntendedDegreeProgram(
+                                    application,
+                                    post
+                                );
+
+                                if (typeof result === "boolean") {
+                                    ok = result;
+                                } else {
+                                    error_messages = result;
+                                }
+                            }
+                                break;
+
+                            case PAGE_INTENDED_DEGREE_PROGRAM_2: {
+                                const result = await this.#data_service.chosenIntendedDegreeProgram2(
+                                    application,
+                                    post
+                                );
+
+                                if (typeof result === "boolean") {
+                                    ok = result;
+                                } else {
+                                    error_messages = result;
+                                }
+                            }
+                                break;
+
+                            case PAGE_LEGAL: {
+                                const result = await this.#data_service.acceptedLegal(
+                                    application,
+                                    post
+                                );
+
+                                if (typeof result === "boolean") {
+                                    ok = result;
+                                } else {
+                                    error_messages = result;
+                                }
+                            }
+                                break;
+
+                            case PAGE_PERSONAL_DATA: {
+                                const result = await this.#data_service.filledPersonalData(
+                                    application,
+                                    post
+                                );
+
+                                if (typeof result === "boolean") {
+                                    ok = result;
+                                } else {
+                                    error_messages = result;
+                                }
+                            }
+                                break;
+
+                            case PAGE_PORTRAIT: {
+                                const result = await this.#data_service.chosenPortrait(
+                                    application,
+                                    post
+                                );
+
+                                if (typeof result === "boolean") {
+                                    ok = result;
+                                } else {
+                                    error_messages = result;
+                                }
+                            }
+                                break;
+
+                            case PAGE_PREVIOUS_STUDIES: {
+                                const result = await this.#data_service.chosenPreviousStudies(
+                                    application,
+                                    post
+                                );
+
+                                if (typeof result === "boolean") {
+                                    ok = result;
+                                } else {
+                                    error_messages = result;
+                                }
+                            }
+                                break;
+
+                            case PAGE_UNIVERSITY_ENTRANCE_QUALIFICATION: {
+                                const result = await this.#data_service.chosenUniversityEntranceQualification(
+                                    application,
+                                    post
+                                );
+
+                                if (typeof result === "boolean") {
+                                    ok = result;
+                                } else {
+                                    error_messages = result;
+                                }
+                            }
+                                break;
+
+                            default:
+                                break;
                         }
-                    }
-                        break;
-
-                    case PAGE_IDENTIFICATION_NUMBER: {
-                        const result = await this.#data_service.confirmedIdentificationNumber(
-                            application,
-                            post
-                        );
-
-                        if (typeof result === "boolean") {
-                            ok = result;
-                        } else {
-                            ok = false;
-                            error_messages = result;
-                        }
-                    }
-                        break;
-
-                    case PAGE_INTENDED_DEGREE_PROGRAM: {
-                        const result = await this.#data_service.chosenIntendedDegreeProgram(
-                            application,
-                            post
-                        );
-
-                        if (typeof result === "boolean") {
-                            ok = result;
-                        } else {
-                            ok = false;
-                            error_messages = result;
-                        }
-                    }
-                        break;
-
-                    case PAGE_INTENDED_DEGREE_PROGRAM_2: {
-                        const result = await this.#data_service.chosenIntendedDegreeProgram2(
-                            application,
-                            post
-                        );
-
-                        if (typeof result === "boolean") {
-                            ok = result;
-                        } else {
-                            ok = false;
-                            error_messages = result;
-                        }
-                    }
-                        break;
-
-                    case PAGE_LEGAL: {
-                        const result = await this.#data_service.acceptedLegal(
-                            application,
-                            post
-                        );
-
-                        if (typeof result === "boolean") {
-                            ok = result;
-                        } else {
-                            ok = false;
-                            error_messages = result;
-                        }
-                    }
-                        break;
-
-                    case PAGE_PERSONAL_DATA: {
-                        const result = await this.#data_service.filledPersonalData(
-                            application,
-                            post
-                        );
-
-                        if (typeof result === "boolean") {
-                            ok = result;
-                        } else {
-                            ok = false;
-                            error_messages = result;
-                        }
-                    }
-                        break;
-
-                    case PAGE_PORTRAIT: {
-                        const result = await this.#data_service.chosenPortrait(
-                            application,
-                            post
-                        );
-
-                        if (typeof result === "boolean") {
-                            ok = result;
-                        } else {
-                            ok = false;
-                            error_messages = result;
-                        }
-                    }
-                        break;
-
-                    case PAGE_PREVIOUS_STUDIES: {
-                        const result = await this.#data_service.chosenPreviousStudies(
-                            application,
-                            post
-                        );
-
-                        if (typeof result === "boolean") {
-                            ok = result;
-                        } else {
-                            ok = false;
-                            error_messages = result;
-                        }
-                    }
-                        break;
-
-                    case PAGE_UNIVERSITY_ENTRANCE_QUALIFICATION: {
-                        const result = await this.#data_service.chosenUniversityEntranceQualification(
-                            application,
-                            post
-                        );
-
-                        if (typeof result === "boolean") {
-                            ok = result;
-                        } else {
-                            ok = false;
-                            error_messages = result;
-                        }
-                    }
                         break;
 
                     default:
-                        ok = false;
                         break;
                 }
             } else {
-                switch (post.page) {
-                    case PAGE_CREATE: {
-                        const result = await this.#data_service.create(
-                            post
-                        );
+                switch (menu.id) {
+                    case MENU_ID_APPLICATION_LOGIN:
+                        switch (post.page) {
+                            case PAGE_CREATE: {
+                                const result = await this.#data_service.create(
+                                    post
+                                );
 
-                        if (typeof result === "string") {
-                            response_session_number = result;
-                        } else {
-                            if (result === false) {
-                                ok = result;
-                            } else {
-                                ok = false;
-                                error_messages = result;
+                                if (typeof result === "string") {
+                                    ok = true;
+                                    response_session_number = result;
+                                } else {
+                                    if (result !== false) {
+                                        error_messages = result;
+                                    }
+                                }
                             }
-                        }
-                    }
-                        break;
+                                break;
 
-                    case PAGE_RESUME: {
-                        const result = await this.#data_service.resume(
-                            post
-                        );
+                            case PAGE_RESUME: {
+                                const result = await this.#data_service.resume(
+                                    post
+                                );
 
-                        if (typeof result === "string") {
-                            response_session_number = result;
-                        } else {
-                            if (result === false) {
-                                ok = result;
-                            } else {
-                                ok = false;
-                                error_messages = result;
+                                if (typeof result === "string") {
+                                    ok = true;
+                                    response_session_number = result;
+                                } else {
+                                    if (result !== false) {
+                                        error_messages = result;
+                                    }
+                                }
                             }
+                                break;
+
+                            default:
+                                break;
                         }
-                    }
                         break;
 
                     default:
-                        ok = false;
                         break;
                 }
             }
-        } else {
-            ok = false;
         }
 
         return {

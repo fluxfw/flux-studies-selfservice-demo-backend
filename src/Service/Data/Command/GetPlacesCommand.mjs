@@ -29,10 +29,10 @@ export class GetPlacesCommand {
      * @returns {Promise<Place[]>}
      */
     async getPlaces() {
-        return (await this.#data_service.getPlacesWithPostalCode()).map(place => {
+        return structuredClone((await this.#data_service.getPlacesWithPostalCode()).map(place => {
             const _place = structuredClone(place);
             delete _place["postal-code"];
             return _place;
-        });
+        }));
     }
 }

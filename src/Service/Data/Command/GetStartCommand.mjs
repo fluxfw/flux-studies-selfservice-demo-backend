@@ -31,9 +31,9 @@ export class GetStartCommand {
      * @returns {Promise<Start>}
      */
     async getStart() {
-        return {
+        return structuredClone({
             ...START,
             semesters: await this.#data_service.getSemesters()
-        };
+        });
     }
 }

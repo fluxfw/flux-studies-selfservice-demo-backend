@@ -95,7 +95,7 @@ export class GetUniversityEntranceQualificationCommand {
             return selects.push(select) - 1;
         }
 
-        return {
+        return structuredClone({
             ...UNIVERSITY_ENTRANCE_QUALIFICATION,
             data,
             "select-to-data": select_to_data,
@@ -147,6 +147,6 @@ export class GetUniversityEntranceQualificationCommand {
                 ])
             ),
             values
-        };
+        });
     }
 }

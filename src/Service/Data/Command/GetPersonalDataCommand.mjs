@@ -37,7 +37,7 @@ export class GetPersonalDataCommand {
      * @returns {Promise<PersonalData>}
      */
     async getPersonalData(values = null) {
-        return {
+        return structuredClone({
             ...PERSONAL_DATA,
             salutations: await this.#data_service.getSalutations(),
             "registration-number-format": `${REGISTRATION_NUMBER_FORMAT}`,
@@ -49,6 +49,6 @@ export class GetPersonalDataCommand {
             "max-birth-date": MAX_BIRTH_DATE,
             "old-age-survivar-insurance-number-format": `${OLD_AGE_SURVIVAR_INSURANCE_NUMBER_FORMAT}`,
             values
-        };
+        });
     }
 }

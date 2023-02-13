@@ -44,7 +44,7 @@ export class GetLegalCommand {
         const _subject = structuredClone(subject);
         delete _subject.combinations;
 
-        return {
+        return structuredClone({
             ...LEGAL,
             "degree-program": (await this.#data_service.getDegreePrograms()).find(degree_program => degree_program.id === chosen_subject["degree-program"]),
             subject: _subject,
@@ -52,6 +52,6 @@ export class GetLegalCommand {
             "single-choice": chosen_intended_degree_program_2["single-choice"],
             "multiple-choice": chosen_intended_degree_program_2["multiple-choice"],
             values
-        };
+        });
     }
 }

@@ -1,3 +1,4 @@
+import { MENU_ID_APPLICATION_LOGIN } from "../../../../../flux-studis-selfservice-frontend/src/Adapter/Menu/MENU_ID.mjs";
 import { PAGE_CREATE, PAGE_IDENTIFICATION_NUMBER } from "../../../../../flux-studis-selfservice-frontend/src/Adapter/Page/PAGE.mjs";
 
 /** @typedef {import("../../../Adapter/Application/Application.mjs").Application} Application */
@@ -87,11 +88,9 @@ export class CreateCommand {
             return false;
         }
 
-        /**
-         * @type {Application}
-         */
         const application = {
             "identification-number": await this.#data_service.randomIdentificationNumber(),
+            menu: MENU_ID_APPLICATION_LOGIN,
             page: PAGE_IDENTIFICATION_NUMBER,
             posts: []
         };

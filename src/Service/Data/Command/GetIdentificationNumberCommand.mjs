@@ -22,9 +22,9 @@ export class GetIdentificationNumberCommand {
      * @returns {Promise<IdentificationNumber>}
      */
     async getIdentificationNumber(identification_number) {
-        return {
+        return structuredClone({
             ...IDENTIFICATION_NUMBER,
             "identification-number": identification_number
-        };
+        });
     }
 }

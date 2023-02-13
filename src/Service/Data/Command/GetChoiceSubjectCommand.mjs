@@ -33,10 +33,10 @@ export class GetChoiceSubjectCommand {
      * @returns {Promise<ChoiceSubject>}
      */
     async getChoiceSubject(values = null) {
-        return {
+        return structuredClone({
             ...CHOICE_SUBJECT,
             "degree-programs": await this.#data_service.getDegreePrograms(),
             values
-        };
+        });
     }
 }

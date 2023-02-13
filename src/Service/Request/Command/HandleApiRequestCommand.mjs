@@ -55,6 +55,12 @@ export class HandleApiRequestCommand {
             );
         }
 
+        if (request.url.pathname.startsWith("/api/menu/") || request.url.pathname === "/api/menu") {
+            return this.#request_service.handleMenuRequest(
+                request
+            );
+        }
+
         if (request.url.pathname.startsWith("/api/post/") || request.url.pathname === "/api/post") {
             return this.#request_service.handlePostRequest(
                 request

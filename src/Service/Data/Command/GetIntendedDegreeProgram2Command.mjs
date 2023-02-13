@@ -40,11 +40,11 @@ export class GetIntendedDegreeProgram2Command {
         const _subject = structuredClone(subject);
         delete _subject.combinations;
 
-        return {
+        return structuredClone({
             ...INTENDED_DEGREE_PROGRAM_2,
             subject: _subject,
             combination: subject.combinations.find(combination => combination.id === chosen_intended_degree_program.combination),
             values
-        };
+        });
     }
 }

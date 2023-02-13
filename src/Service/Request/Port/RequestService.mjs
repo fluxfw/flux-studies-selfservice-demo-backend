@@ -137,6 +137,21 @@ export class RequestService {
      * @param {HttpServerRequest} request
      * @returns {HttpServerResponse | null}
      */
+    async handleMenuRequest(request) {
+        return (await import("../Command/HandleMenuRequestCommand.mjs")).HandleMenuRequestCommand.new(
+            this.#data_service,
+            this.#http_api,
+            this
+        )
+            .handleMenuRequest(
+                request
+            );
+    }
+
+    /**
+     * @param {HttpServerRequest} request
+     * @returns {HttpServerResponse | null}
+     */
     async handlePostRequest(request) {
         return (await import("../Command/HandlePostRequestCommand.mjs")).HandlePostRequestCommand.new(
             this.#data_service,

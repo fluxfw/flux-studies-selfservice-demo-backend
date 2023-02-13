@@ -22,11 +22,11 @@ export class GetAreaCodesCommand {
      * @returns {Promise<AreaCode[]>}
      */
     async getAreaCodes() {
-        return AREA_CODES.map(area_code => {
+        return structuredClone(AREA_CODES.map(area_code => {
             const _area_code = structuredClone(area_code);
             _area_code["phone-number-format"] = `${PHONE_NUMBER_FORMAT}`;
             _area_code["phone-number-example"] = PHONE_NUMBER_EXAMPLE;
             return _area_code;
-        });
+        }));
     }
 }

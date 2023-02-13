@@ -33,10 +33,10 @@ export class GetIntendedDegreeProgramCommand {
      * @returns {Promise<IntendedDegreeProgram>}
      */
     async getIntendedDegreeProgram(values = null) {
-        return {
+        return structuredClone({
             ...INTENDED_DEGREE_PROGRAM,
             subjects: await this.#data_service.getSubjects(),
             values
-        };
+        });
     }
 }

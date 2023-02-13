@@ -37,7 +37,7 @@ export class GetPreviousStudiesCommand {
      * @returns {Promise<PreviousStudies>}
      */
     async getPreviousStudies(values = null) {
-        return {
+        return structuredClone({
             ...PREVIOUS_STUDIES,
             "certificate-types": await this.#data_service.getCertificateTypes(),
             "min-start-date": MIN_START_DATE,
@@ -50,6 +50,6 @@ export class GetPreviousStudiesCommand {
             cantons: await this.#data_service.getCantons(),
             places: await this.#data_service.getPlaces(),
             values
-        };
+        });
     }
 }

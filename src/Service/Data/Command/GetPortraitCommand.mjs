@@ -23,9 +23,9 @@ export class GetPortraitCommand {
      * @returns {Promise<Portrait>}
      */
     async getPortrait(values = null) {
-        return {
+        return structuredClone({
             ...PORTRAIT,
             values
-        };
+        });
     }
 }

@@ -18,7 +18,7 @@ export class GetLayoutCommand {
     }
 
     /**
-     * @returns {Promise<Layout[]>}
+     * @returns {Promise<Layout>}
      */
     async getLayout() {
         return structuredClone(LAYOUT);

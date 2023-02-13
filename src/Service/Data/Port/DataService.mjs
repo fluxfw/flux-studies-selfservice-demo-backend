@@ -26,6 +26,7 @@
 /** @typedef {import("../../../../../flux-studis-selfservice-frontend/src/Adapter/Language/Language.mjs").Language} Language */
 /** @typedef {import("../../../../../flux-studis-selfservice-frontend/src/Adapter/Layout/Layout.mjs").Layout} Layout */
 /** @typedef {import("../../../../../flux-studis-selfservice-frontend/src/Adapter/Legal/Legal.mjs").Legal} Legal */
+/** @typedef {import("../../../../../flux-studis-selfservice-frontend/src/Adapter/Menu/Menu.mjs").Menu} Menu */
 /** @typedef {import("../../../../../flux-studis-selfservice-frontend/src/Adapter/PersonalData/PersonalData.mjs").PersonalData} PersonalData */
 /** @typedef {import("../../../../../flux-studis-selfservice-frontend/src/Adapter/Place/Place.mjs").Place} Place */
 /** @typedef {import("../../../../../flux-studis-selfservice-frontend/src/Adapter/Place/PlaceWithPostalCode.mjs").PlaceWithPostalCode} PlaceWithPostalCode */
@@ -406,7 +407,7 @@ export class DataService {
     }
 
     /**
-     * @returns {Promise<Layout[]>}
+     * @returns {Promise<Layout>}
      */
     async getLayout() {
         return (await import("../Command/GetLayoutCommand.mjs")).GetLayoutCommand.new()
@@ -429,6 +430,19 @@ export class DataService {
                 chosen_intended_degree_program,
                 chosen_intended_degree_program_2,
                 values
+            );
+    }
+
+    /**
+     * @param {Application | null} application
+     * @returns {Promise<Menu>}
+     */
+    async getMenu(application = null) {
+        return (await import("../Command/GetMenuCommand.mjs")).GetMenuCommand.new(
+            this
+        )
+            .getMenu(
+                application
             );
     }
 
@@ -574,6 +588,21 @@ export class DataService {
             this
         )
             .logout(
+                session_number
+            );
+    }
+
+    /**
+     * @param {string} id
+     * @param {string | null} session_number
+     * @returns {Promise<ApiResponse>}
+     */
+    async menu(id, session_number = null) {
+        return (await import("../Command/MenuCommand.mjs")).MenuCommand.new(
+            this
+        )
+            .menu(
+                id,
                 session_number
             );
     }
