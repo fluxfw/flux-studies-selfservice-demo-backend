@@ -1,4 +1,4 @@
-export const SERVER_CONFIG_HTTPS_CERT_KEY = "server-https-cert";
+export const SERVER_CONFIG_HTTPS_CERTIFICATE_KEY = "server-https-certificate";
 
 export const SERVER_CONFIG_HTTPS_DHPARAM_KEY = "server-https-dhparam";
 
