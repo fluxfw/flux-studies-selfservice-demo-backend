@@ -21,10 +21,10 @@ checkAlreadyInstalled
 
 installLibrary flux-config-api https://github.com/fluxfw/flux-config-api/archive/refs/tags/v2023-02-27-1.tar.gz
 
-installLibrary flux-http-api https://github.com/fluxfw/flux-http-api/archive/refs/tags/v2023-02-17-2.tar.gz
+installLibrary flux-http-api https://github.com/fluxfw/flux-http-api/archive/refs/tags/v2023-03-01-1.tar.gz
 
 installLibrary flux-shutdown-handler-api https://github.com/fluxfw/flux-shutdown-handler-api/archive/refs/tags/v2023-02-09-1.tar.gz
 
-installLibrary flux-studis-selfservice-frontend/src https://github.com/fluxfw/flux-studis-selfservice-frontend/releases/download/v2023-02-27-1/flux-studis-selfservice-frontend-v2023-02-27-1-build.tar.gz
+installLibrary flux-studis-selfservice-frontend/src https://github.com/fluxfw/flux-studis-selfservice-frontend/releases/download/v2023-03-01-1/flux-studis-selfservice-frontend-v2023-03-01-1-build.tar.gz
 
 installLibrary mime-db https://registry.npmjs.org/mime-db/-/mime-db-1.52.0.tgz
