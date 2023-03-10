@@ -6,6 +6,14 @@ Changes:
 
 \-
 
+## v2023-03-10-1
+
+Changes:
+
+- Fix static files
+- remove cache and storage settings
+- remove force orientation
+
 ## v2023-03-01-1
 
 Changes:
