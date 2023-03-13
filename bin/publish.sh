@@ -11,8 +11,6 @@ tag="`get-release-tag "$root"`"
 
 "$bin/build.sh"
 
-#"$bin/lint.sh"
-
 tag-release "$root"
 create-github-release "$root"
 
