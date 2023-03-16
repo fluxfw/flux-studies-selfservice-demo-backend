@@ -1,6 +1,6 @@
 import { COOKIE_SESSION_NUMBER } from "../../../Adapter/Response/COOKIE.mjs";
 
-/** @typedef {import("../../../../../flux-http-api/src/Adapter/Server/HttpServerRequest.mjs").HttpServerRequest} HttpServerRequest */
+/** @typedef {import("../../../../../flux-http-api/src/Server/HttpServerRequest.mjs").HttpServerRequest} HttpServerRequest */
 
 export class GetSessionNumberFromRequestCommand {
     /**

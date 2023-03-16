@@ -1,8 +1,8 @@
 /** @typedef {import("../../../Adapter/Response/ApiResponse.mjs").ApiResponse} ApiResponse */
 /** @typedef {import("../../Data/Port/DataService.mjs").DataService} DataService */
-/** @typedef {import("../../../../../flux-http-api/src/Adapter/Api/HttpApi.mjs").HttpApi} HttpApi */
-/** @typedef {import("../../../../../flux-http-api/src/Adapter/Server/HttpServerRequest.mjs").HttpServerRequest} HttpServerRequest */
-/** @typedef {import("../../../../../flux-http-api/src/Adapter/Server/HttpServerResponse.mjs").HttpServerResponse} HttpServerResponse */
+/** @typedef {import("../../../../../flux-http-api/src/FluxHttpApi.mjs").FluxHttpApi} FluxHttpApi */
+/** @typedef {import("../../../../../flux-http-api/src/Server/HttpServerRequest.mjs").HttpServerRequest} HttpServerRequest */
+/** @typedef {import("../../../../../flux-http-api/src/Server/HttpServerResponse.mjs").HttpServerResponse} HttpServerResponse */
 
 export class RequestService {
     /**
@@ -10,30 +10,30 @@ export class RequestService {
      */
     #data_service;
     /**
-     * @type {HttpApi}
+     * @type {FluxHttpApi}
      */
-    #http_api;
+    #flux_http_api;
 
     /**
      * @param {DataService} data_service
-     * @param {HttpApi} http_api
+     * @param {FluxHttpApi} flux_http_api
      * @returns {RequestService}
      */
-    static new(data_service, http_api) {
+    static new(data_service, flux_http_api) {
         return new this(
             data_service,
-            http_api
+            flux_http_api
         );
     }
 
     /**
      * @param {DataService} data_service
-     * @param {HttpApi} http_api
+     * @param {FluxHttpApi} flux_http_api
      * @private
      */
-    constructor(data_service, http_api) {
+    constructor(data_service, flux_http_api) {
         this.#data_service = data_service;
-        this.#http_api = http_api;
+        this.#flux_http_api = flux_http_api;
     }
 
     /**
@@ -67,7 +67,7 @@ export class RequestService {
     async handleBackRequest(request) {
         return (await import("../Command/HandleBackRequestCommand.mjs")).HandleBackRequestCommand.new(
             this.#data_service,
-            this.#http_api,
+            this.#flux_http_api,
             this
         )
             .handleBackRequest(
@@ -81,7 +81,7 @@ export class RequestService {
      */
     async handleFrontendRequest(request) {
         return (await import("../Command/HandleFrontendRequestCommand.mjs")).HandleFrontendRequestCommand.new(
-            this.#http_api
+            this.#flux_http_api
         )
             .handleFrontendRequest(
                 request
@@ -95,7 +95,7 @@ export class RequestService {
     async handleGetRequest(request) {
         return (await import("../Command/HandleGetRequestCommand.mjs")).HandleGetRequestCommand.new(
             this.#data_service,
-            this.#http_api,
+            this.#flux_http_api,
             this
         )
             .handleGetRequest(
@@ -110,7 +110,7 @@ export class RequestService {
     async handleLayoutRequest(request) {
         return (await import("../Command/HandleLayoutRequestCommand.mjs")).HandleLayoutRequestCommand.new(
             this.#data_service,
-            this.#http_api,
+            this.#flux_http_api,
             this
         )
             .handleLayoutRequest(
@@ -125,7 +125,7 @@ export class RequestService {
     async handleLogoutRequest(request) {
         return (await import("../Command/HandleLogoutRequestCommand.mjs")).HandleLogoutRequestCommand.new(
             this.#data_service,
-            this.#http_api,
+            this.#flux_http_api,
             this
         )
             .handleLogoutRequest(
@@ -140,7 +140,7 @@ export class RequestService {
     async handleMenuRequest(request) {
         return (await import("../Command/HandleMenuRequestCommand.mjs")).HandleMenuRequestCommand.new(
             this.#data_service,
-            this.#http_api,
+            this.#flux_http_api,
             this
         )
             .handleMenuRequest(
@@ -155,7 +155,7 @@ export class RequestService {
     async handlePostRequest(request) {
         return (await import("../Command/HandlePostRequestCommand.mjs")).HandlePostRequestCommand.new(
             this.#data_service,
-            this.#http_api,
+            this.#flux_http_api,
             this
         )
             .handlePostRequest(

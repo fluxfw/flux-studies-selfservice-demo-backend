@@ -1,111 +1,98 @@
 import { CONFIG_ENV_PREFIX } from "../Config/CONFIG.mjs";
 import { SERVER_CONFIG_HTTPS_CERTIFICATE_KEY, SERVER_CONFIG_HTTPS_DHPARAM_KEY, SERVER_CONFIG_HTTPS_KEY_KEY, SERVER_CONFIG_LISTEN_HTTP_PORT_KEY, SERVER_CONFIG_LISTEN_HTTPS_PORT_KEY, SERVER_CONFIG_LISTEN_INTERFACE_KEY, SERVER_CONFIG_REDIRECT_HTTP_TO_HTTPS_KEY, SERVER_CONFIG_REDIRECT_HTTP_TO_HTTPS_PORT_KEY, SERVER_CONFIG_REDIRECT_HTTP_TO_HTTPS_STATUS_CODE_KEY } from "../Server/SERVER_CONFIG.mjs";
-import { SERVER_DEFAULT_LISTEN_HTTP_PORT, SERVER_DEFAULT_LISTEN_HTTPS_PORT, SERVER_DEFAULT_REDIRECT_HTTP_TO_HTTPS, SERVER_DEFAULT_REDIRECT_HTTP_TO_HTTPS_PORT, SERVER_DEFAULT_REDIRECT_HTTP_TO_HTTPS_STATUS_CODE } from "../../../../flux-http-api/src/Adapter/Server/SERVER.mjs";
+import { SERVER_DEFAULT_LISTEN_HTTP_PORT, SERVER_DEFAULT_LISTEN_HTTPS_PORT, SERVER_DEFAULT_REDIRECT_HTTP_TO_HTTPS, SERVER_DEFAULT_REDIRECT_HTTP_TO_HTTPS_PORT, SERVER_DEFAULT_REDIRECT_HTTP_TO_HTTPS_STATUS_CODE } from "../../../../flux-http-api/src/Server/SERVER.mjs";
 
-/** @typedef {import("../../../../flux-config-api/src/Adapter/Api/ConfigApi.mjs").ConfigApi} ConfigApi */
 /** @typedef {import("../../Service/Data/Port/DataService.mjs").DataService} DataService */
-/** @typedef {import("../../../../flux-http-api/src/Adapter/Api/HttpApi.mjs").HttpApi} HttpApi */
+/** @typedef {import("../../../../flux-config-api/src/FluxConfigApi.mjs").FluxConfigApi} FluxConfigApi */
+/** @typedef {import("../../../../flux-http-api/src/FluxHttpApi.mjs").FluxHttpApi} FluxHttpApi */
+/** @typedef {import("../../../../flux-shutdown-handler/src/FluxShutdownHandler.mjs").FluxShutdownHandler} FluxShutdownHandler */
 /** @typedef {import("../../Service/Request/Port/RequestService.mjs").RequestService} RequestService */
-/** @typedef {import("../../../../flux-shutdown-handler-api/src/Adapter/ShutdownHandler/ShutdownHandler.mjs").ShutdownHandler} ShutdownHandler */
 
 export class StudisSelfserviceDemoBackendApi {
-    /**
-     * @type {ConfigApi | null}
-     */
-    #config_api = null;
     /**
      * @type {DataService | null}
      */
     #data_service = null;
     /**
-     * @type {HttpApi | null}
+     * @type {FluxConfigApi | null}
      */
-    #http_api = null;
+    #flux_config_api = null;
+    /**
+     * @type {FluxHttpApi | null}
+     */
+    #flux_http_api = null;
+    /**
+     * @type {FluxShutdownHandler}
+     */
+    #flux_shutdown_handler;
     /**
      * @type {RequestService | null}
      */
     #request_service = null;
-    /**
-     * @type {ShutdownHandler}
-     */
-    #shutdown_handler;
 
     /**
-     * @param {ShutdownHandler} shutdown_handler
+     * @param {FluxShutdownHandler} flux_shutdown_handler
      * @returns {StudisSelfserviceDemoBackendApi}
      */
-    static new(shutdown_handler) {
+    static new(flux_shutdown_handler) {
         return new this(
-            shutdown_handler
+            flux_shutdown_handler
         );
     }
 
     /**
-     * @param {ShutdownHandler} shutdown_handler
+     * @param {FluxShutdownHandler} flux_shutdown_handler
      * @private
      */
-    constructor(shutdown_handler) {
-        this.#shutdown_handler = shutdown_handler;
+    constructor(flux_shutdown_handler) {
+        this.#flux_shutdown_handler = flux_shutdown_handler;
     }
 
     /**
      * @returns {Promise<void>}
      */
     async runServer() {
-        const config_api = await this.#getConfigApi();
+        const flux_config_api = await this.#getFluxConfigApi();
 
-        await (await this.#getHttpApi()).runServer(
+        await (await this.#getFluxHttpApi()).runServer(
             async request => (await this.#getRequestService()).handleRequest(
                 request
             ),
             {
-                https_certificate: await config_api.getConfig(
+                https_certificate: await flux_config_api.getConfig(
                     SERVER_CONFIG_HTTPS_CERTIFICATE_KEY
                 ),
-                https_dhparam: await config_api.getConfig(
+                https_dhparam: await flux_config_api.getConfig(
                     SERVER_CONFIG_HTTPS_DHPARAM_KEY
                 ),
-                https_key: await config_api.getConfig(
+                https_key: await flux_config_api.getConfig(
                     SERVER_CONFIG_HTTPS_KEY_KEY
                 ),
-                listen_http_port: await config_api.getConfig(
+                listen_http_port: await flux_config_api.getConfig(
                     SERVER_CONFIG_LISTEN_HTTP_PORT_KEY,
                     SERVER_DEFAULT_LISTEN_HTTP_PORT
                 ),
-                listen_https_port: await config_api.getConfig(
+                listen_https_port: await flux_config_api.getConfig(
                     SERVER_CONFIG_LISTEN_HTTPS_PORT_KEY,
                     SERVER_DEFAULT_LISTEN_HTTPS_PORT
                 ),
-                listen_interface: await config_api.getConfig(
+                listen_interface: await flux_config_api.getConfig(
                     SERVER_CONFIG_LISTEN_INTERFACE_KEY
                 ),
-                redirect_http_to_https: await config_api.getConfig(
+                redirect_http_to_https: await flux_config_api.getConfig(
                     SERVER_CONFIG_REDIRECT_HTTP_TO_HTTPS_KEY,
                     SERVER_DEFAULT_REDIRECT_HTTP_TO_HTTPS
                 ),
-                redirect_http_to_https_port: await config_api.getConfig(
+                redirect_http_to_https_port: await flux_config_api.getConfig(
                     SERVER_CONFIG_REDIRECT_HTTP_TO_HTTPS_PORT_KEY,
                     SERVER_DEFAULT_REDIRECT_HTTP_TO_HTTPS_PORT
                 ),
-                redirect_http_to_https_status_code: await config_api.getConfig(
+                redirect_http_to_https_status_code: await flux_config_api.getConfig(
                     SERVER_CONFIG_REDIRECT_HTTP_TO_HTTPS_STATUS_CODE_KEY,
                     SERVER_DEFAULT_REDIRECT_HTTP_TO_HTTPS_STATUS_CODE
                 )
             }
         );
-    }
-
-    /**
-     * @returns {Promise<ConfigApi>}
-     */
-    async #getConfigApi() {
-        this.#config_api ??= (await import("../../../../flux-config-api/src/Adapter/Api/ConfigApi.mjs")).ConfigApi.new(
-            await (await import("../../../../flux-config-api/src/Adapter/ValueProviderImplementation/getValueProviderImplementations.mjs")).getValueProviderImplementations(
-                CONFIG_ENV_PREFIX
-            )
-        );
-
-        return this.#config_api;
     }
 
     /**
@@ -118,14 +105,27 @@ export class StudisSelfserviceDemoBackendApi {
     }
 
     /**
-     * @returns {Promise<HttpApi>}
+     * @returns {Promise<FluxConfigApi>}
      */
-    async #getHttpApi() {
-        this.#http_api ??= (await import("../../../../flux-http-api/src/Adapter/Api/HttpApi.mjs")).HttpApi.new(
-            this.#shutdown_handler
+    async #getFluxConfigApi() {
+        this.#flux_config_api ??= (await import("../../../../flux-config-api/src/FluxConfigApi.mjs")).FluxConfigApi.new(
+            await (await import("../../../../flux-config-api/src/getValueProviderImplementations.mjs")).getValueProviderImplementations(
+                CONFIG_ENV_PREFIX
+            )
         );
 
-        return this.#http_api;
+        return this.#flux_config_api;
+    }
+
+    /**
+     * @returns {Promise<FluxHttpApi>}
+     */
+    async #getFluxHttpApi() {
+        this.#flux_http_api ??= (await import("../../../../flux-http-api/src/FluxHttpApi.mjs")).FluxHttpApi.new(
+            this.#flux_shutdown_handler
+        );
+
+        return this.#flux_http_api;
     }
 
     /**
@@ -134,7 +134,7 @@ export class StudisSelfserviceDemoBackendApi {
     async #getRequestService() {
         this.#request_service ??= (await import("../../Service/Request/Port/RequestService.mjs")).RequestService.new(
             await this.#getDataService(),
-            await this.#getHttpApi()
+            await this.#getFluxHttpApi()
         );
 
         return this.#request_service;

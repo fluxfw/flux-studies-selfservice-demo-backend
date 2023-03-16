@@ -1,5 +1,5 @@
 import { COOKIE_SESSION_NUMBER } from "../../../Adapter/Response/COOKIE.mjs";
-import { HttpServerResponse } from "../../../../../flux-http-api/src/Adapter/Server/HttpServerResponse.mjs";
+import { HttpServerResponse } from "../../../../../flux-http-api/src/Server/HttpServerResponse.mjs";
 
 /** @typedef {import("../../../Adapter/Response/ApiResponse.mjs").ApiResponse} ApiResponse */
 
