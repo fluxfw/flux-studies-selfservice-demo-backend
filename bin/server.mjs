@@ -3,7 +3,7 @@ let flux_shutdown_handler = null;
 try {
     flux_shutdown_handler = (await import("../../flux-shutdown-handler/src/FluxShutdownHandler.mjs")).FluxShutdownHandler.new();
 
-    await (await import("../src/Adapter/Api/StudisSelfserviceDemoBackendApi.mjs")).StudisSelfserviceDemoBackendApi.new(
+    await (await import("../src/FluxStudisSelfserviceDemoBackend.mjs")).FluxStudisSelfserviceDemoBackend.new(
         flux_shutdown_handler
     )
         .runServer();
