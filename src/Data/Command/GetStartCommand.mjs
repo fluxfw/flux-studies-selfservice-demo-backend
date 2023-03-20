@@ -1,6 +1,6 @@
 import START from "../Start/start.json" assert {type: "json"};
 
-/** @typedef {import("../Port/DataService.mjs").DataService} DataService */
+/** @typedef {import("../DataService.mjs").DataService} DataService */
 /** @typedef {import("../../../../flux-studis-selfservice-frontend/src/Start/Start.mjs").Start} Start */
 
 export class GetStartCommand {

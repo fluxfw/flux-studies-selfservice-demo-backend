@@ -2,7 +2,7 @@ import CHOICE_SUBJECT from "../ChoiceSubject/choice-subject.json" assert {type: 
 
 /** @typedef {import("../../../../flux-studis-selfservice-frontend/src/ChoiceSubject/ChoiceSubject.mjs").ChoiceSubject} ChoiceSubject */
 /** @typedef {import("../../../../flux-studis-selfservice-frontend/src/ChoiceSubject/ChosenSubject.mjs").ChosenSubject} ChosenSubject */
-/** @typedef {import("../Port/DataService.mjs").DataService} DataService */
+/** @typedef {import("../DataService.mjs").DataService} DataService */
 
 export class GetChoiceSubjectCommand {
     /**

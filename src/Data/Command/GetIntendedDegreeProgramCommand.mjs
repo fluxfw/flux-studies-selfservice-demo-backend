@@ -1,7 +1,7 @@
 import INTENDED_DEGREE_PROGRAM from "../IntendedDegreeProgram/intended-degree-program.json" assert {type: "json"};
 
 /** @typedef {import("../../../../flux-studis-selfservice-frontend/src/IntendedDegreeProgram/ChosenIntendedDegreeProgram.mjs").ChosenIntendedDegreeProgram} ChosenIntendedDegreeProgram */
-/** @typedef {import("../Port/DataService.mjs").DataService} DataService */
+/** @typedef {import("../DataService.mjs").DataService} DataService */
 /** @typedef {import("../../../../flux-studis-selfservice-frontend/src/IntendedDegreeProgram/IntendedDegreeProgram.mjs").IntendedDegreeProgram} IntendedDegreeProgram */
 
 export class GetIntendedDegreeProgramCommand {

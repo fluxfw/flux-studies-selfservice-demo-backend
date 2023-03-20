@@ -2,7 +2,7 @@ import { PAGE_CHOICE_SUBJECT, PAGE_COMPLETED, PAGE_INTENDED_DEGREE_PROGRAM, PAGE
 
 /** @typedef {import("../../../../flux-studis-selfservice-frontend/src/Legal/AcceptedLegal.mjs").AcceptedLegal} AcceptedLegal */
 /** @typedef {import("../../Application/Application.mjs").Application} Application */
-/** @typedef {import("../Port/DataService.mjs").DataService} DataService */
+/** @typedef {import("../DataService.mjs").DataService} DataService */
 /** @typedef {import("../../../../flux-studis-selfservice-frontend/src/Label/Label.mjs").Label} Label */
 /** @typedef {import("../../../../flux-studis-selfservice-frontend/src/Post/Post.mjs").Post} Post */
 

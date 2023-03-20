@@ -1,5 +1,5 @@
 /** @typedef {import("../../Application/Application.mjs").Application} Application */
-/** @typedef {import("../Port/DataService.mjs").DataService} DataService */
+/** @typedef {import("../DataService.mjs").DataService} DataService */
 /** @typedef {import("../../Session/Session.mjs").Session} Session */
 
 export class GetApplicationBySessionNumberCommand {

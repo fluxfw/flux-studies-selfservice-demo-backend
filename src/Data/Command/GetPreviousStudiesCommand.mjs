@@ -5,7 +5,7 @@ import { MIN_START_DATE } from "../PreviousStudies/MIN_START_DATE.mjs";
 import PREVIOUS_STUDIES from "../PreviousStudies/previous-studies.json" assert {type: "json"};
 
 /** @typedef {import("../../../../flux-studis-selfservice-frontend/src/PreviousStudies/ChosenPreviousStudies.mjs").ChosenPreviousStudies} ChosenPreviousStudies */
-/** @typedef {import("../Port/DataService.mjs").DataService} DataService */
+/** @typedef {import("../DataService.mjs").DataService} DataService */
 /** @typedef {import("../../../../flux-studis-selfservice-frontend/src/PreviousStudies/PreviousStudies.mjs").PreviousStudies} PreviousStudies */
 
 export class GetPreviousStudiesCommand {

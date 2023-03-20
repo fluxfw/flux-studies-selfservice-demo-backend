@@ -1,6 +1,6 @@
 import { PAGE_CREATE, PAGE_RESUME } from "../../../../flux-studis-selfservice-frontend/src/Page/PAGE.mjs";
 
-/** @typedef {import("../Port/DataService.mjs").DataService} DataService */
+/** @typedef {import("../DataService.mjs").DataService} DataService */
 /** @typedef {import("../../../../flux-studis-selfservice-frontend/src/Label/Label.mjs").Label} Label */
 /** @typedef {import("../../../../flux-studis-selfservice-frontend/src/Post/Post.mjs").Post} Post */
 /** @typedef {import("../../../../flux-studis-selfservice-frontend/src/Resume/Resume.mjs").Resume} Resume */

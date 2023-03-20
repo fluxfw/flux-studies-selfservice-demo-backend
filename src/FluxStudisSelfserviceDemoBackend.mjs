@@ -2,11 +2,10 @@ import { CONFIG_ENV_PREFIX } from "./Config/CONFIG.mjs";
 import { SERVER_CONFIG_HTTPS_CERTIFICATE_KEY, SERVER_CONFIG_HTTPS_DHPARAM_KEY, SERVER_CONFIG_HTTPS_KEY_KEY, SERVER_CONFIG_LISTEN_HTTP_PORT_KEY, SERVER_CONFIG_LISTEN_HTTPS_PORT_KEY, SERVER_CONFIG_LISTEN_INTERFACE_KEY, SERVER_CONFIG_REDIRECT_HTTP_TO_HTTPS_KEY, SERVER_CONFIG_REDIRECT_HTTP_TO_HTTPS_PORT_KEY, SERVER_CONFIG_REDIRECT_HTTP_TO_HTTPS_STATUS_CODE_KEY } from "./Server/SERVER_CONFIG.mjs";
 import { SERVER_DEFAULT_LISTEN_HTTP_PORT, SERVER_DEFAULT_LISTEN_HTTPS_PORT, SERVER_DEFAULT_REDIRECT_HTTP_TO_HTTPS, SERVER_DEFAULT_REDIRECT_HTTP_TO_HTTPS_PORT, SERVER_DEFAULT_REDIRECT_HTTP_TO_HTTPS_STATUS_CODE } from "../../flux-http-api/src/Server/SERVER.mjs";
 
-/** @typedef {import("./Data/Port/DataService.mjs").DataService} DataService */
+/** @typedef {import("./Data/DataService.mjs").DataService} DataService */
 /** @typedef {import("../../flux-config-api/src/FluxConfigApi.mjs").FluxConfigApi} FluxConfigApi */
 /** @typedef {import("../../flux-http-api/src/FluxHttpApi.mjs").FluxHttpApi} FluxHttpApi */
 /** @typedef {import("../../flux-shutdown-handler/src/FluxShutdownHandler.mjs").FluxShutdownHandler} FluxShutdownHandler */
-/** @typedef {import("./Request/Port/RequestService.mjs").RequestService} RequestService */
 
 export class FluxStudisSelfserviceDemoBackend {
     /**
@@ -25,10 +24,6 @@ export class FluxStudisSelfserviceDemoBackend {
      * @type {FluxShutdownHandler}
      */
     #flux_shutdown_handler;
-    /**
-     * @type {RequestService | null}
-     */
-    #request_service = null;
 
     /**
      * @param {FluxShutdownHandler} flux_shutdown_handler
@@ -55,9 +50,13 @@ export class FluxStudisSelfserviceDemoBackend {
         const flux_config_api = await this.#getFluxConfigApi();
 
         await (await this.#getFluxHttpApi()).runServer(
-            async request => (await this.#getRequestService()).handleRequest(
-                request
-            ),
+            async request => (await import("./Request/HandleRequest.mjs")).HandleRequest.new(
+                await this.#getDataService(),
+                await this.#getFluxHttpApi()
+            )
+                .handleRequest(
+                    request
+                ),
             {
                 https_certificate: await flux_config_api.getConfig(
                     SERVER_CONFIG_HTTPS_CERTIFICATE_KEY
@@ -99,7 +98,7 @@ export class FluxStudisSelfserviceDemoBackend {
      * @returns {Promise<DataService>}
      */
     async #getDataService() {
-        this.#data_service ??= (await import("./Data/Port/DataService.mjs")).DataService.new();
+        this.#data_service ??= (await import("./Data/DataService.mjs")).DataService.new();
 
         return this.#data_service;
     }
@@ -126,17 +125,5 @@ export class FluxStudisSelfserviceDemoBackend {
         );
 
         return this.#flux_http_api;
-    }
-
-    /**
-     * @returns {Promise<RequestService>}
-     */
-    async #getRequestService() {
-        this.#request_service ??= (await import("./Request/Port/RequestService.mjs")).RequestService.new(
-            await this.#getDataService(),
-            await this.#getFluxHttpApi()
-        );
-
-        return this.#request_service;
     }
 }

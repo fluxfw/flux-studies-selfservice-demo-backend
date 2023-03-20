@@ -1,7 +1,7 @@
 import { PAGE_CHOICE_SUBJECT } from "../../../../flux-studis-selfservice-frontend/src/Page/PAGE.mjs";
 
 /** @typedef {import("../../Application/Application.mjs").Application} Application */
-/** @typedef {import("../Port/DataService.mjs").DataService} DataService */
+/** @typedef {import("../DataService.mjs").DataService} DataService */
 
 export class ShowPreviousStudiesPageCommand {
     /**

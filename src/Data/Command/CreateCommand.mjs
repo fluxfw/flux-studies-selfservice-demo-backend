@@ -3,7 +3,7 @@ import { PAGE_CREATE, PAGE_IDENTIFICATION_NUMBER } from "../../../../flux-studis
 
 /** @typedef {import("../../Application/Application.mjs").Application} Application */
 /** @typedef {import("../../../../flux-studis-selfservice-frontend/src/Create/Create.mjs").Create} Create */
-/** @typedef {import("../Port/DataService.mjs").DataService} DataService */
+/** @typedef {import("../DataService.mjs").DataService} DataService */
 /** @typedef {import("../../../../flux-studis-selfservice-frontend/src/Label/Label.mjs").Label} Label */
 /** @typedef {import("../../../../flux-studis-selfservice-frontend/src/Post/Post.mjs").Post} Post */
 

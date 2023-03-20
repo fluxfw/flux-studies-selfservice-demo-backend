@@ -1,7 +1,7 @@
 import { MENU_ID_APPLICATION_LOGIN } from "../../../../flux-studis-selfservice-frontend/src/Menu/MENU_ID.mjs";
 
 /** @typedef {import("../../Response/ApiResponse.mjs").ApiResponse} ApiResponse */
-/** @typedef {import("../Port/DataService.mjs").DataService} DataService */
+/** @typedef {import("../DataService.mjs").DataService} DataService */
 
 export class MenuCommand {
     /**

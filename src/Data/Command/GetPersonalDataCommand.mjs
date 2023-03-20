@@ -4,7 +4,7 @@ import { OLD_AGE_SURVIVAR_INSURANCE_NUMBER_FORMAT } from "../PersonalData/OLD_AG
 import PERSONAL_DATA from "../PersonalData/personal-data.json" assert {type: "json"};
 import { REGISTRATION_NUMBER_FORMAT } from "../PersonalData/REGISTRATION_NUMBER_FORMAT.mjs";
 
-/** @typedef {import("../Port/DataService.mjs").DataService} DataService */
+/** @typedef {import("../DataService.mjs").DataService} DataService */
 /** @typedef {import("../../../../flux-studis-selfservice-frontend/src/PersonalData/FilledPersonalData.mjs").FilledPersonalData} FilledPersonalData */
 /** @typedef {import("../../../../flux-studis-selfservice-frontend/src/PersonalData/PersonalData.mjs").PersonalData} PersonalData */
 

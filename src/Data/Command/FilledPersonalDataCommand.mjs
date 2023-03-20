@@ -7,7 +7,7 @@ import { regExpStringToRegExp } from "../../../../flux-studis-selfservice-fronte
 import { PAGE_LEGAL, PAGE_PERSONAL_DATA } from "../../../../flux-studis-selfservice-frontend/src/Page/PAGE.mjs";
 
 /** @typedef {import("../../Application/Application.mjs").Application} Application */
-/** @typedef {import("../Port/DataService.mjs").DataService} DataService */
+/** @typedef {import("../DataService.mjs").DataService} DataService */
 /** @typedef {import("../../../../flux-studis-selfservice-frontend/src/PersonalData/FilledPersonalData.mjs").FilledPersonalData} FilledPersonalData */
 /** @typedef {import("../../../../flux-studis-selfservice-frontend/src/Label/Label.mjs").Label} Label */
 /** @typedef {import("../../../../flux-studis-selfservice-frontend/src/Post/Post.mjs").Post} Post */

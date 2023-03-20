@@ -2,7 +2,7 @@ import { PAGE_PORTRAIT, PAGE_PREVIOUS_STUDIES, PAGE_UNIVERSITY_ENTRANCE_QUALIFIC
 
 /** @typedef {import("../../Application/Application.mjs").Application} Application */
 /** @typedef {import("../../../../flux-studis-selfservice-frontend/src/UniversityEntranceQualification/ChosenUniversityEntranceQualification.mjs").ChosenUniversityEntranceQualification} ChosenUniversityEntranceQualification */
-/** @typedef {import("../Port/DataService.mjs").DataService} DataService */
+/** @typedef {import("../DataService.mjs").DataService} DataService */
 /** @typedef {import("../../../../flux-studis-selfservice-frontend/src/Label/Label.mjs").Label} Label */
 /** @typedef {import("../../../../flux-studis-selfservice-frontend/src/Post/Post.mjs").Post} Post */
 

@@ -1,11 +1,11 @@
-import { COOKIE_SESSION_NUMBER } from "../../Response/COOKIE.mjs";
-import { HttpServerResponse } from "../../../../flux-http-api/src/Server/HttpServerResponse.mjs";
+import { COOKIE_SESSION_NUMBER } from "../Response/COOKIE.mjs";
+import { HttpServerResponse } from "../../../flux-http-api/src/Server/HttpServerResponse.mjs";
 
-/** @typedef {import("../../Response/ApiResponse.mjs").ApiResponse} ApiResponse */
+/** @typedef {import("../Response/ApiResponse.mjs").ApiResponse} ApiResponse */
 
-export class MapApiResponseCommand {
+export class MapApiResponse {
     /**
-     * @returns {MapApiResponseCommand}
+     * @returns {MapApiResponse}
      */
     static new() {
         return new this();

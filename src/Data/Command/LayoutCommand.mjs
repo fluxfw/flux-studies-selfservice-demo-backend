@@ -1,5 +1,5 @@
 /** @typedef {import("../../Response/ApiResponse.mjs").ApiResponse} ApiResponse */
-/** @typedef {import("../Port/DataService.mjs").DataService} DataService */
+/** @typedef {import("../DataService.mjs").DataService} DataService */
 
 export class LayoutCommand {
     /**

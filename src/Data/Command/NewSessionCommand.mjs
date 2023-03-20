@@ -1,4 +1,4 @@
-/** @typedef {import("../Port/DataService.mjs").DataService} DataService */
+/** @typedef {import("../DataService.mjs").DataService} DataService */
 /** @typedef {import("../../Session/Session.mjs").Session} Session */
 
 export class NewSessionCommand {

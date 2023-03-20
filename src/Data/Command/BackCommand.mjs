@@ -2,7 +2,7 @@ import { MENU_ID_APPLICATION_LOGIN } from "../../../../flux-studis-selfservice-f
 import { PAGE_CHOICE_SUBJECT, PAGE_COMPLETED, PAGE_INTENDED_DEGREE_PROGRAM, PAGE_INTENDED_DEGREE_PROGRAM_2, PAGE_LEGAL, PAGE_PERSONAL_DATA, PAGE_PORTRAIT, PAGE_PREVIOUS_STUDIES, PAGE_UNIVERSITY_ENTRANCE_QUALIFICATION } from "../../../../flux-studis-selfservice-frontend/src/Page/PAGE.mjs";
 
 /** @typedef {import("../../Response/ApiResponse.mjs").ApiResponse} ApiResponse */
-/** @typedef {import("../Port/DataService.mjs").DataService} DataService */
+/** @typedef {import("../DataService.mjs").DataService} DataService */
 
 export class BackCommand {
     /**

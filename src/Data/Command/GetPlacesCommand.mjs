@@ -1,4 +1,4 @@
-/** @typedef {import("../Port/DataService.mjs").DataService} DataService */
+/** @typedef {import("../DataService.mjs").DataService} DataService */
 /** @typedef {import("../../../../flux-studis-selfservice-frontend/src/Place/Place.mjs").Place} Place */
 
 export class GetPlacesCommand {

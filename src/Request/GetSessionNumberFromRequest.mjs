@@ -1,10 +1,10 @@
-import { COOKIE_SESSION_NUMBER } from "../../Response/COOKIE.mjs";
+import { COOKIE_SESSION_NUMBER } from "../Response/COOKIE.mjs";
 
-/** @typedef {import("../../../../flux-http-api/src/Server/HttpServerRequest.mjs").HttpServerRequest} HttpServerRequest */
+/** @typedef {import("../../../flux-http-api/src/Server/HttpServerRequest.mjs").HttpServerRequest} HttpServerRequest */
 
-export class GetSessionNumberFromRequestCommand {
+export class GetSessionNumberFromRequest {
     /**
-     * @returns {GetSessionNumberFromRequestCommand}
+     * @returns {GetSessionNumberFromRequest}
      */
     static new() {
         return new this();
