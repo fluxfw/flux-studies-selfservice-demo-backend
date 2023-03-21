@@ -22,7 +22,9 @@ export class GetIssueYearsCommand {
      * @returns {Promise<IssueYear[]>}
      */
     async getIssueYears() {
-        return Array.from({ length: MAX_ISSUE_YEAR - MIN_ISSUE_YEAR + 1 }).map((_, year) => ({
+        return Array.from({
+            length: MAX_ISSUE_YEAR - MIN_ISSUE_YEAR + 1
+        }).map((_, year) => ({
             id: `${year + MIN_ISSUE_YEAR}`
         }));
     }
