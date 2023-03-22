@@ -1,6 +1,6 @@
 import { HttpServerResponse } from "../../../flux-http-api/src/Server/HttpServerResponse.mjs";
+import { METHOD_POST } from "../../../flux-http-api/src/Method/METHOD.mjs";
 import { STATUS_CODE_400 } from "../../../flux-http-api/src/Status/STATUS_CODE.mjs";
-import { METHOD_OPTIONS, METHOD_POST } from "../../../flux-http-api/src/Method/METHOD.mjs";
 
 /** @typedef {import("../DataService.mjs").DataService} DataService */
 /** @typedef {import("../../../flux-http-api/src/FluxHttpApi.mjs").FluxHttpApi} FluxHttpApi */
@@ -50,7 +50,6 @@ export class HandleMenuRequest {
         const response = await this.#flux_http_api.validateMethods(
             request,
             [
-                METHOD_OPTIONS,
                 METHOD_POST
             ]
         );

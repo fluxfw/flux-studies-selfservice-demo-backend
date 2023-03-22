@@ -1,4 +1,4 @@
-import { METHOD_GET, METHOD_HEAD, METHOD_OPTIONS } from "../../../flux-http-api/src/Method/METHOD.mjs";
+import { METHOD_GET, METHOD_HEAD } from "../../../flux-http-api/src/Method/METHOD.mjs";
 
 /** @typedef {import("../DataService.mjs").DataService} DataService */
 /** @typedef {import("../../../flux-http-api/src/FluxHttpApi.mjs").FluxHttpApi} FluxHttpApi */
@@ -50,8 +50,7 @@ export class HandleLayoutRequest {
             request,
             [
                 METHOD_GET,
-                METHOD_HEAD,
-                METHOD_OPTIONS
+                METHOD_HEAD
             ]
         );
 

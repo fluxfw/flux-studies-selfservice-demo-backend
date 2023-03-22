@@ -1,4 +1,4 @@
-import { METHOD_OPTIONS, METHOD_POST } from "../../../flux-http-api/src/Method/METHOD.mjs";
+import { METHOD_POST } from "../../../flux-http-api/src/Method/METHOD.mjs";
 
 /** @typedef {import("../Data/DataService.mjs").DataService} DataService */
 /** @typedef {import("../../../flux-http-api/src/FluxHttpApi.mjs").FluxHttpApi} FluxHttpApi */
@@ -49,7 +49,6 @@ export class HandleBackRequest {
         const response = await this.#flux_http_api.validateMethods(
             request,
             [
-                METHOD_OPTIONS,
                 METHOD_POST
             ]
         );
