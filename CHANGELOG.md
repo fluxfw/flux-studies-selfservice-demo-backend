@@ -6,6 +6,12 @@ Changes:
 
 \-
 
+## v2023-03-22-2
+
+Changes:
+
+- University entrance qualification data
+
 ## v2023-03-22-1
 
 Changes:

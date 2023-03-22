@@ -4,7 +4,6 @@ import { UNIVERSITY_ENTRANCE_QUALIFICATION_SELECT_TYPE_CERTIFICATE, UNIVERSITY_E
 /** @typedef {import("../../../../flux-studis-selfservice-frontend/src/UniversityEntranceQualification/ChosenUniversityEntranceQualification.mjs").ChosenUniversityEntranceQualification} ChosenUniversityEntranceQualification */
 /** @typedef {import("../DataService.mjs").DataService} DataService */
 /** @typedef {import("../../../../flux-studis-selfservice-frontend/src/UniversityEntranceQualification/UniversityEntranceQualification.mjs").UniversityEntranceQualification} UniversityEntranceQualification */
-/** @typedef {import("../../../../flux-studis-selfservice-frontend/src/UniversityEntranceQualification/UniversityEntranceQualificationData.mjs").UniversityEntranceQualificationData} UniversityEntranceQualificationData */
 /** @typedef {import("../../../../flux-studis-selfservice-frontend/src/UniversityEntranceQualification/UniversityEntranceQualificationSelectOption.mjs").UniversityEntranceQualificationSelectOption} UniversityEntranceQualificationSelectOption */
 
 export class GetUniversityEntranceQualificationCommand {
@@ -97,40 +96,42 @@ export class GetUniversityEntranceQualificationCommand {
 
         return structuredClone({
             ...UNIVERSITY_ENTRANCE_QUALIFICATION,
-            data,
+            data: data.map(_data => ({
+                ..._data
+            })),
             "select-to-data": select_to_data,
             selects,
             "select-index": addSelect(
                 UNIVERSITY_ENTRANCE_QUALIFICATION_SELECT_TYPE_CERTIFICATE_TYPE,
                 Array.from(certificate_types.keys()).map(certificate_type_index => [
-                    certificate_type_index,
+                    `${certificate_type_index}`,
                     addSelect(
                         UNIVERSITY_ENTRANCE_QUALIFICATION_SELECT_TYPE_ISSUE_YEAR,
                         Array.from(issue_years.keys()).map(issue_years_index => [
-                            issue_years_index,
+                            `${issue_years_index}`,
                             addSelect(
                                 UNIVERSITY_ENTRANCE_QUALIFICATION_SELECT_TYPE_CERTIFICATE,
                                 Array.from(certificates.keys()).map(certificate_index => [
-                                    certificate_index,
+                                    `${certificate_index}`,
                                     addSelect(
                                         UNIVERSITY_ENTRANCE_QUALIFICATION_SELECT_TYPE_MATURA_CANTON,
                                         Array.from(cantons.keys()).map(canton_index => [
-                                            canton_index,
+                                            `${canton_index}`,
                                             addSelect(
                                                 UNIVERSITY_ENTRANCE_QUALIFICATION_SELECT_TYPE_UPPER_SECONDARY_SCHOOL,
                                                 Array.from(schools.keys()).map(school_index => [
-                                                    school_index,
+                                                    `${school_index}`,
                                                     addSelect(
                                                         UNIVERSITY_ENTRANCE_QUALIFICATION_SELECT_TYPE_CERTIFICATE_COUNTRY,
                                                         Array.from(countries.keys()).map(country_index => [
-                                                            country_index,
+                                                            `${country_index}`,
                                                             addSelect(
                                                                 UNIVERSITY_ENTRANCE_QUALIFICATION_SELECT_TYPE_CERTIFICATE_CANTON,
                                                                 Array.from(cantons.keys()).map(canton_index_2 => [
-                                                                    canton_index_2,
+                                                                    `${canton_index_2}`,
                                                                     addSelect(
                                                                         UNIVERSITY_ENTRANCE_QUALIFICATION_SELECT_TYPE_CERTIFICATE_PLACE,
-                                                                        Array.from(places.keys())
+                                                                        Array.from(places.keys()).map(place_index => `${place_index}`)
                                                                     )
                                                                 ])
                                                             )
