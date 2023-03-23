@@ -64,16 +64,16 @@ export class ChosenUniversityEntranceQualificationCommand {
                 return false;
             }
 
-            const data = university_entrance_qualification.data[data_index];
+            if (!Object.hasOwn(university_entrance_qualification.data[data_index], post.data[select_type])) {
+                return false;
+            }
 
-            const _data_index = data.findIndex(option => option.id === post.data[select_type]);
-
-            const select_option = select_options.find(_select_option => (typeof _select_option === "number" ? _select_option : _select_option[0]) === _data_index) ?? null;
+            const select_option = select_options.find(_select_option => (typeof _select_option === "string" ? _select_option : _select_option[0]) === post.data[select_type]) ?? null;
 
             if (select_option === null) {
                 return false;
             }
-            if (typeof select_option === "number") {
+            if (typeof select_option === "string") {
                 return true;
             }
 

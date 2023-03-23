@@ -96,42 +96,43 @@ export class GetUniversityEntranceQualificationCommand {
 
         return structuredClone({
             ...UNIVERSITY_ENTRANCE_QUALIFICATION,
-            data: data.map(_data => ({
-                ..._data
-            })),
+            data: data.map(data_2 => Object.fromEntries(data_2.map(data_3 => [
+                data_3.id,
+                data_3
+            ]))),
             "select-to-data": select_to_data,
             selects,
             "select-index": addSelect(
                 UNIVERSITY_ENTRANCE_QUALIFICATION_SELECT_TYPE_CERTIFICATE_TYPE,
-                Array.from(certificate_types.keys()).map(certificate_type_index => [
-                    `${certificate_type_index}`,
+                certificate_types.map(certificate_type => [
+                    certificate_type.id,
                     addSelect(
                         UNIVERSITY_ENTRANCE_QUALIFICATION_SELECT_TYPE_ISSUE_YEAR,
-                        Array.from(issue_years.keys()).map(issue_years_index => [
-                            `${issue_years_index}`,
+                        issue_years.map(issue_year => [
+                            issue_year.id,
                             addSelect(
                                 UNIVERSITY_ENTRANCE_QUALIFICATION_SELECT_TYPE_CERTIFICATE,
-                                Array.from(certificates.keys()).map(certificate_index => [
-                                    `${certificate_index}`,
+                                certificates.map(certificate => [
+                                    certificate.id,
                                     addSelect(
                                         UNIVERSITY_ENTRANCE_QUALIFICATION_SELECT_TYPE_MATURA_CANTON,
-                                        Array.from(cantons.keys()).map(canton_index => [
-                                            `${canton_index}`,
+                                        cantons.map(canton => [
+                                            canton.id,
                                             addSelect(
                                                 UNIVERSITY_ENTRANCE_QUALIFICATION_SELECT_TYPE_UPPER_SECONDARY_SCHOOL,
-                                                Array.from(schools.keys()).map(school_index => [
-                                                    `${school_index}`,
+                                                schools.map(school => [
+                                                    school.id,
                                                     addSelect(
                                                         UNIVERSITY_ENTRANCE_QUALIFICATION_SELECT_TYPE_CERTIFICATE_COUNTRY,
-                                                        Array.from(countries.keys()).map(country_index => [
-                                                            `${country_index}`,
+                                                        countries.map(country => [
+                                                            country.id,
                                                             addSelect(
                                                                 UNIVERSITY_ENTRANCE_QUALIFICATION_SELECT_TYPE_CERTIFICATE_CANTON,
-                                                                Array.from(cantons.keys()).map(canton_index_2 => [
-                                                                    `${canton_index_2}`,
+                                                                cantons.map(canton_2 => [
+                                                                    canton_2.id,
                                                                     addSelect(
                                                                         UNIVERSITY_ENTRANCE_QUALIFICATION_SELECT_TYPE_CERTIFICATE_PLACE,
-                                                                        Array.from(places.keys()).map(place_index => `${place_index}`)
+                                                                        places.map(place => place.id)
                                                                     )
                                                                 ])
                                                             )
