@@ -32,7 +32,7 @@ export class HandleFrontendRequest {
 
     /**
      * @param {HttpServerRequest} request
-     * @returns {HttpServerResponse}
+     * @returns {Promise<HttpServerResponse>}
      */
     async handleFrontendRequest(request) {
         const response = await this.#flux_http_api.validateMethods(

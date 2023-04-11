@@ -40,7 +40,7 @@ export class HandleMenuRequest {
 
     /**
      * @param {HttpServerRequest} request
-     * @returns {HttpServerResponse | null}
+     * @returns {Promise<HttpServerResponse | null>}
      */
     async handleMenuRequest(request) {
         if (request.url.pathname !== "/api/menu") {

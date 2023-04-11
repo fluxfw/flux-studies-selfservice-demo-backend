@@ -39,7 +39,7 @@ export class HandleBackRequest {
 
     /**
      * @param {HttpServerRequest} request
-     * @returns {HttpServerResponse | null}
+     * @returns {Promise<HttpServerResponse | null>}
      */
     async handleBackRequest(request) {
         if (request.url.pathname !== "/api/back") {

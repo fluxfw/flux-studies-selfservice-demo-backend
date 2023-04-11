@@ -39,7 +39,7 @@ export class HandleLogoutRequest {
 
     /**
      * @param {HttpServerRequest} request
-     * @returns {HttpServerResponse | null}
+     * @returns {Promise<HttpServerResponse | null>}
      */
     async handleLogoutRequest(request) {
         if (request.url.pathname !== "/api/logout") {

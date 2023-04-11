@@ -40,7 +40,7 @@ export class HandlePostRequest {
 
     /**
      * @param {HttpServerRequest} request
-     * @returns {HttpServerResponse | null}
+     * @returns {Promise<HttpServerResponse | null>}
      */
     async handlePostRequest(request) {
         if (request.url.pathname !== "/api/post") {

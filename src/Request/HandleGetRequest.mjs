@@ -39,7 +39,7 @@ export class HandleGetRequest {
 
     /**
      * @param {HttpServerRequest} request
-     * @returns {HttpServerResponse | null}
+     * @returns {Promise<HttpServerResponse | null>}
      */
     async handleGetRequest(request) {
         if (request.url.pathname !== "/api/get") {

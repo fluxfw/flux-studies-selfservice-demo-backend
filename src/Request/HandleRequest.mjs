@@ -37,7 +37,7 @@ export class HandleRequest {
 
     /**
      * @param {HttpServerRequest} request
-     * @returns {HttpServerResponse | null}
+     * @returns {Promise<HttpServerResponse | null>}
      */
     async handleRequest(request) {
         if (request.url.pathname.startsWith("/api/") || request.url.pathname === "/api") {

@@ -39,7 +39,7 @@ export class HandleLayoutRequest {
 
     /**
      * @param {HttpServerRequest} request
-     * @returns {HttpServerResponse | null}
+     * @returns {Promise<HttpServerResponse | null>}
      */
     async handleLayoutRequest(request) {
         if (request.url.pathname !== "/api/layout") {

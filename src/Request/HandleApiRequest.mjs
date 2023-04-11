@@ -37,7 +37,7 @@ export class HandleApiRequest {
 
     /**
      * @param {HttpServerRequest} request
-     * @returns {HttpServerResponse | null}
+     * @returns {Promise<HttpServerResponse | null>}
      */
     async handleApiRequest(request) {
         if (request.url.pathname.startsWith("/api/back/") || request.url.pathname === "/api/back") {
