@@ -69,7 +69,7 @@ export class ChosenSubjectCommand {
         if (!Object.values(post.data.qualifications).every(value => typeof value === "boolean")) {
             return false;
         }
-        if (!degree_program.qualifications.every(qualification => qualification.id in post.data.qualifications)) {
+        if (!degree_program.qualifications.every(qualification => Object.hasOwn(post.data.qualifications, qualification.id))) {
             return false;
         }
         if (!degree_program.qualifications.filter(qualification => qualification.required).every(qualification => post.data.qualifications[qualification.id])) {

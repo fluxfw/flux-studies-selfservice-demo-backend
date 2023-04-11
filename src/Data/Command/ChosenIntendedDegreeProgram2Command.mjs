@@ -58,7 +58,7 @@ export class ChosenIntendedDegreeProgram2Command {
             || Object.keys(post.data["single-choice"]).length === 0
             || !Object.keys(post.data["single-choice"]).every(key => typeof key === "string" && key !== "")
             || !Object.values(post.data["single-choice"]).every(value => typeof value === "string" && value !== "")
-            || !intended_degree_program_2.combination["single-choice"].every(single_choice => single_choice.id in post.data["single-choice"])
+            || !intended_degree_program_2.combination["single-choice"].every(single_choice => Object.hasOwn(post.data["single-choice"], single_choice.id))
             || !Object.entries(post.data["single-choice"]).every(([
                 key,
                 value
@@ -81,7 +81,7 @@ export class ChosenIntendedDegreeProgram2Command {
             || Object.keys(post.data["multiple-choice"]).length === 0
             || !Object.keys(post.data["multiple-choice"]).every(key => typeof key === "string" && key !== "")
             || !Object.values(post.data["multiple-choice"]).every(value => Array.isArray(value) && value.length > 0 && value.every(_value => typeof _value === "string" && _value !== ""))
-            || !intended_degree_program_2.combination["multiple-choice"].every(multiple_choice => multiple_choice.id in post.data["multiple-choice"])
+            || !intended_degree_program_2.combination["multiple-choice"].every(multiple_choice => Object.hasOwn(post.data["multiple-choice"], multiple_choice.id))
             || !Object.entries(post.data["multiple-choice"]).every(([
                 key,
                 value
