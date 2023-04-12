@@ -1,0 +1,23 @@
+[
+    {
+        "id": "nationally_1",
+        "label": {
+            "en": "Nationally 1",
+            "de": "Nationalität 1"
+        }
+    },
+    {
+        "id": "nationally_2",
+        "label": {
+            "en": "Nationally 2",
+            "de": "Nationalität 2"
+        }
+    },
+    {
+        "id": "nationally_3",
+        "label": {
+            "en": "Nationally 3",
+            "de": "Nationalität 3"
+        }
+    }
+]

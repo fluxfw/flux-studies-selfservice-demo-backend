@@ -199,6 +199,12 @@ export class FilledPersonalDataCommand {
             }
         }
 
+        if (personal_data["only-one-phone"]) {
+            if (PHONE_TYPES.filter(phone_type => post.data[`${phone_type}-phone-area-code`] !== "").length > 1) {
+                return false;
+            }
+        }
+
         if (typeof post.data.email !== "string") {
             return false;
         }
@@ -215,7 +221,7 @@ export class FilledPersonalDataCommand {
         if (post.data["mother-language"] === "") {
             return false;
         }
-        if (!personal_data.languages.some(language => language.id === post.data["mother-language"])) {
+        if (!personal_data["mother-languages"].some(mother_language => mother_language.id === post.data["mother-language"])) {
             return false;
         }
 
@@ -225,7 +231,7 @@ export class FilledPersonalDataCommand {
         if (post.data["correspondence-language"] === "") {
             return false;
         }
-        if (!personal_data.languages.some(language => language.id === post.data["correspondence-language"])) {
+        if (!personal_data["correspondence-languages"].some(correspondence_language => correspondence_language.id === post.data["correspondence-language"])) {
             return false;
         }
 
@@ -260,7 +266,7 @@ export class FilledPersonalDataCommand {
         if (post.data.nationally === "") {
             return false;
         }
-        if (!personal_data.countries.some(country => country.id === post.data.nationally)) {
+        if (!personal_data.nationalities.some(nationally => nationally.id === post.data.nationally)) {
             return false;
         }
 
@@ -270,7 +276,7 @@ export class FilledPersonalDataCommand {
         if (post.data["origin-place"] === "") {
             return false;
         }
-        if (!personal_data.places.some(_place => _place.id === post.data["origin-place"])) {
+        if (!personal_data["origin-places"].some(origin_place => origin_place.id === post.data["origin-place"])) {
             return false;
         }
 

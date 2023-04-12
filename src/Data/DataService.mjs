@@ -13,6 +13,7 @@
 /** @typedef {import("../../../flux-studis-selfservice-frontend/src/ChoiceSubject/ChosenSubject.mjs").ChosenSubject} ChosenSubject */
 /** @typedef {import("../../../flux-studis-selfservice-frontend/src/UniversityEntranceQualification/ChosenUniversityEntranceQualification.mjs").ChosenUniversityEntranceQualification} ChosenUniversityEntranceQualification */
 /** @typedef {import("../../../flux-studis-selfservice-frontend/src/IdentificationNumber/ConfirmedIdentificationNumber.mjs").ConfirmedIdentificationNumber} ConfirmedIdentificationNumber */
+/** @typedef {import("../../../flux-studis-selfservice-frontend/src/CorrespondenceLanguage/CorrespondenceLanguage.mjs").CorrespondenceLanguage} CorrespondenceLanguage */
 /** @typedef {import("../../../flux-studis-selfservice-frontend/src/Country/Country.mjs").Country} Country */
 /** @typedef {import("../../../flux-studis-selfservice-frontend/src/Create/Create.mjs").Create} Create */
 /** @typedef {import("../../../flux-studis-selfservice-frontend/src/DegreeProgram/DegreeProgram.mjs").DegreeProgram} DegreeProgram */
@@ -23,10 +24,12 @@
 /** @typedef {import("../../../flux-studis-selfservice-frontend/src/IntendedDegreeProgram2/IntendedDegreeProgram2.mjs").IntendedDegreeProgram2} IntendedDegreeProgram2 */
 /** @typedef {import("../../../flux-studis-selfservice-frontend/src/IssueYear/IssueYear.mjs").IssueYear} IssueYear */
 /** @typedef {import("../../../flux-studis-selfservice-frontend/src/Label/Label.mjs").Label} Label */
-/** @typedef {import("../../../flux-studis-selfservice-frontend/src/Language/Language.mjs").Language} Language */
 /** @typedef {import("../../../flux-studis-selfservice-frontend/src/Layout/Layout.mjs").Layout} Layout */
 /** @typedef {import("../../../flux-studis-selfservice-frontend/src/Legal/Legal.mjs").Legal} Legal */
 /** @typedef {import("../../../flux-studis-selfservice-frontend/src/Menu/Menu.mjs").Menu} Menu */
+/** @typedef {import("../../../flux-studis-selfservice-frontend/src/MotherLanguage/MotherLanguage.mjs").MotherLanguage} MotherLanguage */
+/** @typedef {import("../../../flux-studis-selfservice-frontend/src/Nationally/Nationally.mjs").Nationally} Nationally */
+/** @typedef {import("../../../flux-studis-selfservice-frontend/src/OriginPlace/OriginPlace.mjs").OriginPlace} OriginPlace */
 /** @typedef {import("../../../flux-studis-selfservice-frontend/src/PersonalData/PersonalData.mjs").PersonalData} PersonalData */
 /** @typedef {import("../../../flux-studis-selfservice-frontend/src/Place/Place.mjs").Place} Place */
 /** @typedef {import("../../../flux-studis-selfservice-frontend/src/Place/PlaceWithPostalCode.mjs").PlaceWithPostalCode} PlaceWithPostalCode */
@@ -328,6 +331,14 @@ export class DataService {
     }
 
     /**
+     * @returns {Promise<CorrespondenceLanguage[]>}
+     */
+    async getCorrespondenceLanguages() {
+        return (await import("./Command/GetCorrespondenceLanguagesCommand.mjs")).GetCorrespondenceLanguagesCommand.new()
+            .getCorrespondenceLanguages();
+    }
+
+    /**
      * @returns {Promise<Country[]>}
      */
     async getCountries() {
@@ -399,14 +410,6 @@ export class DataService {
     }
 
     /**
-     * @returns {Promise<Language[]>}
-     */
-    async getLanguages() {
-        return (await import("./Command/GetLanguagesCommand.mjs")).GetLanguagesCommand.new()
-            .getLanguages();
-    }
-
-    /**
      * @returns {Promise<Layout>}
      */
     async getLayout() {
@@ -444,6 +447,30 @@ export class DataService {
             .getMenu(
                 application
             );
+    }
+
+    /**
+     * @returns {Promise<MotherLanguage[]>}
+     */
+    async getMotherLanguages() {
+        return (await import("./Command/GetMotherLanguagesCommand.mjs")).GetMotherLanguagesCommand.new()
+            .getMotherLanguages();
+    }
+
+    /**
+     * @returns {Promise<Nationally[]>}
+     */
+    async getNationalities() {
+        return (await import("./Command/GetNationalitiesCommand.mjs")).GetNationalitiesCommand.new()
+            .getNationalities();
+    }
+
+    /**
+     * @returns {Promise<OriginPlace[]>}
+     */
+    async getOriginPlaces() {
+        return (await import("./Command/GetOriginPlacesCommand.mjs")).GetOriginPlacesCommand.new()
+            .getOriginPlaces();
     }
 
     /**

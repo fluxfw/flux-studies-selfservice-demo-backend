@@ -1,0 +1,23 @@
+[
+    {
+        "id": "origin_place_1",
+        "label": {
+            "en": "Origin place 1",
+            "de": "Heimatort 1"
+        }
+    },
+    {
+        "id": "origin_place_2",
+        "label": {
+            "en": "Origin place 2",
+            "de": "Heimatort 2"
+        }
+    },
+    {
+        "id": "origin_place_3",
+        "label": {
+            "en": "Origin place 3",
+            "de": "Heimatort 3"
+        }
+    }
+]

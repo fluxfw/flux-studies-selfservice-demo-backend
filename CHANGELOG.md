@@ -6,6 +6,15 @@ Changes:
 
 \-
 
+## v2023-04-12-1
+
+Changes:
+
+- Seperate countries and nationalities
+- Seperate places and origin places
+- Seperate mother languages and correspondence languages
+- Only one phone variant
+
 ## v2023-03-24-1
 
 Changes:

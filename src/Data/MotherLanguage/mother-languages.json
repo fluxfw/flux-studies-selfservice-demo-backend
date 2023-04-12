@@ -1,0 +1,23 @@
+[
+    {
+        "id": "mother_language_1",
+        "label": {
+            "en": "Mother language 1",
+            "de": "Muttersprache 1"
+        }
+    },
+    {
+        "id": "mother_language_2",
+        "label": {
+            "en": "Mother language 2",
+            "de": "Muttersprache 2"
+        }
+    },
+    {
+        "id": "mother_language_3",
+        "label": {
+            "en": "Mother language 3",
+            "de": "Muttersprache 3"
+        }
+    }
+]

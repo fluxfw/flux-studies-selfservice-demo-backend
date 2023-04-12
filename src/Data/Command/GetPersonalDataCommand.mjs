@@ -44,10 +44,13 @@ export class GetPersonalDataCommand {
             countries: await this.#data_service.getCountries(),
             places: await this.#data_service.getPlacesWithPostalCode(),
             "area-codes": await this.#data_service.getAreaCodes(),
-            languages: await this.#data_service.getLanguages(),
+            "mother-languages": await this.#data_service.getMotherLanguages(),
+            "correspondence-languages": await this.#data_service.getCorrespondenceLanguages(),
             "min-birth-date": MIN_BIRTH_DATE,
             "max-birth-date": MAX_BIRTH_DATE,
             "old-age-survivar-insurance-number-format": `${OLD_AGE_SURVIVAR_INSURANCE_NUMBER_FORMAT}`,
+            nationalities: await this.#data_service.getNationalities(),
+            "origin-places": await this.#data_service.getOriginPlaces(),
             values
         });
     }

@@ -1,0 +1,23 @@
+[
+    {
+        "id": "correspondence_language_1",
+        "label": {
+            "en": "Correspondence language 1",
+            "de": "Korrespondenzsprache 1"
+        }
+    },
+    {
+        "id": "correspondence_language_2",
+        "label": {
+            "en": "Correspondence language 2",
+            "de": "Korrespondenzsprache 2"
+        }
+    },
+    {
+        "id": "correspondence_language_3",
+        "label": {
+            "en": "Correspondence language 3",
+            "de": "Korrespondenzsprache 3"
+        }
+    }
+]
