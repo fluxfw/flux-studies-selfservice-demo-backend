@@ -59,13 +59,19 @@ export class FluxStudisSelfserviceDemoBackend {
                 ),
             {
                 https_certificate: await flux_config_api.getConfig(
-                    SERVER_CONFIG_HTTPS_CERTIFICATE_KEY
+                    SERVER_CONFIG_HTTPS_CERTIFICATE_KEY,
+                    null,
+                    false
                 ),
                 https_dhparam: await flux_config_api.getConfig(
-                    SERVER_CONFIG_HTTPS_DHPARAM_KEY
+                    SERVER_CONFIG_HTTPS_DHPARAM_KEY,
+                    null,
+                    false
                 ),
                 https_key: await flux_config_api.getConfig(
-                    SERVER_CONFIG_HTTPS_KEY_KEY
+                    SERVER_CONFIG_HTTPS_KEY_KEY,
+                    null,
+                    false
                 ),
                 listen_http_port: await flux_config_api.getConfig(
                     SERVER_CONFIG_LISTEN_HTTP_PORT_KEY,
@@ -76,7 +82,9 @@ export class FluxStudisSelfserviceDemoBackend {
                     SERVER_DEFAULT_LISTEN_HTTPS_PORT
                 ),
                 listen_interface: await flux_config_api.getConfig(
-                    SERVER_CONFIG_LISTEN_INTERFACE_KEY
+                    SERVER_CONFIG_LISTEN_INTERFACE_KEY,
+                    null,
+                    false
                 ),
                 redirect_http_to_https: await flux_config_api.getConfig(
                     SERVER_CONFIG_REDIRECT_HTTP_TO_HTTPS_KEY,
