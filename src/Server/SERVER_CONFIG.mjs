@@ -1,3 +1,5 @@
+export const SERVER_CONFIG_DISABLE_HTTP_IF_HTTPS_KEY = "server-disable-http-if-https";
+
 export const SERVER_CONFIG_HTTPS_CERTIFICATE_KEY = "server-https-certificate";
 
 export const SERVER_CONFIG_HTTPS_DHPARAM_KEY = "server-https-dhparam";
