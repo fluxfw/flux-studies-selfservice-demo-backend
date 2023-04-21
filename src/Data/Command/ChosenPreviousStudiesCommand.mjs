@@ -67,9 +67,6 @@ export class ChosenPreviousStudiesCommand {
                 return false;
             }
 
-            if (typeof previous_study["start-date"] !== "number") {
-                return false;
-            }
             if (!Number.isInteger(previous_study["start-date"])) {
                 return false;
             }
@@ -80,9 +77,6 @@ export class ChosenPreviousStudiesCommand {
                 return false;
             }
 
-            if (typeof previous_study["end-date"] !== "number") {
-                return false;
-            }
             if (!Number.isInteger(previous_study["end-date"])) {
                 return false;
             }
@@ -114,9 +108,6 @@ export class ChosenPreviousStudiesCommand {
                 return false;
             }
 
-            if (typeof previous_study.semesters !== "number") {
-                return false;
-            }
             if (!Number.isInteger(previous_study.semesters)) {
                 return false;
             }

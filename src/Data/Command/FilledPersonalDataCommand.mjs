@@ -117,9 +117,6 @@ export class FilledPersonalDataCommand {
             return false;
         }
 
-        if (typeof post.data["house-number"] !== "number") {
-            return false;
-        }
         if (!Number.isInteger(post.data["house-number"])) {
             return false;
         }
@@ -134,9 +131,6 @@ export class FilledPersonalDataCommand {
             return false;
         }
 
-        if (typeof post.data["postal-code"] !== "number") {
-            return false;
-        }
         if (!Number.isInteger(post.data["postal-code"])) {
             return false;
         }
@@ -338,9 +332,6 @@ export class FilledPersonalDataCommand {
                     return false;
                 }
 
-                if (typeof post.data["parents-address-house-number"] !== "number") {
-                    return false;
-                }
                 if (!Number.isInteger(post.data["parents-address-house-number"])) {
                     return false;
                 }
@@ -351,9 +342,6 @@ export class FilledPersonalDataCommand {
                     return false;
                 }
 
-                if (typeof post.data["parents-address-postal-code"] !== "number") {
-                    return false;
-                }
                 if (!Number.isInteger(post.data["parents-address-postal-code"])) {
                     return false;
                 }

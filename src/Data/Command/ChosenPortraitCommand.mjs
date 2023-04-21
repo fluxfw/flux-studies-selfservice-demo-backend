@@ -46,7 +46,7 @@ export class ChosenPortraitCommand {
 
         const portrait = await this.#data_service.getPortrait();
 
-        if (post.data.photo !== null && !(Array.isArray(post.data.photo) && post.data.photo.length > 0 && post.data.photo.every(char => typeof char === "number" && Number.isInteger(char) && char >= 0) && post.data.photo.length < portrait["photo-max-data-size"])) {
+        if (post.data.photo !== null && !(Array.isArray(post.data.photo) && post.data.photo.length > 0 && post.data.photo.every(char => Number.isInteger(char) && char >= 0) && post.data.photo.length < portrait["photo-max-data-size"])) {
             return false;
         }
         if (portrait["required-photo"] && post.data.photo === null) {
