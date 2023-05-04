@@ -40,7 +40,7 @@ export class ChosenPreviousStudiesCommand {
             return false;
         }
 
-        if (typeof post.data !== "object") {
+        if (post.data === null || typeof post.data !== "object") {
             return false;
         }
 
@@ -53,7 +53,7 @@ export class ChosenPreviousStudiesCommand {
             return false;
         }
         if (!post.data["previous-studies"].every(previous_study => {
-            if (typeof previous_study !== "object") {
+            if (previous_study === null || typeof previous_study !== "object") {
                 return false;
             }
 

@@ -47,7 +47,7 @@ export class PostCommand {
         let response_session_number = null;
         let error_messages = null;
 
-        if (typeof post === "object") {
+        if (post !== null && typeof post === "object") {
             if (application !== null) {
                 switch (menu.id) {
                     case MENU_ID_APPLICATION_LOGIN:

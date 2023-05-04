@@ -40,7 +40,7 @@ export class ChosenSubjectCommand {
             return false;
         }
 
-        if (typeof post.data !== "object") {
+        if (post.data === null || typeof post.data !== "object") {
             return false;
         }
 
@@ -57,7 +57,7 @@ export class ChosenSubjectCommand {
             return false;
         }
 
-        if (typeof post.data.qualifications !== "object") {
+        if (post.data.qualifications === null || typeof post.data.qualifications !== "object") {
             return false;
         }
         if (Object.keys(post.data.qualifications).length === 0) {

@@ -40,7 +40,7 @@ export class AcceptedLegalCommand {
             return false;
         }
 
-        if (typeof post.data !== "object") {
+        if (post.data === null || typeof post.data !== "object") {
             return false;
         }
 
