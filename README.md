@@ -1,10 +1,16 @@
 # flux-studis-selfservice-demo-backend
 
+## Set up
+
+*You need to fill placeholders (Wrapped in `%`), create secret files and adjust to your needs (Applies everywhere)*
+
+### Docker
+
 ```shell
-docker run --rm -p [%host_ip%:]80:80 fluxfw/flux-studis-selfservice-demo-backend:vYYYY-MM-DD-I
+docker run --rm -p [%host_ip%:]80:80 fluxfw/flux-studis-selfservice-demo-backend:%version%
 ```
 
-## Config
+### Config
 
 | Config | Default value | Environment variable | Cli parameter | Config JSON file |
 | ------ | ------------- | -------------------- | ------------- | ---------------- |
