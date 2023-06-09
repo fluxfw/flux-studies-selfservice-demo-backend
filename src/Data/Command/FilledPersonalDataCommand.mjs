@@ -3,7 +3,7 @@ import { EMAIL_FORMAT } from "../PersonalData/EMAIL_FORMAT.mjs";
 import { MAX_BIRTH_DATE } from "../PersonalData/MAX_BIRTH_DATE.mjs";
 import { MIN_BIRTH_DATE } from "../PersonalData/MIN_BIRTH_DATE.mjs";
 import { PHONE_TYPES } from "../../../../flux-studis-selfservice-frontend/src/PersonalData/PHONE_TYPES.mjs";
-import { regExpStringToRegExp } from "../../../../flux-studis-selfservice-frontend/src/PersonalData/regExpStringToRegExp.mjs";
+import { valueToRegExp } from "../../../../flux-form/src/DEFAULT_ADDITIONAL_VALIDATION_TYPES.mjs";
 import { PAGE_LEGAL, PAGE_PERSONAL_DATA } from "../../../../flux-studis-selfservice-frontend/src/Page/PAGE.mjs";
 
 /** @typedef {import("../../Application/Application.mjs").Application} Application */
@@ -90,9 +90,10 @@ export class FilledPersonalDataCommand {
         if (typeof post.data["registration-number"] !== "string") {
             return false;
         }
-        if (post.data["registration-number"] !== "" && !regExpStringToRegExp(
-            personal_data["registration-number-format"]
-        ).test(post.data["registration-number"])) {
+        if (post.data["registration-number"] !== "" && !(await valueToRegExp(
+            personal_data["registration-number-format"],
+            true
+        )).test(post.data["registration-number"])) {
             return false;
         }
 
@@ -180,9 +181,10 @@ export class FilledPersonalDataCommand {
             if (post.data[`${phone_type}-phone-area-code`] !== "" && area_code === null) {
                 return false;
             }
-            if (post.data[`${phone_type}-phone-number`] !== "" && !regExpStringToRegExp(
-                area_code["phone-number-format"]
-            ).test(post.data[`${phone_type}-phone-number`])) {
+            if (post.data[`${phone_type}-phone-number`] !== "" && !(await valueToRegExp(
+                area_code["phone-number-format"],
+                true
+            )).test(post.data[`${phone_type}-phone-number`])) {
                 return false;
             }
         }
@@ -248,9 +250,10 @@ export class FilledPersonalDataCommand {
         if (typeof post.data["old-age-survivar-insurance-number"] !== "string") {
             return false;
         }
-        if (post.data["old-age-survivar-insurance-number"] !== "" && !regExpStringToRegExp(
-            personal_data["old-age-survivar-insurance-number-format"]
-        ).test(post.data["old-age-survivar-insurance-number"])) {
+        if (post.data["old-age-survivar-insurance-number"] !== "" && !(await valueToRegExp(
+            personal_data["old-age-survivar-insurance-number-format"],
+            true
+        )).test(post.data["old-age-survivar-insurance-number"])) {
             return false;
         }
 
