@@ -23,4 +23,4 @@ xdg-open "http://$host_ip"
 
 docker run --rm -v "$libs:/$name/libs:ro" -p "$host_ip:80:80" "$image:$tag"
 
-#git-clean-ignored "$root"
+git-clean-ignored "$libs/flux-studis-selfservice-frontend"
