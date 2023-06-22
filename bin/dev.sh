@@ -17,7 +17,9 @@ user="${FLUX_PUBLISH_DOCKER_USER:=fluxfw}"
 image="$user/$name"
 tag="`get-release-tag "$root"`"
 
-(cd "$libs" && node-docker flux-studis-selfservice-frontend/bin/generate-pwa.mjs)
+dev_build_image="$name-dev-build:latest"
+echo -e "FROM node:current-alpine\nRUN apk add --no-cache imagemagick" | docker build - --pull -t "$dev_build_image"
+run-in-docker "$dev_build_image" flux-studis-selfservice-frontend/bin/generate-pwa.mjs "$libs"
 
 xdg-open "http://$host_ip"
 
