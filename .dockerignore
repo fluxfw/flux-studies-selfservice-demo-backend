@@ -1,4 +1,5 @@
 *
+!bin/build.mjs
 !bin/install-libraries.sh
 !bin/server.mjs
 !src

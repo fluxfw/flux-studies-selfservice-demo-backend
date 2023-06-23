@@ -25,8 +25,10 @@ installLibrary flux-form https://github.com/fluxfw/flux-form/archive/refs/tags/v
 
 installLibrary flux-http-api https://github.com/fluxfw/flux-http-api/archive/refs/tags/v2023-06-19-1.tar.gz
 
+installLibrary flux-pwa-generator https://github.com/fluxfw/flux-pwa-generator/archive/refs/tags/v2023-06-23-7.tar.gz
+
 installLibrary flux-shutdown-handler https://github.com/fluxfw/flux-shutdown-handler/archive/refs/tags/v2023-03-16-1.tar.gz
 
-installLibrary flux-studis-selfservice-frontend/src https://github.com/fluxfw/flux-studis-selfservice-frontend/releases/download/v2023-06-05-1/flux-studis-selfservice-frontend-v2023-06-05-1-build.tar.gz
+installLibrary flux-studis-selfservice-frontend/src https://github.com/fluxfw/flux-studis-selfservice-frontend/releases/download/v2023-06-23-1/flux-studis-selfservice-frontend-v2023-06-23-1-build.tar.gz
 
 installLibrary mime-db https://registry.npmjs.org/mime-db/-/mime-db-1.52.0.tgz

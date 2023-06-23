@@ -7,6 +7,8 @@ RUN ln -s libs/flux-studis-selfservice-demo-backend/bin /build/flux-studis-selfs
 
 COPY . /build/flux-studis-selfservice-demo-backend/libs/flux-studis-selfservice-demo-backend
 
+RUN /build/flux-studis-selfservice-demo-backend/libs/flux-studis-selfservice-demo-backend/bin/build.mjs prod
+
 FROM node:20-alpine
 
 USER node:node
